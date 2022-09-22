@@ -23,7 +23,7 @@ export class Sidebar extends React.Component {
 					exact="true"
 					className="list-group-item list-group-item-action">
 					Games
-				</NavLink>	
+				</NavLink>
 			</div>
 		)
 	}

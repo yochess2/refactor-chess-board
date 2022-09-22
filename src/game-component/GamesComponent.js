@@ -16,7 +16,6 @@ export class GamesComponent extends React.Component {
 			pageIndex: 0,
 			pages: 0,
 		}
-		console.log(this.props)
 		this.api = new ChessWebAPI
 	}
 
@@ -25,7 +24,7 @@ export class GamesComponent extends React.Component {
 		// console.log("    GamesComponent - ComponentDidMount", this.props)
 		this.setState({ pages: Math.ceil(this.props.games.length / this.state.perPage) })
 		if (this.props.games.length === 0) {
-			this.fetchandSetGames()
+			// this.fetchandSetGames()
 		}
 	}
 
@@ -39,8 +38,8 @@ export class GamesComponent extends React.Component {
 
 	fetchandSetGames = async (username) => {
 		let res = await this.api.getPlayerCompleteMonthlyArchives("tiger415", 2022, 9)
-		let games = res.body.games.slice().reverse()
 		if (res.body && res.body.games && res.body.games.length > 0) {
+			let games = res.body.games.slice().reverse()
 			this.props.saveGames(games)
 			this.setState({ pages: Math.ceil(this.props.games.length / this.state.perPage) })
 		}
@@ -52,16 +51,19 @@ export class GamesComponent extends React.Component {
 		return (
 			<div className="mt-2">
 				<h4 className="p-1 border-bottom">Games</h4>
+
+				
+
 				<div className="table-responsive-sm">
+				{this.props.games && this.props.games.length > 0 ? 
 					<Games 
 						paginatedGames={this.getPaginatedGames(this.props.games)}
 						gamesLength={this.props.games.length}
 						pageIndex={this.state.pageIndex}
 						perPage={this.state.perPage}
-					/>
-				</div>
-				
-				<div className="pagination-nav">	
+					/>				
+				: <h6>No Games</h6>}
+					
 					<ReactPaginate
 						onPageChange={this.handlePageClick}
 						activePage={this.state.activePage}
@@ -81,7 +83,7 @@ export class GamesComponent extends React.Component {
 				        nextClassName="page-item"
 				        nextLinkClassName="page-link"
 					/>
-				</div>
+				</div> 
 			</div>
 		)
 	}

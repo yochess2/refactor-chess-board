@@ -62,9 +62,9 @@ export class ChessWrapper extends React.Component {
 						<span>Clock</span>
 					</div>
 
-					{/* Search Bar */}
+					{/* Empty Space */}
 					<div style={{ border: "dotted" }} className="col-sm-4 align-self-end">
-						<h1>Search Bar</h1>
+						<h1>Empty Space</h1>
 					</div>
 				</div>
 

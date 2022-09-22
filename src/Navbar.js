@@ -2,6 +2,9 @@ import React, { Component } from "react"
 import { NavLink } from "react-router-dom"
 
 export class Navbar extends Component {
+	constructor(props) {
+		super(props)
+	}
 	render() {
 		return (
 			<>
@@ -21,7 +24,7 @@ export class Navbar extends Component {
 					    	<span className="navbar-toggler-icon"></span>
 					    </button>
 					    <div className="collapse navbar-collapse" id="navmenu">
-					    	<ul className="navbar-nav ms-auto">
+					    	<ul className="navbar-nav me-auto mb-2 mb-lg-0">
 					    		<li className="nav-item">
 									<NavLink 
 										to="/home" 
@@ -48,11 +51,21 @@ export class Navbar extends Component {
 									</NavLink>
 					    		</li>
 					    	</ul>
+							<form className="d-flex">
+								<input className="form-control me-2" type="search" placeholder="Search" aria-label="Search"/>
+								<button className="btn btn-primary" onClick={this.onUserSearch}>Search</button>
+							</form>
 					    </div>
 					</div>
 				</nav>
 			</>
 		)
+	}
+
+	//TODO: Calendar logic
+	onUserSearch = (event) => {
+		event.preventDefault()
+		this.props.handleUserSearch(event)
 	}
 }
 

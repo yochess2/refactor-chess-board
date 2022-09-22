@@ -1,10 +1,12 @@
 import React from "react"
 import { Route, Routes } from "react-router-dom"
 import { Chess } from "chess.js"
+import ChessWebAPI from "chess-web-api"
 
 import Home from "./Home"
 import Navbar from "./Navbar"
 import Sidebar from "./Sidebar"
+import Searchbar from "./Searchbar"
 import ChessWrapper from "./ChessWrapper"
 import GamesComponent from "./game-component/GamesComponent"
 
@@ -18,13 +20,14 @@ export class App extends React.Component {
 			games: [],
 			gameNum: null,
 		}
+		this.api = new ChessWebAPI
 	}
 
 	render() {
 		return (
 			<>	
 			{/* Navbar */}
-			<Navbar />
+			<Navbar handleUserSearch={this.handleUserSearch} />
 			
 			<div className="container">
 				<div className="row">
@@ -74,8 +77,13 @@ export class App extends React.Component {
 	}
 
 	saveGames = (games) => {
-		console.log('App is saving games', games)
+		console.log("App is saving games", games)
 		this.setState({ games })
+	}
+
+	handleUserSearch = (event) => {
+		event.preventDefault()
+		console.log("App is fetching user", event)
 	}
 }
 
