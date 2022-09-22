@@ -26,6 +26,7 @@ export class ChessWrapper extends React.Component {
 				username: "Black User",
 				rating: "1200",
 			},
+			games: [],
 		}
 	}
 
@@ -109,17 +110,6 @@ export class ChessWrapper extends React.Component {
 					<div style={{ border: "dotted" }} className="col-sm-4">
 						<h1>Buttons</h1>
 					</div>
-				</div>
-
-				{/* ROW 4 */}
-				<div className="row">
-					<h1>GameList</h1>
-					<p>Game</p>
-					<p>Game</p>
-					<p>Game</p>
-					<p>Game</p>
-					<p>Game</p>
-
 				</div>
 			</>
 		)
