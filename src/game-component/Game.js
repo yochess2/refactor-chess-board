@@ -9,7 +9,7 @@ export class Game extends React.Component {
 		// console.log("        Game - Render")
 		return (
 			<tr className="hand-icon game-detail">
-				<td>{(this.props.index+1)+(this.props.pageIndex*20)}</td>
+				<td>{(this.props.index+1)+(this.props.pageIndex*this.props.perPage)}</td>
 				<td>{this.getDate(this.props.game.end_time)}</td>
 				<td>{this.getTime(this.props.game.end_time)}</td>
 				<td>{this.getTimeControl(this.props.game.time_control)}</td>

@@ -3,16 +3,16 @@ import ChessWebAPI from "chess-web-api"
 import ReactPaginate from "react-paginate"
 import Calendar from "react-calendar"
 
-import { withRouter } from "./withRouter"
-import Game from "./game-component/Game"
-import Games from "./game-component/Games"
+import { withRouter } from "../withRouter"
+import Game from "./Game"
+import Games from "./Games"
 
 export class GamesComponent extends React.Component {
 	constructor(props) {
 		// console.log(    "GamesComponent - Constructor")
 		super(props)
 		this.state = {
-			perPage: 20,
+			perPage: 10,
 			pageIndex: 0,
 			pages: 0,
 		}
@@ -50,13 +50,14 @@ export class GamesComponent extends React.Component {
 	render() {
 		// console.log("    GamesComponent - Render", this.state)
 		return (
-			<>
-				<h2>Games</h2>
+			<div className="mt-2">
+				<h4 className="p-1 border-bottom">Games</h4>
 				<div className="table-responsive-sm">
 					<Games 
 						paginatedGames={this.getPaginatedGames(this.props.games)}
 						gamesLength={this.props.games.length}
 						pageIndex={this.state.pageIndex}
+						perPage={this.state.perPage}
 					/>
 				</div>
 				
@@ -81,7 +82,7 @@ export class GamesComponent extends React.Component {
 				        nextLinkClassName="page-link"
 					/>
 				</div>
-			</>
+			</div>
 		)
 	}
 

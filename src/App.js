@@ -6,7 +6,7 @@ import Home from "./Home"
 import Navbar from "./Navbar"
 import Sidebar from "./Sidebar"
 import ChessWrapper from "./ChessWrapper"
-import GamesComponent from "./GamesComponent"
+import GamesComponent from "./game-component/GamesComponent"
 
 import "./index.css"
 

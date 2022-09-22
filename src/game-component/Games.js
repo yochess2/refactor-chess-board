@@ -29,14 +29,15 @@ export class Games extends React.Component {
 						game={game}
 						index={index}
 						pageIndex={this.props.pageIndex}
+						perPage={this.props.perPage}
 					/>
 				)}
 				</tbody>
 				<caption>
 					Displaying 
-					{' '+( this.props.pageIndex*20+1 )+' '} 
+					{' '+( this.props.pageIndex * this.props.perPage + 1 )+' '} 
 					to 
-					{' '+( this.props.paginatedGames.length + ( this.props.pageIndex*20 ) )+' '}
+					{' '+( this.props.paginatedGames.length + ( this.props.pageIndex * this.props.perPage ) )+' '}
 					of 
 					{' '+this.props.gamesLength} games
 				</caption>
