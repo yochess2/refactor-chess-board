@@ -9,13 +9,27 @@ export class Game extends React.Component {
 		// console.log("        Game - Render")
 		return (
 			<tr className="hand-icon game-detail">
-				<td>{(this.props.index+1)+(this.props.pageIndex*this.props.perPage)}</td>
-				<td>{this.getDate(this.props.game.end_time)}</td>
-				<td>{this.getTime(this.props.game.end_time)}</td>
-				<td>{this.getTimeControl(this.props.game.time_control)}</td>
-				<td>{this.trimLongName(this.props.game.white.username)}</td>
-				<td>{this.trimLongName(this.props.game.black.username)}</td>
-				<td>{this.getResult(this.props.game.white.result, this.props.game.black.result)}</td>
+				<td className="align-middle">
+					<div>{(this.props.index+1)+(this.props.pageIndex*this.props.perPage)}</div>
+				</td>
+				<td>
+					<div>{this.getDate(this.props.game.end_time)}</div>
+					<div>{this.getTime(this.props.game.end_time)}</div>
+				</td>
+				<td className="align-middle">
+					<div>{this.getTimeControl(this.props.game.time_control)}</div>
+				</td>
+				<td>
+					<div>{this.trimLongName(this.props.game.white.username)}</div>
+					<div>({this.props.game.white.rating})</div>
+				</td>
+				<td>
+					<div>{this.trimLongName(this.props.game.black.username)}</div>
+					<div>({this.props.game.black.rating})</div>
+				</td >
+				<td className="align-middle">
+					<div>{this.getResult(this.props.game.white.result, this.props.game.black.result)}</div>
+				</td>
 			</tr>
 		)
 	}
@@ -40,7 +54,11 @@ export class Game extends React.Component {
 
 	//TODO: figure out what inputs are
 	getTimeControl = (s) => {
-		return `${s}s`
+		let timer
+		if (s === "180") {
+			timer = "3 min"
+		}
+		return timer
 	}
 
 	//TODO: edge cases like abortion

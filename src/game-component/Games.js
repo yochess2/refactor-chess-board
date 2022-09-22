@@ -15,7 +15,6 @@ export class Games extends React.Component {
 						<th scope="col">#</th>
 						<th scope="col">Date</th>
 						<th scope="col">Time</th>
-						<th scope="col">Clock</th>
 						<th scope="col">White</th>
 						<th scope="col">Black</th>
 						<th scope="col">Result</th>
