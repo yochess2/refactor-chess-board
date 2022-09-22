@@ -1,6 +1,7 @@
 import React from "react"
 import ChessWebAPI from "chess-web-api"
 import ReactPaginate from "react-paginate"
+import Calendar from "react-calendar"
 
 import { withRouter } from "./withRouter"
 import Game from "./game-component/Game"

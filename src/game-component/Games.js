@@ -32,7 +32,14 @@ export class Games extends React.Component {
 					/>
 				)}
 				</tbody>
-				<caption>Display {this.props.paginatedGames.length} of {this.props.gamesLength} games</caption>
+				<caption>
+					Displaying 
+					{' '+( this.props.pageIndex*20+1 )+' '} 
+					to 
+					{' '+( this.props.paginatedGames.length + ( this.props.pageIndex*20 ) )+' '}
+					of 
+					{' '+this.props.gamesLength} games
+				</caption>
 			</table>
 			</>
 		)
