@@ -1,16 +1,18 @@
-import React from 'react'
-import { Chess } from "chess.js"
+import React from "react"
 import { Chessboard } from "react-chessboard"
 
 export class ChessWrapper extends React.Component {
+	componentDidMount() {
+		document.title = "Game - YoChess"
+	}
+
 	constructor(props) {
 		super(props)
-		this.chess = new Chess()
 
 		this.state = {
 			boardWidth: "256",
-			fen: this.chess.fen(),
-			history: this.chess.history(),
+			fen: this.props.chess.fen(),
+			history: this.props.chess.history(),
 			timestamps: [],
 			black_time: "",
 			white_time: "",
@@ -28,29 +30,28 @@ export class ChessWrapper extends React.Component {
 	}
 
 	componentDidMount() {
-		console.log('ChessWrapper - componentDidMount')
-		window.addEventListener('resize', this.handleResize)
+		console.log("ChessWrapper - componentDidMount")
+		window.addEventListener("resize", this.handleResize)
 		this.handleResize()
 	}
 
 	componentWillUnmount = () => {
-		console.log('ChessWrapper - componentWillUnmount')
-		window.removeEventListener('resize', this.handleResize)
+		console.log("ChessWrapper - componentWillUnmount")
+		window.removeEventListener("resize", this.handleResize)
 	}
 
 	handleResize = () => {
 		let display = document.getElementsByClassName("chess-board-wrapper")[0];
-		console.log('handle resize')
+		console.log("handle resize")
 		this.setState({ boardWidth: display.offsetWidth - 20 })
 	}
 
 
 	render() {
 		return (
-			<div style={{ border: "solid" }} className="container">
-
+			<>
 				{/* ROW 1 */}
-				<div className="row">
+				<div style={{ border: "dotted" }}  className="row">
 
 					{/* Black Player Info and Black Clock */}
 					<div style={{ border: "dotted" }} className="col-sm-4 align-self-end">
@@ -120,7 +121,7 @@ export class ChessWrapper extends React.Component {
 					<p>Game</p>
 
 				</div>
-			</div>
+			</>
 		)
 	}
 }

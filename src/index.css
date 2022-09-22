@@ -2,6 +2,10 @@
 	background-color: #0c8351 !important;
 }	
 
+.nav-link.active {
+	border-bottom: 2px solid #ffffff;
+}
+
 .hand-icon {
 	cursor: pointer;
 }
