@@ -2,6 +2,7 @@ import React from "react"
 import ChessWebAPI from "chess-web-api"
 import ReactPaginate from "react-paginate"
 
+import { withRouter } from "./withRouter"
 import Game from "./game-component/Game"
 import Games from "./game-component/Games"
 
@@ -14,6 +15,7 @@ export class GamesComponent extends React.Component {
 			pageIndex: 0,
 			pages: 0,
 		}
+		console.log(this.props)
 		this.api = new ChessWebAPI
 	}
 
@@ -93,7 +95,8 @@ export class GamesComponent extends React.Component {
 	handlePageClick = (event) => {
 	  let pageIndex = event.selected
 	  this.setState({ pageIndex })
+	  this.props.navigate(`/games/${pageIndex+1}`)
 	}
 }
 
-export default GamesComponent
+export default withRouter(GamesComponent)

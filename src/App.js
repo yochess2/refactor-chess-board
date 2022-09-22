@@ -51,6 +51,13 @@ export class App extends React.Component {
 									saveGames={this.saveGames}
 								/>} 
 							/>
+							<Route 
+								path="/games/:id"
+								element={<GamesComponent 
+									games={this.state.games}
+									saveGames={this.saveGames}
+								/>} 
+							/>
 						</Routes>
 						<Routes>
 							<Route 
