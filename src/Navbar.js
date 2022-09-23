@@ -7,9 +7,7 @@ export class Navbar extends Component {
 	constructor(props) {
 		super(props)
 		this.state = {
-			username: '',
-			startDate: new Date(),
-			dropdownEvent: '',
+			date: null,
 		}
 	}
 	render() {
@@ -58,12 +56,20 @@ export class Navbar extends Component {
 									</NavLink>
 					    		</li>
 					    	</ul>
-					    	<Searchbar handleUserSearch={this.props.handleUserSearch}/>
+					    	<Searchbar 
+					    		handleUserSearch={this.props.handleUserSearch}
+					    		handleDate={this.handleDate}
+					    		date={this.state.date}
+				    		/>
 					    </div>
 					</div>
 				</nav>
 			</>
 		)
+	}
+
+	handleDate = (date) => {
+		this.setState({ date })
 	}
 }
 

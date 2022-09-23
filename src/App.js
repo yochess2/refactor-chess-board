@@ -81,8 +81,8 @@ export class App extends React.Component {
 		this.setState({ games })
 	}
 
-	handleUserSearch = async (event) => {
-		console.log("App is fetching user", event)
+	handleUserSearch = async (username, date) => {
+		console.log("App is fetching user", username, date)
 
 
 	}
