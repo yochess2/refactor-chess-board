@@ -84,7 +84,6 @@ export class App extends React.Component {
 	handleUserSearch = async (username, date) => {
 		console.log("App is fetching user", username, date)
 
-
 	}
 }
 

@@ -28,10 +28,10 @@ export class Searchbar extends React.Component {
 						data-bs-toggle="dropdown" 
 						aria-expanded="false">
 						<span>
-							{!this.props.date ? 'Select Month' : this.formatMonth(this.props.date)}
+							{!this.props.date ? 'Select Month' : this.formatMonth(this.props.date, null)}
 						</span>
 					</button>
-					<ul className="dropdown-menu" onClick={this.handleCalendarDropdown}>
+					<ul className="dropdown-menu m-0" onClick={this.handleCalendarDropdown}>
 						<Calendar 
 							maxDetail="year"
 							value={this.props.date}
@@ -52,9 +52,8 @@ export class Searchbar extends React.Component {
 		)
 	}
 
-	formatMonth = (date) => {
-		console.log(date)
-		return date.toLocaleString('default', { month: 'long', year: 'numeric' })
+	formatMonth = (date, monthVal) => {
+		return date.toLocaleString('default', { month: monthVal || 'long', year: 'numeric' })
 	}
 
 	//Had to play around a bit to figure this out, not sure if right
@@ -73,9 +72,8 @@ export class Searchbar extends React.Component {
 
 	//TODO: Calendar logic
 	onUserSearch = (event) => {
-		console.log('event', event)
 		event.preventDefault()
-		this.props.handleUserSearch(this.state.username, this.state.date)
+		this.props.handleUserSearch(this.state.username, this.props.date)
 	}
 }
 
