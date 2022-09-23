@@ -6,9 +6,9 @@ export class Games extends React.Component {
 	constructor(props) {
 		super(props)
 	}
+
 	render() {
 		return (
-			<>
 			<table className="table table-hover table-striped">
 				<thead className="table-dark">
 					<tr>
@@ -33,16 +33,19 @@ export class Games extends React.Component {
 				)}
 				</tbody>
 				<caption>
-					Displaying 
-					{' '+( this.props.pageIndex * this.props.perPage + 1 )+' '} 
-					to 
-					{' '+( this.props.paginatedGames.length + ( this.props.pageIndex * this.props.perPage ) )+' '}
-					of 
-					{' '+this.props.gamesLength} games
+					{this.formatCaption(
+						this.props.pageIndex, 
+						this.props.perPage, 
+						this.props.paginatedGames.length, 
+						this.props.gamesLength
+					)}
 				</caption>
 			</table>
-			</>
 		)
+	}
+
+	formatCaption = (pageIndex, perPage, paginatedGamesLength, gamesLength) => {
+		return 	`Displaying ${pageIndex*perPage+1} to ${paginatedGamesLength+pageIndex*perPage} of ${gamesLength} games`
 	}
 }
 

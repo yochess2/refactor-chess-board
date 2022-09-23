@@ -10,19 +10,17 @@ export class Navbar extends Component {
 			width: null,
 		}
 		this.myRef = React.createRef()
+		console.log('nav', this.props)
 	}
 
 	componentDidMount = () => {
-		window.addEventListener('resize', this.handleWindowSizeChange.bind(this))
-		this.setState({ width: window.innerWidth })
-	}
-
-	componentDidUpdate = () => {
-		// console.log(this.state.width)
+		window.addEventListener('resize', this.handleWindowSizeChange)
+		this.setState({ width: window.innerWidth }, () => {
+		window.removeEventListener('resize', this.handleWindowSizeChange)
+		})
 	}
 
 	render() {
-		// console.log('    Navbar - render', this.state.width)
 		return (
 			<>
 				<nav className="navbar navbar-expand-sm bg-dark navbar-dark navbar-style">
@@ -85,7 +83,7 @@ export class Navbar extends Component {
 	}
 
 	handleMobile = () => {
-		if (this.state.width && this.state.width < 578) {
+		if (this.state.width && this.state.width <= 578) {
 			this.myRef.current.click()
 		}
 	}

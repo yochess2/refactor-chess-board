@@ -17,3 +17,26 @@
 .highlight-move {
 	background-color: #00FFFF;
 }
+
+.search-icon {
+/*	height: 60px !important;
+	width: 50px important;
+	background-color: white;
+	display: grid;
+	place-item: center;*/
+}
+
+.search-inputs {
+	/*margin-top: 0px;*/
+	/*display: flex;*/
+}
+
+.search-inputs input {
+	/*background-color: white;*/
+	/*border: 0 !important;*/
+	/*border-top-right-radius: 0px !important;*/
+	/*border-bottom-right-radius: 0px !important;*/
+	/*font-size: 18px;*/
+	/*padding: 15px;*/
+	/*height: 30px;*/
+}

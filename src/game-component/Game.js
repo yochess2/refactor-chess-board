@@ -6,11 +6,10 @@ export class Game extends React.Component {
 	}
 
 	render() {
-		// console.log("        Game - Render")
 		return (
 			<tr className="hand-icon game-detail">
 				<td className="align-middle">
-					<div>{(this.props.index+1)+(this.props.pageIndex*this.props.perPage)}</div>
+					<div>{this.getGameNum(this.props.index, this.props.pageIndex, this.props.perPage)}</div>
 				</td>
 				<td>
 					<div>{this.getDate(this.props.game.end_time)}</div>
@@ -34,14 +33,8 @@ export class Game extends React.Component {
 		)
 	}
 
-	getDate = (ms) => {
-		let date = new Date(+(ms.toString() + "000")).toLocaleDateString()
-		return date
-	}
-
-	getTime = (ms) => {
-		let time = new Date(+(ms.toString() + "000")).toLocaleTimeString()
-		return time
+	getGameNum = (index, pageIndex, perPage) => {
+		return (index+1) + (pageIndex*perPage)
 	}
 
 	trimLongName = (name) => {
@@ -50,6 +43,16 @@ export class Game extends React.Component {
 			trimName = name.slice(0,10) + "..."
 		}
 		return trimName 
+	}
+
+	getDate = (ms) => {
+		let date = new Date(+(ms.toString() + "000")).toLocaleDateString()
+		return date
+	}
+
+	getTime = (ms) => {
+		let time = new Date(+(ms.toString() + "000")).toLocaleTimeString()
+		return time
 	}
 
 	//TODO: figure out what inputs are

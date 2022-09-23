@@ -3,71 +3,54 @@ import ChessWebAPI from "chess-web-api"
 import ReactPaginate from "react-paginate"
 import Calendar from "react-calendar"
 
-import { withRouter } from "../withRouter"
 import Game from "./Game"
 import Games from "./Games"
 
 export class GamesComponent extends React.Component {
 	constructor(props) {
-		// console.log(    "GamesComponent - Constructor")
 		super(props)
 		this.state = {
-			perPage: 10,
+			perPage: 50,
 			pageIndex: 0,
-			pages: 0,
+			pages: this.getPages(props.games.length, 50),
 		}
-		this.api = new ChessWebAPI
+		console.log(this.props, 'games')
 	}
 
 	componentDidMount() {
 		document.title = "YoChess - Games"
-		// console.log("    GamesComponent - ComponentDidMount", this.props)
-		this.setState({ pages: Math.ceil(this.props.games.length / this.state.perPage) })
-		if (this.props.games.length === 0) {
-			// this.fetchandSetGames()
-		}
 	}
 
 	componentDidUpdate(prevProps, prevState) {
-		// console.log("    GamesComponent - ComponentDidUpdate", this.props, prevProps, this.state, prevState)
-	}
-
-	componentWillUnmount() {
-		// console.log("    GamesComponent - ComponentWillUnmount", this.state)
-	}
-
-	fetchandSetGames = async (username) => {
-		let res = await this.api.getPlayerCompleteMonthlyArchives("tiger415", 2022, 9)
-		if (res.body && res.body.games && res.body.games.length > 0) {
-			let games = res.body.games.slice().reverse()
-			this.props.saveGames(games)
-			this.setState({ pages: Math.ceil(this.props.games.length / this.state.perPage) })
+		if (this.props.games.length !== prevProps.games.length) {
+			let pages = this.getPages(this.props.games.length, this.state.perPage)
+			this.setState({ pages })
 		}
-		return res.body
 	}
 
 	render() {
-		// console.log("    GamesComponent - Render", this.state)
 		return (
-			<div className="mt-2">
-				<h4 className="p-1 border-bottom">Games</h4>
+			<>{!this.props.games || this.props.games.length <= 0 ? 
+
+				/* If no games */
+				<p>No Games</p> :
+
+				/* else */
 				<div className="table-responsive-sm">
 					<Games 
 						paginatedGames={this.getPaginatedGames(this.props.games)}
 						gamesLength={this.props.games.length}
 						pageIndex={this.state.pageIndex}
-						perPage={this.state.perPage}
-					/>				
-					
+						perPage={this.state.perPage} />				
 					<ReactPaginate
-						onPageChange={this.handlePageClick}
+						onPageChange={this.onPageClick}
 						activePage={this.state.activePage}
 						pageCount={this.state.pages}
 						renderOnZeroPageCount={null}
 						nextLabel="next >"
 						previousLabel="< previous"
 						containerClassName="pagination"
-						activeClassName={'active'}
+						activeClassName='active'
 						pageClassName="page-item"
 				        pageLinkClassName="page-link"
 				        previousClassName="page-item"
@@ -76,11 +59,14 @@ export class GamesComponent extends React.Component {
 				        breakClassName="page-item"
 				        breakLinkClassName="page-link"
 				        nextClassName="page-item"
-				        nextLinkClassName="page-link"
-					/>
-				</div> 
-			</div>
+				        nextLinkClassName="page-link" />
+				</div>
+			}</>
 		)
+	}
+
+	getPages = (gamesLength, perPage) => {
+		return Math.ceil(gamesLength / perPage)
 	}
 
 	getPaginatedGames = (games) => {
@@ -91,11 +77,11 @@ export class GamesComponent extends React.Component {
 		return paginatedGames
 	}
 
-	handlePageClick = (event) => {
+	onPageClick = (event) => {
 	  let pageIndex = event.selected
 	  this.setState({ pageIndex })
-	  this.props.navigate(`/games/${pageIndex+1}`)
+	  this.props.navigate(`/games/${this.props.username}/${pageIndex+1}`)
 	}
 }
 
-export default withRouter(GamesComponent)
+export default GamesComponent
