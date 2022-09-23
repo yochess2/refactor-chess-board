@@ -6,7 +6,6 @@ import ChessWebAPI from "chess-web-api"
 import Home from "./Home"
 import Navbar from "./Navbar"
 import Sidebar from "./Sidebar"
-import Searchbar from "./Searchbar"
 import ChessWrapper from "./ChessWrapper"
 import GamesComponent from "./game-component/GamesComponent"
 
@@ -18,7 +17,8 @@ export class App extends React.Component {
 		this.state = {
 			chess: new Chess(),
 			games: [],
-			gameNum: null,
+			username: null,
+			gameNum: null, //for use on saving game index num
 		}
 		this.api = new ChessWebAPI
 	}
@@ -81,9 +81,10 @@ export class App extends React.Component {
 		this.setState({ games })
 	}
 
-	handleUserSearch = (event) => {
-		event.preventDefault()
+	handleUserSearch = async (event) => {
 		console.log("App is fetching user", event)
+
+
 	}
 }
 

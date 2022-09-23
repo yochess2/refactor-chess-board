@@ -51,9 +51,6 @@ export class GamesComponent extends React.Component {
 		return (
 			<div className="mt-2">
 				<h4 className="p-1 border-bottom">Games</h4>
-
-				
-
 				<div className="table-responsive-sm">
 				{this.props.games && this.props.games.length > 0 ? 
 					<Games 

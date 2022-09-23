@@ -1,5 +1,5 @@
 import React from "react"
-import { Chessboard } from "react-chessboard"
+import { Chessboard } from "react-chessboard" 
 
 export class ChessWrapper extends React.Component {
 	componentDidMount() {

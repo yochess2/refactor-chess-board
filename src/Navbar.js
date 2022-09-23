@@ -1,9 +1,16 @@
 import React, { Component } from "react"
 import { NavLink } from "react-router-dom"
 
+import Searchbar from "./Searchbar"
+
 export class Navbar extends Component {
 	constructor(props) {
 		super(props)
+		this.state = {
+			username: '',
+			startDate: new Date(),
+			dropdownEvent: '',
+		}
 	}
 	render() {
 		return (
@@ -51,21 +58,12 @@ export class Navbar extends Component {
 									</NavLink>
 					    		</li>
 					    	</ul>
-							<form className="d-flex">
-								<input className="form-control me-2" type="search" placeholder="Search" aria-label="Search"/>
-								<button className="btn btn-primary" onClick={this.onUserSearch}>Search</button>
-							</form>
+					    	<Searchbar handleUserSearch={this.props.handleUserSearch}/>
 					    </div>
 					</div>
 				</nav>
 			</>
 		)
-	}
-
-	//TODO: Calendar logic
-	onUserSearch = (event) => {
-		event.preventDefault()
-		this.props.handleUserSearch(event)
 	}
 }
 
