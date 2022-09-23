@@ -19,6 +19,7 @@ export class Searchbar extends React.Component {
 	}
 
 	render() {
+		// console.log('        Searchbar - render')
 		return (
 	    	<div className="row">
 				<div className="input-group">

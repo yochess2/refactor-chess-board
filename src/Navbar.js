@@ -6,9 +6,23 @@ import Searchbar from "./Searchbar"
 export class Navbar extends Component {
 	constructor(props) {
 		super(props)
+		this.state = {
+			width: null,
+		}
 		this.myRef = React.createRef()
 	}
+
+	componentDidMount = () => {
+		window.addEventListener('resize', this.handleWindowSizeChange.bind(this))
+		this.setState({ width: window.innerWidth })
+	}
+
+	componentDidUpdate = () => {
+		// console.log(this.state.width)
+	}
+
 	render() {
+		// console.log('    Navbar - render', this.state.width)
 		return (
 			<>
 				<nav className="navbar navbar-expand-sm bg-dark navbar-dark navbar-style">
@@ -66,8 +80,14 @@ export class Navbar extends Component {
 		)
 	}
 
+	handleWindowSizeChange = () => {
+		this.setState({ width: window.innerWidth })
+	}
+
 	handleMobile = () => {
-		this.myRef.current.click()
+		if (this.state.width && this.state.width < 578) {
+			this.myRef.current.click()
+		}
 	}
 }
 

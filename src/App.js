@@ -15,16 +15,18 @@ export class App extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = {
-			chess: new Chess(),
 			games: [],
+			chess: new Chess(),
 			username: null,
 			date: null,
 			gameNum: null, //for use on saving game index num
 		}
 		this.api = new ChessWebAPI
+		this.chess = new Chess()
 	}
 
 	render() {
+		console.log('App - render')
 		return (
 			<>	
 			{/* Navbar */}
@@ -84,12 +86,21 @@ export class App extends React.Component {
 
 	handleUserSearch = async (username, date) => {
 		console.log("App is fetching user", username, date)
-		// this.api.getPlayerCompleteMonthlyArchives(this.props.username, 2022, 9)
+		// let month = (date.toLocaleString('default', { month: 'numeric' }))
+		// let year = (date.toLocaleString('default', { year: 'numeric' }))
+
+		// this.api.getPlayerCompleteMonthlyArchives(username, year, month)
+		// 	.then(res => {
+		// 		console.log('success!', res.body.games)
+		// 		this.setState({ games: res.body.games })
+		// 	})
 	}
 
 	handleDate = (date) => {
 		this.setState({ date })
 	}
 }
+
+
 
 export default App

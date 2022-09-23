@@ -52,14 +52,12 @@ export class GamesComponent extends React.Component {
 			<div className="mt-2">
 				<h4 className="p-1 border-bottom">Games</h4>
 				<div className="table-responsive-sm">
-				{this.props.games && this.props.games.length > 0 ? 
 					<Games 
 						paginatedGames={this.getPaginatedGames(this.props.games)}
 						gamesLength={this.props.games.length}
 						pageIndex={this.state.pageIndex}
 						perPage={this.state.perPage}
 					/>				
-				: <h6>No Games</h6>}
 					
 					<ReactPaginate
 						onPageChange={this.handlePageClick}
