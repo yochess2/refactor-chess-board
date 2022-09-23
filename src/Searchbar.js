@@ -7,6 +7,7 @@ export class Searchbar extends React.Component {
 		super(props)
 		this.state = {
 			username: '',
+			date: null,
 		}
 
 		//Only workabout I can find on dropdown menu
@@ -28,7 +29,7 @@ export class Searchbar extends React.Component {
 						data-bs-toggle="dropdown" 
 						aria-expanded="false">
 						<span>
-							{!this.props.date ? 'Select Month' : this.formatMonth(this.props.date, null)}
+							{!this.state.date ? 'Select Month' : this.formatMonth(this.state.date, null)}
 						</span>
 					</button>
 					<ul className="dropdown-menu m-0" onClick={this.handleCalendarDropdown}>
@@ -62,7 +63,7 @@ export class Searchbar extends React.Component {
 	}
 
 	handleMonthClick = (date) => {
-		this.props.handleDate(date)
+		this.setState({ date })
 		this.myRef.current.click()
 	}
 
@@ -73,7 +74,8 @@ export class Searchbar extends React.Component {
 	//TODO: Calendar logic
 	onUserSearch = (event) => {
 		event.preventDefault()
-		this.props.handleUserSearch(this.state.username, this.props.date)
+		this.props.handleUserSearch(this.state.username, this.state.date)
+		this.props.handleMobile()
 	}
 }
 

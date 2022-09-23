@@ -6,9 +6,7 @@ import Searchbar from "./Searchbar"
 export class Navbar extends Component {
 	constructor(props) {
 		super(props)
-		this.state = {
-			date: null,
-		}
+		this.myRef = React.createRef()
 	}
 	render() {
 		return (
@@ -26,7 +24,8 @@ export class Navbar extends Component {
 					    	data-bs-toggle="collapse" 
 					    	data-bs-target="#navmenu"
 					    >
-					    	<span className="navbar-toggler-icon"></span>
+					    	<span className="navbar-toggler-icon" ref={this.myRef}>
+					    	</span>
 					    </button>
 					    <div className="collapse navbar-collapse" id="navmenu">
 					    	<ul className="navbar-nav me-auto mb-2 mb-lg-0">
@@ -58,8 +57,7 @@ export class Navbar extends Component {
 					    	</ul>
 					    	<Searchbar 
 					    		handleUserSearch={this.props.handleUserSearch}
-					    		handleDate={this.handleDate}
-					    		date={this.state.date}
+					    		handleMobile={this.handleMobile}
 				    		/>
 					    </div>
 					</div>
@@ -68,8 +66,8 @@ export class Navbar extends Component {
 		)
 	}
 
-	handleDate = (date) => {
-		this.setState({ date })
+	handleMobile = () => {
+		this.myRef.current.click()
 	}
 }
 

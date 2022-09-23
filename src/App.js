@@ -18,6 +18,7 @@ export class App extends React.Component {
 			chess: new Chess(),
 			games: [],
 			username: null,
+			date: null,
 			gameNum: null, //for use on saving game index num
 		}
 		this.api = new ChessWebAPI
@@ -83,7 +84,11 @@ export class App extends React.Component {
 
 	handleUserSearch = async (username, date) => {
 		console.log("App is fetching user", username, date)
+		// this.api.getPlayerCompleteMonthlyArchives(this.props.username, 2022, 9)
+	}
 
+	handleDate = (date) => {
+		this.setState({ date })
 	}
 }
 

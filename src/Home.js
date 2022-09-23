@@ -3,8 +3,8 @@ import React from "react"
 export class Home extends React.Component {
 	render() {
 		return (
-			<div>
-				<h2>Home</h2>				
+			<div className="mt-2">
+				<h4 className="p-1 border-bottom">Home</h4>
 			</div>
 		)
 	}
