@@ -6,18 +6,6 @@ import Searchbar from "./Searchbar"
 export class Navbar extends Component {
 	constructor(props) {
 		super(props)
-		this.state = {
-			width: null,
-		}
-		this.myRef = React.createRef()
-		console.log('nav', this.props)
-	}
-
-	componentDidMount = () => {
-		window.addEventListener('resize', this.handleWindowSizeChange)
-		this.setState({ width: window.innerWidth }, () => {
-		window.removeEventListener('resize', this.handleWindowSizeChange)
-		})
 	}
 
 	render() {
@@ -36,7 +24,7 @@ export class Navbar extends Component {
 					    	data-bs-toggle="collapse" 
 					    	data-bs-target="#navmenu"
 					    >
-					    	<span className="navbar-toggler-icon" ref={this.myRef}>
+					    	<span className="navbar-toggler-icon">
 					    	</span>
 					    </button>
 					    <div className="collapse navbar-collapse" id="navmenu">
@@ -67,10 +55,6 @@ export class Navbar extends Component {
 									</NavLink>
 					    		</li>
 					    	</ul>
-					    	<Searchbar 
-					    		handleUserSearch={this.props.handleUserSearch}
-					    		handleMobile={this.handleMobile}
-				    		/>
 					    </div>
 					</div>
 				</nav>
@@ -80,12 +64,6 @@ export class Navbar extends Component {
 
 	handleWindowSizeChange = () => {
 		this.setState({ width: window.innerWidth })
-	}
-
-	handleMobile = () => {
-		if (this.state.width && this.state.width <= 578) {
-			this.myRef.current.click()
-		}
 	}
 }
 

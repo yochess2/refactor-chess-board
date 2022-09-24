@@ -9,6 +9,7 @@ import { drakesGames } from "./game-component/samples"
 
 import Home from "./Home"
 import Navbar from "./navbar-component/Navbar"
+import Searchbar from "./navbar-component/Searchbar"
 import Sidebar from "./navbar-component/Sidebar"
 import ChessWrapper from "./ChessWrapper"
 import GamesComponent from "./game-component/GamesComponent"
@@ -22,11 +23,14 @@ export class App extends React.Component {
 			chess: new Chess(),
 			username: "tiger415",
 			date: null,
-			gameNum: null, //for use on saving game index num
+			gameNum: null, //for use on saving game index num,
 		}
 		// console.log(this.state.games)
 		this.api = new ChessWebAPI({ queue: true})
 		this.chess = new Chess()
+	}
+
+	componentDidMount() {
 	}
 
 	render() {
@@ -47,7 +51,11 @@ export class App extends React.Component {
 					{/* Website Components and Routes */}
 					<div className="col-md-9">
 						<div className="mt-2">
-							<h4 className="p-1 border-bottom">Title goes here of some sort</h4>
+		
+				    	<Searchbar 
+				    		handleUserSearch={this.handleUserSearch}
+				    		handleMobile={this.handleMobile}
+			    		/>
 							<div className="table-responsive-md">
 								<Routes>
 									<Route 
