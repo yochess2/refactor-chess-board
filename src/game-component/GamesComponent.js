@@ -36,7 +36,7 @@ export class GamesComponent extends React.Component {
 				<p>No Games</p> :
 
 				/* else */
-				<div className="table-responsive-sm">
+				<>
 					<Games 
 						paginatedGames={this.getPaginatedGames(this.props.games)}
 						gamesLength={this.props.games.length}
@@ -60,7 +60,7 @@ export class GamesComponent extends React.Component {
 				        breakLinkClassName="page-link"
 				        nextClassName="page-item"
 				        nextLinkClassName="page-link" />
-				</div>
+				</>
 			}</>
 		)
 	}

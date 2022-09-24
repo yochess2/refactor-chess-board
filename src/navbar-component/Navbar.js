@@ -23,7 +23,7 @@ export class Navbar extends Component {
 	render() {
 		return (
 			<>
-				<nav className="navbar navbar-expand-sm bg-dark navbar-dark navbar-style">
+				<nav className="navbar navbar-expand-md bg-dark navbar-dark navbar-style">
 					<div className="container-fluid">
 						<NavLink 
 							to="/" 

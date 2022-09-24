@@ -18,7 +18,7 @@ export class App extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = {
-			games: drakesGames,
+			games: [],
 			chess: new Chess(),
 			username: "tiger415",
 			date: null,
@@ -27,7 +27,6 @@ export class App extends React.Component {
 		// console.log(this.state.games)
 		this.api = new ChessWebAPI({ queue: true})
 		this.chess = new Chess()
-
 	}
 
 	render() {
@@ -41,15 +40,15 @@ export class App extends React.Component {
 				<div className="row">
 
 					{/* Sidebar */}
-					<div className="col-sm-3">
+					<div className="col-md-3">
 						<Sidebar location={this.props.location}/>
 					</div>
 
 					{/* Website Components and Routes */}
-					<div className="col-sm-9">
+					<div className="col-md-9">
 						<div className="mt-2">
 							<h4 className="p-1 border-bottom">Title goes here of some sort</h4>
-							<div className="table-responsive-sm">
+							<div className="table-responsive-md">
 								<Routes>
 									<Route 
 										exact={true}
@@ -123,23 +122,23 @@ export class App extends React.Component {
 
 	handleUserSearch = async (username, date) => {
 		console.log("App is fetching user", username, date)
-		let res = await this.api.getPlayer(username)
-		if (res.body) {
-			console.log('got res.body', res, res.body)
-		}
+		// let res = await this.api.getPlayer(username)
+		// if (res.body) {
+		// 	console.log('got res.body', res, res.body)
+		// }
 
-			// .then(res => {
-			// 	console.log('success!', res.body)
-			// 	this.setState({ games: [], username }, () => {
-			// 		console.log(this.state.username)
-			// 		this.joined = this.getJoinedDate(res.body.joined)
-			// 		this.joinedMonth = parseInt(this.joined.toLocaleString('default', { month: 'numeric' }))
-			// 		this.joinedYear = parseInt(this.joined.toLocaleString('default', { year: 'numeric' }))
-			// 		this.month = 11
-			// 		this.year = 2012
-			// 		// this.api.dispatch(this.api.getPlayerCompleteMonthlyArchives, this.fetchGames, [this.state.username, this.year, this.month])
-			// 	})
-			// })
+		this.api.getPlayer(username).then(res => {
+			console.log('success!', res.body)
+			this.setState({ games: [], username }, () => {
+				console.log(this.state.username)
+				this.joined = this.getJoinedDate(res.body.joined)
+				this.joinedMonth = parseInt(this.joined.toLocaleString('default', { month: 'numeric' }))
+				this.joinedYear = parseInt(this.joined.toLocaleString('default', { year: 'numeric' }))
+				this.month = 9
+				this.year = 2022
+				this.api.dispatch(this.api.getPlayerCompleteMonthlyArchives, this.fetchGames, [this.state.username, this.year, this.month])
+			})
+		})
 	}
 }
 

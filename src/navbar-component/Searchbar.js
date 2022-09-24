@@ -1,56 +1,112 @@
 import React from "react"
 import Calendar from "react-calendar"
 import 'react-calendar/dist/Calendar.css'
-// import { FaSearch } from "react-icons/fa"
-
 
 export class Searchbar extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = {
 			username: '',
-			date: null,
+			fromDate: null,
+			toDate: null,
 		}
-		this.myRef = React.createRef()
+		this.fromRef = React.createRef()
+		this.toRef = React.createRef()
 	}
 
 	render() {
 		console.log(this.state)
 		return (
 	    	<div className="row">
-				<div className="input-group search-inputs">
-					<button 
-						ref={this.myRef}
-						className="btn btn-info dropdown-toggle" 
-						type="button" 
-						data-bs-toggle="dropdown" 
-						aria-expanded="false">
-						<span>
-							{!this.state.date ? 'Set Month' : this.formatMonth(this.state.date, null)}
-						</span>
-					</button>
-					<ul className="dropdown-menu m-0" onClick={this.handleCalendarDropdown}>
-						<Calendar 
-							maxDetail="year"
-							value={this.props.date}
-							onClickMonth={this.onMonthClick}
-						/>
-					</ul>
-					<input 
-						type="search"
-						placeholder="Search Username"
-						className="form-control"
-						value={this.state.username}
-						onChange={this.onUserChange} 
-						aria-label="Search Username"
-					/>
-					<button
-						id="usersearch01" 
-						className="btn btn-primary" 
-						onClick={this.handleUserSearch}>
-						Search
-					</button>
+
+	    		<div 
+	    			className="col-md-6" 
+					style={{margin: 0, padding: 0}}
+
+	    		>
+
+
+					<div className="input-group search-inputs">
+						{/* From Button */}
+						<button 
+							style={{width: "50%"}}
+							ref={this.fromRef}
+							className="btn btn-dark dropdown-toggle" 
+							type="button" 
+							data-bs-toggle="dropdown" 
+							aria-expanded="false">
+							<span>
+								{!this.state.fromDate ? 'From Month' : this.formatMonth(this.state.fromDate, null)}
+							</span>
+						</button>
+						<ul 
+							className="dropdown-menu m-0"
+							onClick={this.handleCalendarDropdown}
+							title="from-calendar"
+						>
+							<Calendar 
+								maxDetail="year"
+								value={this.props.fromDate}
+								onClickMonth={(toDate) => this.onMonthClick(toDate, "fromDate")}
+							/>
+						</ul>
+
+
+
+						{/* To Button */}
+						<button 
+							style={{width: "50%"}}
+							ref={this.toRef}
+							className="btn btn-info dropdown-toggle" 
+							type="button" 
+							data-bs-toggle="dropdown" 
+							aria-expanded="false">
+							<span>
+								{!this.state.toDate ? 'To Month' : this.formatMonth(this.state.toDate, null)}
+							</span>
+						</button>
+						<ul 
+							className="dropdown-menu m-0" 
+							onClick={this.handleCalendarDropdown}
+							title="to-calendar"
+						>
+							<Calendar 
+								maxDetail="year"
+								value={this.props.toDate}
+								onClickMonth={(toDate) => this.onMonthClick(toDate, "toDate") }
+							/>
+						</ul>
+					</div>
 				</div>
+
+				<div 
+					className="col-md-6" 
+					style={{margin: 0, padding: 0}}
+				>
+					<div className="input-group search-inputs">
+						{/* Search Input */}
+						<input 
+							type="search"
+							placeholder="Search Username"
+							className="form-control"
+							value={this.state.username}
+							onChange={this.onUserChange} 
+							aria-label="Search Username"
+						/>
+
+						
+
+						{/* Search Button */}
+						<button
+							id="usersearch01" 
+							className="btn btn-primary" 
+							onClick={this.handleUserSearch}>
+							Search
+						</button>
+					</div>
+				</div>
+
+
 			</div>
 		)
 	}
@@ -59,14 +115,21 @@ export class Searchbar extends React.Component {
 		return date.toLocaleString('default', { month: monthVal || 'short', year: 'numeric' })
 	}
 
-	//Had to play around a bit to figure this out, not sure if right
 	handleCalendarDropdown = (event) => {
 		event.stopPropagation()
 	}
 
-	onMonthClick = (date) => {
-		this.setState({ date })
-		this.myRef.current.click()
+	onMonthClick = (date, type) => {
+		if (type === "fromDate") {
+			this.setState({ fromDate: date }, () => {
+				this.fromRef.current.click()
+				this.toRef.current.click()
+			})
+		}
+		if (type === "toDate") {
+			this.setState({ toDate: date })
+			this.toRef.current.click()
+		}
 	}
 
 	onUserChange = (event) => {
@@ -81,7 +144,7 @@ export class Searchbar extends React.Component {
 			return
 		}
 
-		this.props.handleUserSearch(this.state.username, this.state.date)
+		this.props.handleUserSearch(this.state.username, this.state.fromDate, this.state.toDate)
 		this.props.handleMobile()
 	}
 }
