@@ -1,5 +1,6 @@
 import React from "react"
 import { NavLink } from "react-router-dom"
+import { FaBars } from "react-icons/fa"
 
 export class Sidebar extends React.Component {
 	constructor(props) {
@@ -8,32 +9,60 @@ export class Sidebar extends React.Component {
 
 	render() {
 		return (
-			<div className="list-group mt-2">
-				<h4 className="p-1 border-bottom">
-					{this.getName(this.props.location.pathname.toLowerCase())}
-				</h4>
-				<NavLink 
-					to="/home" 
-					exact="true"
-					className="list-group-item list-group-item-action">
-					Home
-				</NavLink>
-				<NavLink 
-					to="/board" 
-					exact="true"
-					className="list-group-item list-group-item-action">
-					Board
-				</NavLink>		
-				<NavLink 
-					to="/games" 
-					exact="true"
-					className="list-group-item list-group-item-action">
-					Games
-				</NavLink>
+			<>
+			{/* Sidebar Heading */}
+			<div className="row border-bottom sidebar-header">
+				<div className="col-9">
+					<span className="p-1 sidebar-heading">
+						{this.getName(this.props.location.pathname.toLowerCase())}
+					</span>
+				</div>
+				<div className="col-3">
+					<span className="p-1 border-bottom collapse-sidebar-btn">
+						<FaBars
+							type="button" 
+							data-bs-toggle="collapse" 
+							data-bs-target="#sidemenu"
+							role="button"
+							aria-expanded="true"
+							aria-controls="collapseSidebar"/>
+
+					</span>
+				</div>
 			</div>
+			{/* SIdebar Heading End */}
+
+			{/* Sidebar Content */}
+			<div className="sidebar-container">
+				<div className="show mt-2" id="sidemenu">
+					<div className="list-group">
+						<NavLink 
+							to="/home" 
+							exact="true"
+							className="list-group-item list-group-item-action">
+							Home
+						</NavLink>
+						<NavLink 
+							to="/board" 
+							exact="true"
+							className="list-group-item list-group-item-action">
+							Board
+						</NavLink>		
+						<NavLink 
+							to="/games" 
+							exact="true"
+							className="list-group-item list-group-item-action">
+							Games
+						</NavLink>
+					</div>
+				</div>
+			</div>
+			{/* End Sidebar Content */}
+			</>
 		)
 	}
 
+	//TODO
 	getName = (pathname) => {
 		if (pathname.match("/games")) {
 			return "Games"

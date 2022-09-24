@@ -2,7 +2,6 @@ import "./index.css"
 import React from "react"
 import { Route, Routes } from "react-router-dom"
 import { Chess } from "chess.js"
-import ChessWebAPI from "chess-web-api"
 
 import { withRouter } from "./utilities/withRouter"
 import { drakesGames } from "./game-component/samples"
@@ -11,22 +10,24 @@ import Home from "./Home"
 import Navbar from "./bar-component/Navbar"
 import Searchbar from "./bar-component/Searchbar"
 import Sidebar from "./bar-component/Sidebar"
-import ChessWrapper from "./ChessWrapper"
+import ApiContent from "./ApiContent"
 import GamesComponent from "./game-component/GamesComponent"
+import ChessWrapper from "./ChessWrapper"
 
 
 export class App extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = {
+			username: null,
+			fromDate: null,
+			toDate: null,
 			games: [],
 			chess: new Chess(),
-			username: null,
 			date: null,
 			gameNum: null, //for use on saving game index num,
 		}
 		// console.log(this.state.games)
-		this.api = new ChessWebAPI({ queue: true})
 		this.chess = new Chess()
 	}
 
@@ -34,65 +35,69 @@ export class App extends React.Component {
 	}
 
 	render() {
-		console.log('App - render')
 		return (
 			<>	
 			{/* Navbar */}
 			<Navbar handleUserSearch={this.handleUserSearch} />
-			
+			{/* End Navbar */}
+
+
 			<div className="container">
 				<div className="row">
+
 
 					{/* Sidebar */}
 					<div className="col-md-3">
 						<Sidebar location={this.props.location}/>
 					</div>
+					{/* End Sidebar */}
 
-					{/* Website Components and Routes */}
+
 					<div className="col-md-9">
-						<div className="content-page">
 		
-					    	<Searchbar 
-					    		handleUserSearch={this.handleUserSearch}
-					    		handleMobile={this.handleMobile} />
-							<div className="table-responsive-md">
-								<Routes>
-									<Route 
-										exact={true}
-										path="/home"
-										element={<Home />} 
-									/>
-								</Routes>
-								<Routes>
-									<Route 
-										path="/games"
-										element={<GamesComponent 
-											games={this.state.games}
-											navigate={this.props.navigate}
-											username={this.state.username}
-											saveGames={this.saveGames}
-										/>} 
-									/>
-									<Route 
-										path="/games/:username/:id"
-										element={<GamesComponent 
-											games={this.state.games}
-											navigate={this.props.navigate}
-											username={this.state.username}
-											saveGames={this.saveGames}
-										/>} 
-									/>
-								</Routes>
-								<Routes>
-									<Route 
-										path="/board"
-										element={<ChessWrapper chess={this.state.chess}/>} 
-									/>
-								</Routes>
-							</div>
-						</div>
-					</div>
+						{/* Searchbar and ApiContent */}
+				    	<Searchbar handleUserSearch={this.handleUserSearch}/>
+				    	<ApiContent />
+				    	{/* End Searchbar */}
 
+
+					    {/* Main Content */}
+						<div className="table-responsive-md mt-2">
+							<Routes>
+								<Route 
+									exact={true}
+									path="/home"
+									element={<Home />} 
+								/>
+							</Routes>
+							<Routes>
+								<Route 
+									path="/games"
+									element={<GamesComponent 
+										games={this.state.games}
+										navigate={this.props.navigate}
+										username={this.state.username}
+										saveGames={this.saveGames} />} 
+								/>
+								<Route 
+									path="/games/:username/:id"
+									element={<GamesComponent 
+										games={this.state.games}
+										navigate={this.props.navigate}
+										username={this.state.username}
+										saveGames={this.saveGames} />} 
+								/>
+							</Routes>
+							<Routes>
+								<Route 
+									path="/board"
+									element={<ChessWrapper chess={this.state.chess}/>} />
+							</Routes>
+						</div>
+						{/* End Main Content */}
+
+
+					</div>
 				</div>
 			</div>
 			</>
@@ -122,13 +127,39 @@ export class App extends React.Component {
 
 	}
 
-	getJoinedDate = (ms) => {
+	getDate = (ms) => {
 		let date = new Date(+(ms.toString() + "000"))
 		return date
 	}
 
-	handleUserSearch = async (a,b,c) => {
-		console.log("App is fetching user", a,b,c)
+	handleUserSearch = (username, toDate, fromDate) => {
+		console.log("App is fetching user", username, toDate, fromDate)
+
+
+		let a = parseInt(this.getDate(toDate).toLocaleString('default', { month: 'numeric' }))
+		let b = parseInt(this.getDate(fromDate).toLocaleString('default', { year: 'numeric' }))
+
+console.log(a)
+		this.setState({ username }, () => {
+			this.props.navigate(`/games/${this.state.username}/${1}`)
+
+		})
+
+
+		let games = {...this.state.games}
+		console.log(games)
+		console.log(<div>hello world</div>)
+
+
+		this.setState({ 
+			games: drakesGames,
+			username
+		}, () => {
+			console.log(this.state)
+		})
+
+
+		// console.log(b,c,d)
 		// let res = await this.api.getPlayer(username)
 		// if (res.body) {
 		// 	console.log('got res.body', res, res.body)

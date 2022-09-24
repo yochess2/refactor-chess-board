@@ -61,10 +61,6 @@ export class Navbar extends Component {
 			</>
 		)
 	}
-
-	handleWindowSizeChange = () => {
-		this.setState({ width: window.innerWidth })
-	}
 }
 
-export default Navbar;
+export default Navbar

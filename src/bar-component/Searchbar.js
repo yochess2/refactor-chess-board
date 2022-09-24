@@ -1,6 +1,6 @@
 import React from "react"
 import Calendar from "react-calendar"
-import 'react-calendar/dist/Calendar.css'
+import "react-calendar/dist/Calendar.css"
 
 export class Searchbar extends React.Component {
 	constructor(props) {
@@ -11,8 +11,8 @@ export class Searchbar extends React.Component {
 			formUsername: "",
 			formFromDate: null,
 			formToDate: null,
-			errorToDate: null,
-			errorUsername: false,
+			errorMessage: "",
+			error: false,
 		}
 		this.fromRef = React.createRef()
 		this.toRef = React.createRef()
@@ -23,19 +23,12 @@ export class Searchbar extends React.Component {
 	    	<div className="row mt-2">
 
 
-		    {/* toDate error message */}
-	    	{this.state.errorToDate && 
+		    {/* Error Message */}
+	    	{this.state.error && 
 			<div className="alert alert-danger" role="alert" >
-				To Date must be greater than From Date
+				{this.state.errorMessage}
 			</div>}
-			{/* End toDate error message */}
-
-		    {/* username error message */}
-	    	{this.state.errorUsername && 
-			<div className="alert alert-danger" role="alert" >
-				Username should not be empty
-			</div>}
-			{/* End username error message */}
+			{/* Error Message */}
 
 
 	    		{/* First Group: From and To Date */}
@@ -51,7 +44,7 @@ export class Searchbar extends React.Component {
 							data-bs-toggle="dropdown" 
 							aria-expanded="false">
 							<span>
-								{!this.state.displayFromDate ? 'From Month' : this.formatMonth(this.state.displayFromDate)}
+								{!this.state.displayFromDate ? "From Month" : this.formatMonth(this.state.displayFromDate)}
 							</span>
 						</button>
 						<ul className="dropdown-menu m-0"onClick={e => e.stopPropagation()}>
@@ -71,7 +64,7 @@ export class Searchbar extends React.Component {
 							data-bs-toggle="dropdown" 
 							aria-expanded="false">
 							<span>
-								{!this.state.displayToDate ? 'To Month' : this.formatMonth(this.state.displayToDate)}
+								{!this.state.displayToDate ? "To Month" : this.formatMonth(this.state.displayToDate)}
 							</span>
 						</button>
 						<ul className="dropdown-menu m-0" onClick={e => e.stopPropagation()}>
@@ -119,38 +112,39 @@ export class Searchbar extends React.Component {
 	}
 
 	//Formats date to MM/YYYY format
-	formatMonth = (date) => date.toLocaleString('default', { month: 'short', year: 'numeric' })
+	formatMonth = (date) => date.toLocaleString("default", { month: "short", year: "numeric" })
 
 	//On From Calendar Dropdown Click, 
-	//    Set display date and calendar date to fromDate
-	//    Trigger From Calendar Dropdown after
+	//    After setting,
+	//        Trigger From Calendar Dropdown after
 	onFromMonthClick = (date, event) => {
 		this.setState({ 
 			displayFromDate: date, 
 			formFromDate: date, 
-			errorToDate: false }, () => {
+			error: false ,
+			errorMessage: "",
+		}, () => {
 			this.fromRef.current.click()
 			this.toRef.current.click()
 		})
 	}
 
 	//On To Calendar Dropdown Click,
-	//    Set display date and calendar date to toDate
 	//    If toDate is less than fromDate, 
-	//        Give warning
+	//        Reset dates and give warning
 	onToMonthClick = (date, event) => {
-		if (date < this.state.formFromDate) {
+		if (date < this.state.displayFromDate) {
 			this.setState({ 
-				displayFromDate: date, 
-				formFromDate: date, 
-				errorToDate: true 
+				error: true,
+				errorMessage: "Ending Date cannot be less than Starting Date"
 			})
 			return
 		}
 		this.setState({ 
-			displayToDate: date, 
-			formToDate: date, 
-			errorToDate: false 
+			displayToDate: date,
+			formToDate: date,
+			error: false,
+			errorMessage: "",
 		}, () => {
 			this.toRef.current.click()
 		})
@@ -164,13 +158,28 @@ export class Searchbar extends React.Component {
 
 	//Handle Submit
 	handleUserSearch = (event) => {
-		let { formUsername, formToDate, formFromDate, errorUsername } = {...this.state}
 		event.preventDefault()
+		let { formUsername, formToDate, formFromDate, error } = {...this.state}
 		if (!formUsername) {
-			this.setState({ errorUsername: true })
+			this.setState({ 
+				error: true,
+				errorMessage: "Please enter a username"
+			})
 			return
 		}
-		this.setState({ errorUsername: false
+
+		if (!formToDate || !formFromDate || (formToDate < formFromDate)) {
+			this.setState({
+				error: true,
+				errorMessage: "Invalid Dates"
+			})
+			return
+		}
+
+		this.setState({ 
+			formUsername: "",
+			error: false,
+			errorMessage: "",
 		}, () => this.props.handleUserSearch(formUsername, formToDate, formFromDate))
 	}
 }
