@@ -164,26 +164,17 @@ export class Searchbar extends React.Component {
 		event.preventDefault()
 		let { formUsername, formToDate, formFromDate, error } = {...this.state}
 		if (!formUsername) {
-			this.setState({ 
-				error: true,
-				errorMessage: "Please enter a username"
-			})
+			this.setState({ error: true, errorMessage: "Please enter a username" })
 			return
 		}
 
 		if (!formToDate || !formFromDate || (formToDate < formFromDate)) {
-			this.setState({
-				error: true,
-				errorMessage: "Invalid Dates"
-			})
+			this.setState({ error: true, errorMessage: "Invalid Dates" })
 			return
 		}
 
-		this.setState({ 
-			formUsername: "",
-			error: false,
-			errorMessage: "",
-		}, () => this.props.handleUserSearch(formUsername, formFromDate, formToDate))
+		this.setState({ formUsername: "", error: false, errorMessage: "",}, 
+			() => this.props.handleUserSearch(formUsername, formFromDate, formToDate))
 	}
 }
 

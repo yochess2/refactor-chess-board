@@ -5,42 +5,139 @@ import ChessWebAPI from "chess-web-api"
 export class ApiContent extends React.Component {
 	constructor(props) {
 		super(props)
+		this.state = {
+			error: false,
+			errorMessage: null,
+			games: []
+		}
+
 		this.api = new ChessWebAPI({ queue: true})
 	}
+
+	componentDidMount() {
+		// console.log('>> mount', this.props, this.state)
+	}
+
+	componentDidUpdate = async (prevProps, prevState) => {
+		let { 
+			username, 
+			fromDate, 
+			toDate, 
+			isFetch, 
+			handleFetchOnce,
+			getLink,
+			extractDate, 
+			navigate } = this.props
+		let api = this.api
+
+		if (isFetch !== prevProps.isFetch) {
+			if (isFetch) {
+				handleFetchOnce(false)
+				console.log('1. Fetching Player', username)
+				let res = await this.fetchPlayer(username)
+				if (res.statusCode === 404) {
+					this.setState({error: true, errorMessage: "User does not exist" })
+				} else if (res.statusCode === 200) {
+					this.setState({
+						error: false, 
+						errorMessage: "",
+					})
+					navigate(getLink(username, fromDate, toDate, 1))
+
+					let player = res.body
+					let joinedDate = this.getJoinedDate(player.joined)
+					let extractedJoinedDate = extractDate(joinedDate.date)
+
+					let extractedStartDate = extractDate(fromDate)
+					let extractedToDate = extractDate(toDate)
+
+					this.api.dispatch(
+						this.api.getPlayerCompleteMonthlyArchives, 
+						this.fetchPlayerMonthly, 
+						[username, extractedToDate.year, extractedToDate.month], {},
+						[username, extractedToDate.year, extractedToDate.month, extractedStartDate.year, extractedStartDate.month]
+					)
+
+
+				} else {
+					console.log("Unhandled event: ", res)
+					this.setState({ error: true, errorMessage: "Unhandled event" })
+				}
+
+
+			}
+		}
+	}
+
+	//refer to https://www.npmjs.com/package/chess-web-api#----dispatchmethod-callback-parameters-options-callbackparameters-priority
+	fetchPlayerMonthly = (response, error, username, endYear, endMonth, startYear, startMonth) => {
+		if (!response.body) {
+			console.log('>> response is not working', error)
+			return
+		}
+		console.log('>> response is working', response.body.games)
+		console.log(endYear, endMonth, startYear, startMonth)
+
+		// this.setState({ games: [...this.state.games, response.body.games.reverse()] }, () => {
+	    
+	    if (response.body.games) {
+			this.props.setGames(response.body.games)
+		    if ((endYear <= startYear) && (endMonth <= startMonth)) {
+		    	return
+		    }	    
+		    if (endMonth === 1) {
+		    	endMonth = 12
+		    	endYear-= 1
+		    } else {
+		    	endMonth -=1
+		    }
+		    this.api.dispatch(
+		    	this.api.getPlayerCompleteMonthlyArchives, 
+		    	this.fetchPlayerMonthly, 
+		    	[username, endYear, endMonth], {},
+		    	[username, endYear, endMonth, startYear, startMonth]
+		    )
+		}
+	}
+
+	//helper method to debug confusing async natures
+	delay = ms => new Promise(resolve => setTimeout(resolve, ms)) 
+
 	render() {
 		return (
-			<div>
-				loading
+			<div style={{border: "solid"}}>
+				API CONTENT
+
+			    {/* Error Message */}
+				{this.state.error && 
+				<div className="alert alert-danger" role="alert" >
+					{this.state.errorMessage}
+				</div>}
+				{/* Error Message */}
+
 			</div>
 		)
 	}
 
-	fetchGames = (response, error) => {
-	    if (!response.body) {
-	    	console.log('error', response, error)
-	    	return
-	    }
-	    console.log('print results: ', response)
-
-	    this.setState({ games: [...this.state.games, ...response.body.games.reverse()] }, () => {
-	    	console.log('>> Fetched', this.month, this.year, this.state.games)
-		    if (this.month === 1) {
-		    	this.month = 12
-		    	this.year-=1
-		    }
-		    if ((this.year <= this.joinedYear) && (this.month <= this.joinedMonth)) {
-		    	return
-		    }
-		    if (response.body) {
-		    	this.api.dispatch(this.api.getPlayerCompleteMonthlyArchives, this.fetchGames, [this.state.username, this.year, this.month-=1])
-		    }
-	    })
-
+	//Fetch user from the database
+	fetchPlayer = async player => {
+		let response 
+		try {
+			response = await this.api.getPlayer(player)
+		} catch (err) {
+			response = err
+		}
+		return response
 	}
 
+	//input: int num passed as a number, probably ms from chess.com
+	//returns joinedDate as { date, month, year}
 	getJoinedDate = (ms) => {
-		let date = new Date(+(ms.toString() + "000"))
-		return date
+		let joined = {}
+		joined.date = new Date(+(ms.toString() + "000")) 
+		joined.month = parseInt(joined.date.toLocaleString('default', { month: 'numeric' }))
+		joined.year = parseInt(joined.date.toLocaleString('default', { year: 'numeric' }))
+		return joined
 	}
 }
 

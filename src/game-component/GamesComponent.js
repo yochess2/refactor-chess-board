@@ -3,8 +3,8 @@ import ChessWebAPI from "chess-web-api"
 import ReactPaginate from "react-paginate"
 import Calendar from "react-calendar"
 
-import Game from "./Game"
 import Games from "./Games"
+import Game from "./Game"
 
 export class GamesComponent extends React.Component {
 	constructor(props) {
@@ -14,11 +14,20 @@ export class GamesComponent extends React.Component {
 			pageIndex: 0,
 			pages: this.getPages(props.games.length, 50),
 		}
-		console.log(this.props, 'games')
+		// console.log(this.props, 'games')
 	}
 
 	componentDidMount() {
 		document.title = "YoChess - Games"
+		// console.log('from mount', this.props)
+		// if (this.props.isFetch) {
+		// 	console.log('fetching')
+		// 	this.props.handleFetchOnce(false)
+		// }
+	}
+
+	componentWillUnmount() {
+		// console.log('unmounted')
 	}
 
 	componentDidUpdate(prevProps, prevState) {
@@ -26,11 +35,20 @@ export class GamesComponent extends React.Component {
 			let pages = this.getPages(this.props.games.length, this.state.perPage)
 			this.setState({ pages })
 		}
+
+		if (this.props.isFetch !== prevProps.isFetch) {
+			if (this.props.isFetch) {
+				console.log('hhhhhhhhhh')
+				this.props.handleFetchOnce(false)
+			}
+		}
+
+		// console.log('i am invoked from update', this.props)
 	}
 
 	render() {
-		return (
-			<>{!this.props.games || this.props.games.length <= 0 ? 
+		return (<>
+			{!this.props.games || this.props.games.length <= 0 ? 
 
 				/* If no games */
 				<p>No Games</p> :
@@ -78,9 +96,10 @@ export class GamesComponent extends React.Component {
 	}
 
 	onPageClick = (event) => {
-	  let pageIndex = event.selected
-	  this.setState({ pageIndex })
-	  this.props.navigate(`/games/${this.props.username}/${pageIndex+1}`)
+		let { username, fromDate, toDate, navigate, getLink } = this.props
+		let pageIndex = event.selected
+		this.setState({ pageIndex })
+		navigate(getLink(username, fromDate, toDate, pageIndex+1))
 	}
 }
 

@@ -2,6 +2,7 @@ import "./index.css"
 import React from "react"
 import { Route, Routes } from "react-router-dom"
 import { Chess } from "chess.js"
+import ChessWebAPI from "chess-web-api"
 
 import { withRouter } from "./utilities/withRouter"
 import { drakesGames } from "./game-component/samples"
@@ -10,10 +11,9 @@ import Home from "./Home"
 import Navbar from "./bar-component/Navbar"
 import Searchbar from "./bar-component/Searchbar"
 import Sidebar from "./bar-component/Sidebar"
-import ApiContent from "./ApiContent"
 import GamesComponent from "./game-component/GamesComponent"
 import ChessWrapper from "./ChessWrapper"
-
+import ApiContent from "./ApiContent"
 
 export class App extends React.Component {
 	constructor(props) {
@@ -22,28 +22,26 @@ export class App extends React.Component {
 			username: null,
 			fromDate: null,
 			toDate: null,
+			isFetch: false,
+
 			games: [],
 			chess: new Chess(),
-			date: null,
 			gameNum: null, //for use on saving game index num,
 		}
 		// console.log(this.state.games)
 		this.chess = new Chess()
+		// this.api = new ChessWebAPI
 	}
 
-	componentDidUpdate() {
-		// console.log('>>>>>>>>', this.props.location.pathname)
-	}
-
-	checkActive = (match, location) => {
-	    // console.log(pathname);
-	    if(!location) return false
-	    const {pathname} = location
-	    return pathname === "/"
+	componentDidUpdate(prevProps, prevState) {
+		if (this.props.location.pathname !== prevProps.location.pathname) {
+			// console.log('>>>>>>>>', this.props.location.pathname)
+		}
 	}
 
 	render() {
 		let props = this.props
+		let { username, fromDate, toDate, games, isFetch } = this.state
 		return (<>
 
 		{/* Navbar
@@ -79,42 +77,66 @@ export class App extends React.Component {
 						 */}
 				    	<Searchbar handleUserSearch={this.handleUserSearch} />
 
-
-					    {/* API Content
-					    	TODO RIGHT NOW
-							MVP is to fetch games based on month
-							Potential ideas are
-								1. store games in localstorage
-									- fetch first the desired dates
-					    */}
-				    	<ApiContent />
-					    {/* End API Content */}
+		    		    {/* API Content
+		    		    	TODO RIGHT NOW
+		    				MVP is to fetch games based on month
+		    				Potential ideas are
+		    					1. store games in localstorage
+		    						- fetch first the desired dates
+		    		    */}
+		    	    	<ApiContent 
+			    	    	isFetch={isFetch}
+			    	    	username={username}
+			    	    	fromDate={fromDate}
+			    	    	toDate={toDate}
+			    	    	handleFetchOnce={this.handleFetchOnce} 
+			    	    	setGames={this.setGames}
+			    	    	getLink={this.getLink}
+			    	    	extractDate={this.extractDate}
+			    	    	{...props} />
+		    		    {/* End API Content */}
 
 
 					    {/* Main Content */}
 						<div className="table-responsive-md mt-2">
 							<Routes>
 								<Route 
-									exact
 									path="/"
-									element={<h1>index</h1>} />
+									element={<></>} />
 								<Route 
 									path="home"
 									element={<Home />} />
 								<Route 
 									path="games"
 									element={<GamesComponent 
-										games={this.state.games}
-										username={this.state.username}
-										saveGames={this.saveGames} />}
-										{...props} />
+										games={games}
+										username={username}
+										fromDate={fromDate}
+										toDate={toDate}
+										getLink={this.getLink}
+										extractDate={this.extractDate}
+										{...props} />} />
 								<Route 
-									path="games/:username/:fromDate/:toDate/:id"
+									path="games/:username/"
 									element={<GamesComponent 
-										games={this.state.games}
-										username={this.state.username}
-										saveGames={this.saveGames} />}
-										{...props} />
+										games={games}
+										username={username}
+										fromDate={fromDate}
+										toDate={toDate}
+										getLink={this.getLink}
+										extractDate={this.extractDate}
+										{...props} />} />
+								<Route 
+									path="games/search/:username/:fromDate/:toDate/:id"
+									element={<GamesComponent 
+										games={games}
+										username={username}
+										fromDate={fromDate}
+										toDate={toDate}
+										getLink={this.getLink}
+										extractDate={this.extractDate}
+										{...props} />} />
+
 								<Route 
 									path="board"
 									element={<ChessWrapper chess={this.state.chess}/>} />
@@ -152,59 +174,41 @@ export class App extends React.Component {
 
 	}
 
-	getDateFromMs = (ms) => {
-		let date = new Date(+(ms.toString() + "000"))
-		return date
+
+	getLink = (username, fromDate, toDate, page) => {
+		return `/games/search/${username}/${this.extractDate(fromDate).monthYear}/${this.extractDate(toDate).monthYear}/${page}`
 	}
 
-	getMonth = date => date.toLocaleString('default', { month: 'short' })
-	getYear = date => date.toLocaleString('default', { year: 'numeric' })
-	getMonthAndYear = date => date.toLocaleString("default", { month: "short", year: "numeric" }).replace(' ', '-')
-
-	getLink = (username, fromDate, toDate) => {
-		return `/games/${username}/${this.getMonthAndYear(fromDate)}/${this.getMonthAndYear(toDate)}/1`
+	//sets date as month, year, and month-year format
+	extractDate = (date) => {
+		return {
+			month: date.toLocaleString('default', { month: 'numeric' }),
+			year: date.toLocaleString('default', { year: 'numeric' }),
+			monthYear: date
+				.toLocaleString('default', { month: 'short', year: 'numeric' })
+				.replace(' ', '-')
+		}
 	}
 
-	handleUserSearch = (username, fromDate, toDate) => {
-		console.log("App is fetching user", username, toDate, fromDate)
-		this.setState({ username, toDate, fromDate }, () => {
-			this.props.navigate(this.getLink(username, toDate, fromDate))
+	setGames = (games) => {
+		this.setState({
+			games: [...this.state.games, ...games.slice().reverse()]
+		}, () => {
+			console.log('success')
 		})
+	}
 
-		// let games = {...this.state.games}
-		// console.log(games)
-		// console.log(<div>hello world</div>)
+	//Invoked by Search Component
+	handleUserSearch = (username, fromDate, toDate) => {
+		this.setState({ username, toDate, fromDate, isFetch: true, games: []  }, () => {
+		})
+	}
 
-
-		// this.setState({ 
-		// 	games: drakesGames,
-		// 	username
-		// }, () => {
-		// 	console.log(this.state)
-		// })
-
-
-		// console.log(b,c,d)
-		// let res = await this.api.getPlayer(username)
-		// if (res.body) {
-		// 	console.log('got res.body', res, res.body)
-		// }
-
-		// this.api.getPlayer(username).then(res => {
-		// 	console.log('success!', res.body)
-		// 	this.setState({ games: [], username }, () => {
-		// 		console.log(this.state.username)
-		// 		this.joined = this.getJoinedDate(res.body.joined)
-		// 		this.joinedMonth = parseInt(this.joined.toLocaleString('default', { month: 'numeric' }))
-		// 		this.joinedYear = parseInt(this.joined.toLocaleString('default', { year: 'numeric' }))
-		// 		this.month = 9
-		// 		this.year = 2022
-		// 		this.api.dispatch(this.api.getPlayerCompleteMonthlyArchives, this.fetchGames, [this.state.username, this.year, this.month])
-		// 	})
-		// })
+	//Called by ApiContent, resets the need to fetch
+	handleFetchOnce = (isFetch) => {
+		this.setState({ isFetch }, () => {
+		})
 	}
 }
-
-
 
 export default withRouter(App)
