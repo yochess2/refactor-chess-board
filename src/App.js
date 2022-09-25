@@ -201,11 +201,12 @@ export class App extends React.Component {
 		}
 	}
 
-	setGames = (games) => {
+	setGames = (games, callback) => {
 		this.setState({
 			games: [...this.state.games, ...games.slice().reverse()]
-		}, () => {
-			console.log('success', this.state.games)
+		}, (val) => {
+			console.log('1. setting games', this.state.games)
+			callback(val)
 		})
 	}
 

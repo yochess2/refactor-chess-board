@@ -98,22 +98,24 @@ export class ApiContent extends React.Component {
 		console.log(endYear, endMonth, startYear, startMonth)
 
 	    if (response.body.games) {
-			this.props.setGames(response.body.games)
-		    if ((endYear <= startYear) && (endMonth <= startMonth)) {
-		    	return
-		    }	    
-		    if (endMonth === 1) {
-		    	endMonth = 12
-		    	endYear-= 1
-		    } else {
-		    	endMonth -=1
-		    }
-		    this.api.dispatch(
-		    	this.api.getPlayerCompleteMonthlyArchives, 
-		    	this.fetchPlayerMonthly, 
-		    	[username, endYear, endMonth], {},
-		    	[username, endYear, endMonth, startYear, startMonth]
-		    )
+			this.props.setGames(response.body.games, (val) => {
+				console.log('trigger callback', val)
+			    if ((endYear <= startYear) && (endMonth <= startMonth)) {
+			    	return
+			    }	    
+			    if (endMonth === 1) {
+			    	endMonth = 12
+			    	endYear-= 1
+			    } else {
+			    	endMonth -=1
+			    }
+			    this.api.dispatch(
+			    	this.api.getPlayerCompleteMonthlyArchives, 
+			    	this.fetchPlayerMonthly, 
+			    	[username, endYear, endMonth], {},
+			    	[username, endYear, endMonth, startYear, startMonth]
+			    )
+			})
 		}
 	}
 
