@@ -10,9 +10,9 @@ export class GamesComponent extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = {
-			perPage: 50,
+			perPage: 20,
 			pageIndex: 0,
-			pages: this.getPages(props.games.length, 50),
+			pages: this.getPages(props.games.length, 20),
 		}
 		// console.log(this.props, 'games')
 	}
@@ -24,6 +24,9 @@ export class GamesComponent extends React.Component {
 		// 	console.log('fetching')
 		// 	this.props.handleFetchOnce(false)
 		// }
+		if (this.props.toDate && this.props.fromDate && this.props.username) {
+			
+		}
 	}
 
 	componentWillUnmount() {

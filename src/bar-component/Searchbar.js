@@ -5,6 +5,7 @@ import "react-calendar/dist/Calendar.css"
 export class Searchbar extends React.Component {
 	constructor(props) {
 		super(props)
+		console.log(props)
 		this.state = {
 			displayFromDate: null,
 			displayToDate: null,
@@ -157,6 +158,7 @@ export class Searchbar extends React.Component {
 	onUserChange = (event) => {	
 		let formUsername = event.target.value
 		this.setState({ formUsername })
+		console.log(this.state)
 	}
 
 	//Handle Submit

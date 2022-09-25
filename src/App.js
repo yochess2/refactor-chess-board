@@ -5,7 +5,6 @@ import { Chess } from "chess.js"
 import ChessWebAPI from "chess-web-api"
 
 import { withRouter } from "./utilities/withRouter"
-import { drakesGames } from "./game-component/samples"
 
 import Home from "./Home"
 import Navbar from "./bar-component/Navbar"
@@ -27,6 +26,12 @@ export class App extends React.Component {
 			games: [],
 			chess: new Chess(),
 			gameNum: null, //for use on saving game index num,
+
+			searchBar: {
+				error: false,
+				errorMessage: "",
+			}
+
 		}
 		// console.log(this.state.games)
 		this.chess = new Chess()
@@ -36,6 +41,7 @@ export class App extends React.Component {
 	componentDidUpdate(prevProps, prevState) {
 		if (this.props.location.pathname !== prevProps.location.pathname) {
 			// console.log('>>>>>>>>', this.props.location.pathname)
+			console.log('from app.js', this.state.searchBar)
 		}
 	}
 
@@ -75,7 +81,9 @@ export class App extends React.Component {
 								1. search history (fetch or localstorage)
 								2. search suggestion (fetch)
 						 */}
-				    	<Searchbar handleUserSearch={this.handleUserSearch} />
+				    	<Searchbar 
+				    		handleUserSearch={this.handleUserSearch}
+				    		searchBarState={this.state.searchBar}  />
 
 		    		    {/* API Content
 		    		    	TODO RIGHT NOW
@@ -198,7 +206,8 @@ export class App extends React.Component {
 		})
 	}
 
-	//Invoked by Search Component
+	//Invoked by Search Component,
+	//isFetch triggers api component
 	handleUserSearch = (username, fromDate, toDate) => {
 		this.setState({ username, toDate, fromDate, isFetch: true, games: []  }, () => {
 		})

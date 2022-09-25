@@ -2,6 +2,8 @@ import React from 'react'
 
 import ChessWebAPI from "chess-web-api"
 
+import { drakesGames } from "./game-component/samples"
+
 export class ApiContent extends React.Component {
 	constructor(props) {
 		super(props)
@@ -19,50 +21,55 @@ export class ApiContent extends React.Component {
 	}
 
 	componentDidUpdate = async (prevProps, prevState) => {
-		let { 
-			username, 
-			fromDate, 
-			toDate, 
-			isFetch, 
-			handleFetchOnce,
-			getLink,
-			extractDate, 
-			navigate } = this.props
-		let api = this.api
 
-		if (isFetch !== prevProps.isFetch) {
+		//fetch
+		if (this.props.isFetch !== prevProps.isFetch) {
+			let { 
+				username, 
+				fromDate, 
+				toDate, 
+				isFetch, 
+				handleFetchOnce,
+				getLink,
+				extractDate, 
+				navigate } = this.props
+			let api = this.api
+
 			if (isFetch) {
 				handleFetchOnce(false)
 				console.log('1. Fetching Player', username)
+
 				let res = await this.fetchPlayer(username)
 				if (res.statusCode === 404) {
 					this.setState({error: true, errorMessage: "User does not exist" })
-				} else if (res.statusCode === 200) {
-					this.setState({
-						error: false, 
-						errorMessage: "",
-					})
-					navigate(getLink(username, fromDate, toDate, 1))
-
-					let player = res.body
-					let joinedDate = this.getJoinedDate(player.joined)
-					let extractedJoinedDate = extractDate(joinedDate.date)
-
-					let extractedStartDate = extractDate(fromDate)
-					let extractedToDate = extractDate(toDate)
-
-					this.api.dispatch(
-						this.api.getPlayerCompleteMonthlyArchives, 
-						this.fetchPlayerMonthly, 
-						[username, extractedToDate.year, extractedToDate.month], {},
-						[username, extractedToDate.year, extractedToDate.month, extractedStartDate.year, extractedStartDate.month]
-					)
-
-
-				} else {
+					return
+				}
+				if (res.statusCode !== 200) {
 					console.log("Unhandled event: ", res)
 					this.setState({ error: true, errorMessage: "Unhandled event" })
+					return
 				}
+				
+				this.setState({ error: false, errorMessage: ""})
+				navigate(getLink(username, fromDate, toDate, 1))
+
+				let player = res.body
+				let joinedDate = this.getJoinedDate(player.joined)
+				let extractedJoinedDate = extractDate(joinedDate.date)
+
+				let extractedStartDate = extractDate(fromDate)
+				let extractedToDate = extractDate(toDate)
+
+				this.props.setGames(drakesGames)
+
+			// 	this.api.dispatch(
+			// 		this.api.getPlayerCompleteMonthlyArchives, 
+			// 		this.fetchPlayerMonthly, 
+			// 		[username, extractedToDate.year, extractedToDate.month], {},
+			// 		[username, extractedToDate.year, extractedToDate.month, extractedStartDate.year, extractedStartDate.month]
+			// 	)
+
+
 
 
 			}
@@ -78,8 +85,6 @@ export class ApiContent extends React.Component {
 		console.log('>> response is working', response.body.games)
 		console.log(endYear, endMonth, startYear, startMonth)
 
-		// this.setState({ games: [...this.state.games, response.body.games.reverse()] }, () => {
-	    
 	    if (response.body.games) {
 			this.props.setGames(response.body.games)
 		    if ((endYear <= startYear) && (endMonth <= startMonth)) {
@@ -99,9 +104,6 @@ export class ApiContent extends React.Component {
 		    )
 		}
 	}
-
-	//helper method to debug confusing async natures
-	delay = ms => new Promise(resolve => setTimeout(resolve, ms)) 
 
 	render() {
 		return (
@@ -139,6 +141,9 @@ export class ApiContent extends React.Component {
 		joined.year = parseInt(joined.date.toLocaleString('default', { year: 'numeric' }))
 		return joined
 	}
+
+	//helper method to debug confusing async natures
+	delay = ms => new Promise(resolve => setTimeout(resolve, ms)) 
 }
 
 export default ApiContent
