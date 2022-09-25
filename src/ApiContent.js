@@ -3,6 +3,7 @@ import React from 'react'
 import ChessWebAPI from "chess-web-api"
 
 import { drakesGames } from "./game-component/samples"
+import { bbb } from "./game-component/bbb"
 
 export class ApiContent extends React.Component {
 	constructor(props) {
@@ -39,38 +40,49 @@ export class ApiContent extends React.Component {
 				handleFetchOnce(false)
 				console.log('1. Fetching Player', username)
 
-				let res = await this.fetchPlayer(username)
-				if (res.statusCode === 404) {
-					this.setState({error: true, errorMessage: "User does not exist" })
-					return
-				}
-				if (res.statusCode !== 200) {
-					console.log("Unhandled event: ", res)
-					this.setState({ error: true, errorMessage: "Unhandled event" })
-					return
-				}
+				// let res = await this.fetchPlayer(username)
+				// if (res.statusCode === 404) {
+				// 	this.setState({error: true, errorMessage: "User does not exist" })
+				// 	return
+				// }
+				// if (res.statusCode !== 200) {
+				// 	console.log("Unhandled event: ", res)
+				// 	this.setState({ error: true, errorMessage: "Unhandled event" })
+				// 	return
+				// }
 				
-				this.setState({ error: false, errorMessage: ""})
-				navigate(getLink(username, fromDate, toDate, 1))
+				// this.setState({ error: false, errorMessage: ""})
+				// navigate(getLink(username, fromDate, toDate, 1))
 
-				let player = res.body
-				let joinedDate = this.getJoinedDate(player.joined)
-				let extractedJoinedDate = extractDate(joinedDate.date)
+				// let player = res.body
+				// let joinedDate = this.getJoinedDate(player.joined)
+				// let extractedJoinedDate = extractDate(joinedDate.date)
+
+				// let extractedStartDate = extractDate(fromDate)
+				// let extractedToDate = extractDate(toDate)
+
+
+				// this.api.dispatch(
+				// 	this.api.getPlayerCompleteMonthlyArchives, 
+				// 	this.fetchPlayerMonthly, 
+				// 	[username, extractedToDate.year, extractedToDate.month], {},
+				// 	[username, extractedToDate.year, extractedToDate.month, extractedStartDate.year, extractedStartDate.month]
+				// )
+
+				let games = []
+				if (username === "bigbadbabar") {
+					games = bbb.reverse()
+				}
+				if (username === "tiger415") {
+					games = drakesGames
+				}
+
+				this.setState({ error: false, errorMessage: ""})
+				navigate(getLink(this.props.username, fromDate, toDate, 1))
 
 				let extractedStartDate = extractDate(fromDate)
 				let extractedToDate = extractDate(toDate)
-
-				this.props.setGames(drakesGames)
-
-			// 	this.api.dispatch(
-			// 		this.api.getPlayerCompleteMonthlyArchives, 
-			// 		this.fetchPlayerMonthly, 
-			// 		[username, extractedToDate.year, extractedToDate.month], {},
-			// 		[username, extractedToDate.year, extractedToDate.month, extractedStartDate.year, extractedStartDate.month]
-			// 	)
-
-
-
+				this.props.setGames(games)
 
 			}
 		}

@@ -34,15 +34,16 @@ export class GamesComponent extends React.Component {
 	}
 
 	componentDidUpdate(prevProps, prevState) {
+
 		if (this.props.games.length !== prevProps.games.length) {
 			let pages = this.getPages(this.props.games.length, this.state.perPage)
 			this.setState({ pages })
 		}
-
+console.log('update????', this.props)
 		if (this.props.isFetch !== prevProps.isFetch) {
 			if (this.props.isFetch) {
 				console.log('hhhhhhhhhh')
-				this.props.handleFetchOnce(false)
+				this.setState({ pageIndex: 0})		
 			}
 		}
 

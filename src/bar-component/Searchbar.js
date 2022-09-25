@@ -21,6 +21,7 @@ export class Searchbar extends React.Component {
 
 	render() {
 		let { displayFromDate, formFromDate, displayToDate, formToDate, formUsername } = this.state
+		// let { error, errorMessage } = this.props.searchBarState
 		return (
 	    	<div className="row mt-2">
 

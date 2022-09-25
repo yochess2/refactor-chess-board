@@ -121,6 +121,7 @@ export class App extends React.Component {
 										username={username}
 										fromDate={fromDate}
 										toDate={toDate}
+										isFetch={isFetch}
 										getLink={this.getLink}
 										extractDate={this.extractDate}
 										{...props} />} />
@@ -131,6 +132,7 @@ export class App extends React.Component {
 										username={username}
 										fromDate={fromDate}
 										toDate={toDate}
+										isFetch={isFetch}
 										getLink={this.getLink}
 										extractDate={this.extractDate}
 										{...props} />} />
@@ -141,6 +143,7 @@ export class App extends React.Component {
 										username={username}
 										fromDate={fromDate}
 										toDate={toDate}
+										isFetch={isFetch}
 										getLink={this.getLink}
 										extractDate={this.extractDate}
 										{...props} />} />
@@ -202,7 +205,7 @@ export class App extends React.Component {
 		this.setState({
 			games: [...this.state.games, ...games.slice().reverse()]
 		}, () => {
-			console.log('success')
+			console.log('success', this.state.games)
 		})
 	}
 
