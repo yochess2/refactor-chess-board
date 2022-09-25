@@ -66,6 +66,7 @@ body {
 }
 
 .collapse-sidebar-btn {
+	border: solid;
 	font-size: 30px;
 }
 

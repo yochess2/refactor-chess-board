@@ -31,66 +31,92 @@ export class App extends React.Component {
 		this.chess = new Chess()
 	}
 
-	componentDidMount() {
+	componentDidUpdate() {
+		// console.log('>>>>>>>>', this.props.location.pathname)
+	}
+
+	checkActive = (match, location) => {
+	    // console.log(pathname);
+	    if(!location) return false
+	    const {pathname} = location
+	    return pathname === "/"
 	}
 
 	render() {
-		return (
-			<>	
-			{/* Navbar */}
-			<Navbar handleUserSearch={this.handleUserSearch} />
-			{/* End Navbar */}
+		let props = this.props
+		return (<>
+
+		{/* Navbar
+			Minor Fix: annoying bug with react router and active on index page fixed
+			with a conditional statement on if location === "/" 
+		*/}
+			<Navbar {...props} />
+		{/* End Navbar */}
 
 
 			<div className="container">
 				<div className="row">
 
 
-					{/* Sidebar */}
+					{/* Sidebar
+						TODO: FaBar needs styling and doesn't seem to work on my mobile phone.
+						Right now, App is still in early stages, so undecided on the formatting. 
+					*/}
 					<div className="col-md-3">
-						<Sidebar location={this.props.location}/>
+						<Sidebar {...props} />
 					</div>
 					{/* End Sidebar */}
 
 
 					<div className="col-md-9">
+
 		
-						{/* Searchbar and ApiContent */}
-				    	<Searchbar handleUserSearch={this.handleUserSearch}/>
+						{/* Searchbar 
+					    	MVP Searchbar is done, lots of room for algo related improvements
+							Potential ideas are
+								1. search history (fetch or localstorage)
+								2. search suggestion (fetch)
+						 */}
+				    	<Searchbar handleUserSearch={this.handleUserSearch} />
+
+
+					    {/* API Content
+					    	TODO RIGHT NOW
+							MVP is to fetch games based on month
+							Potential ideas are
+								1. store games in localstorage
+									- fetch first the desired dates
+					    */}
 				    	<ApiContent />
-				    	{/* End Searchbar */}
+					    {/* End API Content */}
 
 
 					    {/* Main Content */}
 						<div className="table-responsive-md mt-2">
 							<Routes>
 								<Route 
-									exact={true}
-									path="/home"
-									element={<Home />} 
-								/>
-							</Routes>
-							<Routes>
+									exact
+									path="/"
+									element={<h1>index</h1>} />
 								<Route 
-									path="/games"
+									path="home"
+									element={<Home />} />
+								<Route 
+									path="games"
 									element={<GamesComponent 
 										games={this.state.games}
-										navigate={this.props.navigate}
 										username={this.state.username}
-										saveGames={this.saveGames} />} 
-								/>
+										saveGames={this.saveGames} />}
+										{...props} />
 								<Route 
-									path="/games/:username/:id"
+									path="games/:username/:fromDate/:toDate/:id"
 									element={<GamesComponent 
 										games={this.state.games}
-										navigate={this.props.navigate}
 										username={this.state.username}
-										saveGames={this.saveGames} />} 
-								/>
-							</Routes>
-							<Routes>
+										saveGames={this.saveGames} />}
+										{...props} />
 								<Route 
-									path="/board"
+									path="board"
 									element={<ChessWrapper chess={this.state.chess}/>} />
 							</Routes>
 						</div>
@@ -100,8 +126,7 @@ export class App extends React.Component {
 					</div>
 				</div>
 			</div>
-			</>
-		)
+		</>)
 	}
 
 	fetchGames = (response, error) => {
@@ -127,36 +152,36 @@ export class App extends React.Component {
 
 	}
 
-	getDate = (ms) => {
+	getDateFromMs = (ms) => {
 		let date = new Date(+(ms.toString() + "000"))
 		return date
 	}
 
-	handleUserSearch = (username, toDate, fromDate) => {
+	getMonth = date => date.toLocaleString('default', { month: 'short' })
+	getYear = date => date.toLocaleString('default', { year: 'numeric' })
+	getMonthAndYear = date => date.toLocaleString("default", { month: "short", year: "numeric" }).replace(' ', '-')
+
+	getLink = (username, fromDate, toDate) => {
+		return `/games/${username}/${this.getMonthAndYear(fromDate)}/${this.getMonthAndYear(toDate)}/1`
+	}
+
+	handleUserSearch = (username, fromDate, toDate) => {
 		console.log("App is fetching user", username, toDate, fromDate)
-
-
-		let a = parseInt(this.getDate(toDate).toLocaleString('default', { month: 'numeric' }))
-		let b = parseInt(this.getDate(fromDate).toLocaleString('default', { year: 'numeric' }))
-
-console.log(a)
-		this.setState({ username }, () => {
-			this.props.navigate(`/games/${this.state.username}/${1}`)
-
+		this.setState({ username, toDate, fromDate }, () => {
+			this.props.navigate(this.getLink(username, toDate, fromDate))
 		})
 
+		// let games = {...this.state.games}
+		// console.log(games)
+		// console.log(<div>hello world</div>)
 
-		let games = {...this.state.games}
-		console.log(games)
-		console.log(<div>hello world</div>)
 
-
-		this.setState({ 
-			games: drakesGames,
-			username
-		}, () => {
-			console.log(this.state)
-		})
+		// this.setState({ 
+		// 	games: drakesGames,
+		// 	username
+		// }, () => {
+		// 	console.log(this.state)
+		// })
 
 
 		// console.log(b,c,d)

@@ -19,12 +19,13 @@ export class Searchbar extends React.Component {
 	}
 
 	render() {
+		let { displayFromDate, formFromDate, displayToDate, formToDate, formUsername } = this.state
 		return (
 	    	<div className="row mt-2">
 
 
 		    {/* Error Message */}
-	    	{this.state.error && 
+			{this.state.error && 
 			<div className="alert alert-danger" role="alert" >
 				{this.state.errorMessage}
 			</div>}
@@ -44,13 +45,13 @@ export class Searchbar extends React.Component {
 							data-bs-toggle="dropdown" 
 							aria-expanded="false">
 							<span>
-								{!this.state.displayFromDate ? "From Month" : this.formatMonth(this.state.displayFromDate)}
+								{!displayFromDate ? "From Month" : this.formatMonth(displayFromDate)}
 							</span>
 						</button>
 						<ul className="dropdown-menu m-0"onClick={e => e.stopPropagation()}>
 							<Calendar 
 								maxDetail="year"
-								value={this.state.formFromDate}
+								value={formFromDate}
 								onClickMonth={this.onFromMonthClick} />
 						</ul>
 						{/* End From Button */}
@@ -64,13 +65,13 @@ export class Searchbar extends React.Component {
 							data-bs-toggle="dropdown" 
 							aria-expanded="false">
 							<span>
-								{!this.state.displayToDate ? "To Month" : this.formatMonth(this.state.displayToDate)}
+								{!displayToDate ? "To Month" : this.formatMonth(displayToDate)}
 							</span>
 						</button>
 						<ul className="dropdown-menu m-0" onClick={e => e.stopPropagation()}>
 							<Calendar 
 								maxDetail="year"
-								value={this.state.formToDate}
+								value={formToDate}
 								onClickMonth={this.onToMonthClick} />
 						</ul>
 						{/* End To Button */}
@@ -84,12 +85,14 @@ export class Searchbar extends React.Component {
 				{/* Second Group: Input and Search */}
 				<div className="col-md-6">
 					<div className="input-group search-inputs">
+
+					
 						{/* Username Input */}
 						<input 
 							type="search"
 							placeholder="Search Username"
 							className="form-control"
-							value={this.state.formUsername}
+							value={formUsername}
 							onChange={this.onUserChange} 
 							aria-label="Search Username"/>
 						{/* End Username Input */}
@@ -180,7 +183,7 @@ export class Searchbar extends React.Component {
 			formUsername: "",
 			error: false,
 			errorMessage: "",
-		}, () => this.props.handleUserSearch(formUsername, formToDate, formFromDate))
+		}, () => this.props.handleUserSearch(formUsername, formFromDate, formToDate))
 	}
 }
 

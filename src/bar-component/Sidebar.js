@@ -37,20 +37,17 @@ export class Sidebar extends React.Component {
 				<div className="show mt-2" id="sidemenu">
 					<div className="list-group">
 						<NavLink 
-							to="/home" 
-							exact="true"
+							to="home" 
 							className="list-group-item list-group-item-action">
 							Home
 						</NavLink>
 						<NavLink 
-							to="/board" 
-							exact="true"
+							to="board" 
 							className="list-group-item list-group-item-action">
 							Board
 						</NavLink>		
 						<NavLink 
-							to="/games" 
-							exact="true"
+							to="games" 
 							className="list-group-item list-group-item-action">
 							Games
 						</NavLink>
