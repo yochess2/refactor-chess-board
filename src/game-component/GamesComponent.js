@@ -24,7 +24,7 @@ export class GamesComponent extends React.Component {
 		// 	console.log('fetching')
 		// 	this.props.handleFetchOnce(false)
 		// }
-		if (this.props.toDate && this.props.fromDate && this.props.username) {
+		if (this.props.startDate && this.props.endDate && this.props.username) {
 			
 		}
 	}
@@ -100,10 +100,11 @@ export class GamesComponent extends React.Component {
 	}
 
 	onPageClick = (event) => {
-		let { username, fromDate, toDate, navigate, getLink } = this.props
+		let { inputs, navigate, getLink } = this.props
+		let { username, startDate, endDate } = inputs
 		let pageIndex = event.selected
 		this.setState({ pageIndex })
-		navigate(getLink(username, fromDate, toDate, pageIndex+1))
+		navigate(getLink(username, startDate, endDate, pageIndex+1))
 	}
 }
 

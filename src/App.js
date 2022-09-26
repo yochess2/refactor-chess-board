@@ -57,7 +57,7 @@ export class App extends React.Component {
 		let props = this.props
 		let { location, navigate } = this.props
 		let { username, startDate, endDate, games, isFetch, error, inputs } = this.state
-		let { handleUserSearch, onError, handleFetchOnce, extractDate, getLink } = this
+		let { handleUserSearch, onError, handleFetchOnce, extractDate, getLink, setGames } = this
 
 		return (<>
 		{/* Navbar (x)
@@ -119,13 +119,16 @@ export class App extends React.Component {
 					    {/* End Searchbar */}
 
 
-		    		    {/* API Content (  )
+		    		    {/* API Content (  ) basically done, just using mock data for now
+
 		    		    	purpose:	To fetch from chess.com API
 		    		    	props:		<state><bool> isFetch - Only runs if set to true
 										<state><obj> inputs
 										<func> onError
 										<func> handleFetchOnce 
 										<func> getLink
+										<func> navigate
+										<func> setGames
 		    		    */}
 		    	    	<ApiContent 
 			    	    	isFetch={isFetch}
@@ -135,9 +138,7 @@ export class App extends React.Component {
 			    	    	extractDate={extractDate}
 			    	    	getLink={getLink}
 							navigate={navigate}
-
-			    	    	// setGames={this.setGames}
-			    	    />
+			    	    	setGames={setGames} />
 		    		    {/* End API Content */}
 
 
@@ -154,9 +155,7 @@ export class App extends React.Component {
 									path="games"
 									element={<GamesComponent 
 										games={games}
-										username={username}
-										startDate={startDate}
-										endDate={endDate}
+										inputs={inputs}
 										isFetch={isFetch}
 										getLink={this.getLink}
 										extractDate={this.extractDate}
@@ -165,9 +164,7 @@ export class App extends React.Component {
 									path="games/:username/"
 									element={<GamesComponent 
 										games={games}
-										username={username}
-										startDate={startDate}
-										endDate={endDate}
+										inputs={inputs}
 										isFetch={isFetch}
 										getLink={this.getLink}
 										extractDate={this.extractDate}
@@ -176,9 +173,7 @@ export class App extends React.Component {
 									path="games/:username/:fromDate/:toDate/:id"
 									element={<GamesComponent 
 										games={games}
-										username={username}
-										fromDate={startDate}
-										endDate={endDate}
+										inputs={inputs}
 										isFetch={isFetch}
 										getLink={this.getLink}
 										extractDate={this.extractDate}
@@ -227,7 +222,6 @@ export class App extends React.Component {
 		this.setState({
 			games: [...this.state.games, ...games.slice().reverse()]
 		}, (val) => {
-			console.log('1. setting games', callback)
 			callback(callback)
 		})
 	}
