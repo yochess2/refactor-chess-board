@@ -43,7 +43,7 @@ export class ChessWrapper extends React.Component {
 
 	handleResize = () => {
 		let display = document.getElementsByClassName("chess-board-wrapper")[0];
-		console.log("handle resize")
+		console.log("handle resize", window.innerWidth)
 		this.setState({ boardWidth: display.offsetWidth - 20 })
 	}
 
@@ -52,27 +52,25 @@ export class ChessWrapper extends React.Component {
 		return (
 			<>
 				{/* ROW 1 */}
-				<div style={{ border: "dotted" }}  className="row">
+				<div className="row">
 
 					{/* Black Player Info and Black Clock */}
-					<div style={{ border: "dotted" }} className="col-sm-4 align-self-end">
+					<div className="col-8 col-sm-4" style={{border: "solid"}}>
 						<span>Player Info</span>
 					</div>
-					<div style={{ border: "dotted" }} className="col-sm-4 align-self-end">
+					<div className="col-4" style={{border: "solid"}}>
 						<span>Clock</span>
 					</div>
 
 					{/* Empty Space */}
-					<div style={{ border: "dotted" }} className="col-sm-4 align-self-end">
-						<h1>Empty Space</h1>
-					</div>
+					<div className="col-4"></div>
 				</div>
 
 				{/* ROW 2 */}
 				<div className="row">
 
 					{/* Chess Board */}
-					<div style={{ border: "dotted" }} className="col-sm-8">
+					<div className="col-sm-8">
 						<div className="chess-board-wrapper justify-content-sm-center">
 							<Chessboard 
 								id="BasicBoard" 
@@ -86,7 +84,7 @@ export class ChessWrapper extends React.Component {
 					</div>
 
 					{/* Notations */}
-					<div style={{ border: "dotted" }} className="col-sm-4">
+					<div className="col-sm-4 d-none d-sm-block" style={{border: "solid"}}>
 						<h1>Notations</h1>
 					</div>
 				</div>
@@ -95,20 +93,20 @@ export class ChessWrapper extends React.Component {
 				<div className="row">
 
 					{/* Black Player Info and Black Clock */}
-					<div style={{ border: "dotted" }} className="col-sm-8">
-						<div className="row">
-							<div style={{ border: "dotted" }} className="col-sm-8">
-								<h1>Player Info</h1>
+					{/*<div className="col-8">*/}
+						{/*<div className="row">*/}
+							<div className="col-8 col-sm-4" style={{border: "solid"}}>
+								<span>Player Info</span>
 							</div>
-							<div style={{ border: "dotted" }} className="col-sm-4">
-								<h1>Clock</h1>
+							<div className="col-4 col-sm-4" style={{border: "solid"}}>
+								<span>Clock</span>
 							</div>
-						</div>
-					</div>
+						{/*</div>*/}
+					{/*</div>*/}
 
 					{/* Buttons */}
-					<div style={{ border: "dotted" }} className="col-sm-4">
-						<h1>Buttons</h1>
+					<div className="col-sm-4" style={{border: "solid"}}>
+						<span>Buttons</span>
 					</div>
 				</div>
 			</>

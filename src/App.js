@@ -11,7 +11,7 @@ import Err from "./Err"
 import Navbar from "./bar-component/Navbar"
 import Searchbar from "./bar-component/Searchbar"
 import Sidebar from "./bar-component/Sidebar"
-import GamesComponent from "./game-component/GamesComponent"
+import GamesWrapper from "./game-component/GamesWrapper"
 import ChessWrapper from "./ChessWrapper"
 import ApiContent from "./ApiContent"
 
@@ -31,6 +31,7 @@ export class App extends React.Component {
 			},
 
 			isFetch: false,
+			pageIndex: null,
 
 			games: [],
 			chess: new Chess(),
@@ -56,7 +57,7 @@ export class App extends React.Component {
 	render() {
 		let props = this.props
 		let { location, navigate } = this.props
-		let { username, startDate, endDate, games, isFetch, error, inputs } = this.state
+		let { username, startDate, endDate, games, isFetch, error, inputs, pageIndex } = this.state
 		let { handleUserSearch, onError, handleFetchOnce, extractDate, getLink, setGames } = this
 
 		return (<>
@@ -105,9 +106,10 @@ export class App extends React.Component {
 							purpose:	To allow user to search for a username by month.
 							props:		<func> handleUserSearch
 										<func> onError
-
+										<state><bool><isFetch>
 							effects:	- Search input for username, start date, and end date
-										- error handling, decides if search is valid or invalid
+										- Error handling, decides if search is valid or invalid
+										- Hides while API is fetching
 
 
 					    	MVP Searchbar is done, lots of room for add-on features.
@@ -115,8 +117,13 @@ export class App extends React.Component {
 								1. search history (localstorage)
 								2. search suggestion (fetch or localstorage)
 						 */}
-				    	<Searchbar handleUserSearch={handleUserSearch} onError={onError} />
-					    {/* End Searchbar */}
+						{!isFetch &&
+				    	<Searchbar 
+				    		handleUserSearch={handleUserSearch} 
+				    		onError={onError} 
+				    		inputs={inputs} 
+				    	/>
+					    }{/* End Searchbar */}
 
 
 		    		    {/* API Content (  ) basically done, just using mock data for now
@@ -153,27 +160,36 @@ export class App extends React.Component {
 									element={<Home />} />
 								<Route 
 									path="games"
-									element={<GamesComponent 
+									element={<GamesWrapper
 										games={games}
 										inputs={inputs}
+										pageIndex={pageIndex}
+
+
 										isFetch={isFetch}
 										getLink={this.getLink}
 										extractDate={this.extractDate}
 										{...props} />} />
 								<Route 
 									path="games/:username/"
-									element={<GamesComponent 
+									element={<GamesWrapper
 										games={games}
 										inputs={inputs}
+										pageIndex={pageIndex}
+
+
 										isFetch={isFetch}
 										getLink={this.getLink}
 										extractDate={this.extractDate}
 										{...props} />} />
 								<Route 
 									path="games/:username/:fromDate/:toDate/:id"
-									element={<GamesComponent 
+									element={<GamesWrapper
 										games={games}
 										inputs={inputs}
+										pageIndex={pageIndex}
+
+
 										isFetch={isFetch}
 										getLink={this.getLink}
 										extractDate={this.extractDate}
@@ -273,6 +289,9 @@ export class App extends React.Component {
 	handleFetchOnce = (isFetch) => this.setState({ isFetch })
 
 
+
+	/* 4. onPageChange
+		invoker:	GamesWrapper
 
 
 	  ////////////////////

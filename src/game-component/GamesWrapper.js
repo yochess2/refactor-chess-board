@@ -6,7 +6,7 @@ import Calendar from "react-calendar"
 import Games from "./Games"
 import Game from "./Game"
 
-export class GamesComponent extends React.Component {
+export class GamesWrapper extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = {
@@ -19,21 +19,27 @@ export class GamesComponent extends React.Component {
 
 	componentDidMount() {
 		document.title = "YoChess - Games"
+		console.log('okay', this.props)
 		// console.log('from mount', this.props)
 		// if (this.props.isFetch) {
 		// 	console.log('fetching')
 		// 	this.props.handleFetchOnce(false)
 		// }
-		if (this.props.startDate && this.props.endDate && this.props.username) {
+		// if (this.props.startDate && this.props.endDate && this.props.username) {
 			
-		}
+		// }
 	}
 
 	componentWillUnmount() {
+		console.log('bye 	', this.props)	
 		// console.log('unmounted')
 	}
 
 	componentDidUpdate(prevProps, prevState) {
+		let { games, pageIndex } = this.props
+
+
+
 
 		if (this.props.games.length !== prevProps.games.length) {
 			let pages = this.getPages(this.props.games.length, this.state.perPage)
@@ -108,4 +114,4 @@ export class GamesComponent extends React.Component {
 	}
 }
 
-export default GamesComponent
+export default GamesWrapper

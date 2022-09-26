@@ -1,35 +1,39 @@
 import React from "react"
 import { NavLink } from "react-router-dom"
-import { FaBars } from "react-icons/fa"
+import { FaCaretDown, FaCaretUp } from "react-icons/fa"
 
 export class Sidebar extends React.Component {
 	constructor(props) {
 		super(props) // location is passed down as prop
+		this.state = {
+			toggle: true
+		}
 	}
 
 	render() {
+		console.log(this.state)
 		return (
 			<>
 			{/* Sidebar Heading */}
-			<div className="row border-bottom sidebar-header">
-				<div className="col-9">
-					<span className="p-1 sidebar-heading">
+			
+				<div className="text-center text-sm-start border-bottom p-1">
+					<div 
+						className="sidebar-heading" 
+						data-bs-toggle="collapse" 
+						data-bs-target="#sidemenu"
+						role="button"
+						aria-expanded="true"
+						aria-controls="collapseSidebar"
+						onClick={this.toggle}>
 						{this.getName(this.props.location.pathname.toLowerCase())}
-					</span>
+						<span>
+							{this.state.toggle 	? 
+							<FaCaretDown /> 	:
+							<FaCaretUp /> 		}
+						</span>
+					</div>
 				</div>
-				<div className="col-3">
-					<span className="p-1 border-bottom collapse-sidebar-btn">
-						<FaBars
-							type="button" 
-							data-bs-toggle="collapse" 
-							data-bs-target="#sidemenu"
-							role="button"
-							aria-expanded="true"
-							aria-controls="collapseSidebar"/>
-
-					</span>
-				</div>
-			</div>
+			
 			{/* SIdebar Heading End */}
 
 			{/* Sidebar Content */}
@@ -59,7 +63,13 @@ export class Sidebar extends React.Component {
 		)
 	}
 
-	//TODO
+
+	toggle = () => {
+		// console.log(this.state)
+		this.setState({ toggle: !this.state.toggle })
+	}
+
+	// helper method
 	getName = (pathname) => {
 		if (pathname.match("/games")) {
 			return "Games"
@@ -71,6 +81,8 @@ export class Sidebar extends React.Component {
 			return "Sidebar"
 		}
 	}
+
+
 }
 
 export default Sidebar

@@ -2,6 +2,7 @@ import React from 'react'
 
 import ChessWebAPI from "chess-web-api"
 
+import { tiger415 } from "./games/tiger415"
 import { games } from "./games/games"
 
 export class ApiContent extends React.Component {
@@ -13,6 +14,7 @@ export class ApiContent extends React.Component {
 			displayYear: null,
 			spinner1: "/",
 			games: [],
+			testing: ''
 		}
 
 		this.api = new ChessWebAPI({ queue: true})
@@ -28,15 +30,15 @@ export class ApiContent extends React.Component {
 		let { fetchPlayerData, getJoinedDate, fixChessDate, getPlayer, getDates } = this
 		let { username, startDate, endDate } = this.props.inputs
 
-		if (isFetch !== prevProps.isFetch && isFetch) {
-			handleFetchOnce(false)
-			let res = await fetchPlayerData(username)
-			let player = getPlayer(res, onError)
-			if (!player) return
 
+		if (isFetch !== prevProps.isFetch && isFetch) {
+			// let res = await fetchPlayerData(username)
+			// let player = getPlayer(res, onError)
+			let player = tiger415 //testing
+
+			if (!player) return handleFetchOnce(false)
 			navigate(getLink(username, startDate, endDate, 1))
 			let dates = getDates(inputs, player, extractDate)
-
 			// this.api.dispatch(
 			// 	this.api.getPlayerCompleteMonthlyArchives, 
 			// 	this.fetchPlayerMonthly, 
@@ -48,21 +50,26 @@ export class ApiContent extends React.Component {
 			 /////////////
 			/* TESTING */
 		   /////////////
-			if (username === "tiger415") {			
+				this.setState({testing: this.state.testing+username})		
+
+			if (username.toLowerCase() === "tiger415") {	
+				this.setState({testing: this.state.testing+"O"})		
+				console.log(this.state, this.props)
 				this.setState({isDisplay: true})
 				await fetch("http://localhost:8000/allgames/1/").then(res => res.json()).then((json) => {
-					console.log("9. ", json)
+					this.setState({testing: this.state.testing+"M"})
+					// console.log("9. ", json)
 					this.setState({
 						displayMonth: 9,
 						displayYear: 2022,
 						spinner: "\\",
 					}, () => {
-						console.log('am i first?')
+						// console.log('am i first?')
 						setGames(json.games, () => {
-							console.log('1. am i logged now')
+							// console.log('1. am i logged now')
 						})
 					})
-					return this.delay(3000)
+					// return this.delay(5000)
 
 				}).then(() => {
 					console.log('or am i second?')
@@ -79,7 +86,7 @@ export class ApiContent extends React.Component {
 						})
 					})
 					console.log('2. or am i second?')
-					return this.delay(3000)
+					// return this.delay(1)
 				}).then(() => {
 					return fetch("http://localhost:8000/allgames/3/")
 				}).then((res) => res.json()).then((json) => {
@@ -94,15 +101,26 @@ export class ApiContent extends React.Component {
 						})
 					})
 					console.log('3. or am i second?')
-					return this.delay(3000)
+					// return this.delay(4000)
+				}).catch((err) => {
+					this.setState({testing: this.state.testing+err.message})
+					console.log('i made it here')
+					onError(true, "no internet, we made it here")
+					return handleFetchOnce(true)
 				})
 				console.log('done')
-				this.setState({isDisplay: false})
+				// this.setState({isDisplay: false})
 						
 
 
-					
+			handleFetchOnce(true, "i dont get it")
+
+
+			return handleFetchOnce(false)
 			}
+			onError(false, "no such user")
+			handleFetchOnce(false)
+
 
 		}
 	}
@@ -156,10 +174,10 @@ export class ApiContent extends React.Component {
 		let { isDisplay, displayMonth, displayYear, spinner } = this.state
 
 		return (
-			<div style={{border: "solid"}}>
-				API CONTENT
+			<div>
+
 				{/*Display fetching */}
-				{!this.state.isDisplay ? '' :
+				{/*{!this.state.isDisplay ? '' :*/}
 				<h4>
 					<span>Fetching</span>
 					<span> ..</span>
@@ -167,7 +185,9 @@ export class ApiContent extends React.Component {
 					<span>..{spinner}..</span>
 					<span>{displayYear}</span>
 				</h4>
-				}{/*End Display */}
+			<p>	{this.state.testing}</p>
+				{/*}*/}
+				{/*End Display */}
 			</div>
 		)
 	}
@@ -205,6 +225,8 @@ export class ApiContent extends React.Component {
 	/* getPlayer - Helper Method
 		params: 	<json> response
 		returns: 	<obj> chess.com player data
+
+		TODO:	more edge cases
 	*/
 	getPlayer = (res, onError) => {
 		if (res.statusCode === 404)
