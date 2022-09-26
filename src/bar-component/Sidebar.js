@@ -4,7 +4,7 @@ import { FaBars } from "react-icons/fa"
 
 export class Sidebar extends React.Component {
 	constructor(props) {
-		super(props)
+		super(props) // location is passed down as prop
 	}
 
 	render() {

@@ -5,7 +5,7 @@ import Searchbar from "./Searchbar"
 
 export class Navbar extends Component {
 	constructor(props) {
-		super(props)
+		super(props) // location is passed as prop
 	}
 
 	render() {

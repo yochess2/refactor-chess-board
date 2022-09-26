@@ -4,8 +4,7 @@ import "react-calendar/dist/Calendar.css"
 
 export class Searchbar extends React.Component {
 	constructor(props) {
-		super(props)
-		// handleUserSearch(), onError() are passed down as props
+		super(props) // handleUserSearch(), onError() are passed down as props
 
 		//TODO: Refactor to objects someday
 		this.state = {
@@ -23,10 +22,8 @@ export class Searchbar extends React.Component {
 	render() { 
 		let { formatMonth, onStartMonthClick, onEndMonthClick, handleUserSearch, onUserChange } = this
 		let { displayStartDate, displayEndDate, formStartDate, formEndDate, username } = this.state
-
 		return (
 	    	<div className="row mt-2">
-
 
 	    		{/* Error Message */}
 	    		{this.props.children}
@@ -55,7 +52,7 @@ export class Searchbar extends React.Component {
 								value={formStartDate}
 								onClickMonth={onStartMonthClick} />
 						</ul>
-						{/* End End Button */}
+						{/* End Start Button */}
 
 
 						{/* Start Button */}
@@ -108,7 +105,6 @@ export class Searchbar extends React.Component {
 						</button>
 						{/* End Search Button */}
 
-
 					</div>
 				</div>
 			</div>
@@ -122,10 +118,12 @@ export class Searchbar extends React.Component {
 		effects: 	binds <dom> StartMonth to React Library
 	*/
 	onStartMonthClick = (date, event) => {
-		this.setState({ displayStartDate: date, formStartDate: date, 
+		this.setState({
+			displayStartDate: date,
+			formStartDate: date
 		}, () => {
 			this.toggleCalendar(true, true)
-			this.props.onError(false, "")
+			this.props.onError(false, "", null)
 		})
 	}
 
@@ -137,11 +135,11 @@ export class Searchbar extends React.Component {
 		effects: 	binds <dom> StartMonth to React Library
 	*/
 	onEndMonthClick = (date, event) => {
-		if (date < this.state.displayStartDate)
+		if (date < this.state.displayStartDate) 
 			return this.props.onError(true, "Ending Date cannot be less than Starting Date")
-
 		this.setState({ displayEndDate: date, formEndDate: date }, () => {
 			this.toggleCalendar(false, true)
+			this.props.onError(false, "", null)
 		})
 	}
 
@@ -160,18 +158,14 @@ export class Searchbar extends React.Component {
 	handleUserSearch = (event) => {
 		event.preventDefault()
 		let { username, formEndDate, formStartDate, } = {...this.state}
-
-		if (!username)
+		if (!username) 
 			return this.props.onError(true, "Please enter a username!")
 		if (!formEndDate || !formStartDate || (formEndDate < formStartDate))
 			return this.props.onError(true, "Dates are invalid!")
-
 		this.props.onError(false, "", () => {
 			this.props.handleUserSearch(username, formStartDate, formEndDate)
 		})
 	}
-
-
 
 
           ////////////////////
@@ -179,12 +173,11 @@ export class Searchbar extends React.Component {
         ////////////////////
 
 
-	// toggleCalendar (x) - Toggles both calendars
+	// toggleCalendar (x) - Toggles both calendars (invokes App.onError)
 	toggleCalendar = (isStart, isEnd) => {
 		if (isStart) this.startDateRef.current.click()
 		if (isEnd) this.endDateRef.current.click()
 	}
-
 
 	// formatMonth (x) - Helper Method - Formats date to MM/YYYY format
 	formatMonth = (date) => date.toLocaleString("default", { month: "short", year: "numeric" })

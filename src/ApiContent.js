@@ -2,16 +2,16 @@ import React from 'react'
 
 import ChessWebAPI from "chess-web-api"
 
-import { drakesGames } from "./game-component/samples"
-import { bbb } from "./game-component/bbb"
+// import { drakesGames } from "./game-component/samples"
+// import { bbb } from "./game-component/bbb"
 
 export class ApiContent extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = {
-			error: false,
-			errorMessage: null,
-			games: []
+			// error: false,
+			// errorMessage: null,
+			// games: []
 		}
 
 		this.api = new ChessWebAPI({ queue: true})
@@ -21,26 +21,30 @@ export class ApiContent extends React.Component {
 		// console.log('>> mount', this.props, this.state)
 	}
 
+	// 
 	componentDidUpdate = async (prevProps, prevState) => {
+		let { username, onError, isFetch } = this.props
+		let api = this.api
+
+				console.log('>>>>>>', this.props, prevProps)
 
 		//fetch
-		if (this.props.isFetch !== prevProps.isFetch) {
-			let { 
-				username, 
-				fromDate, 
-				toDate, 
-				isFetch, 
-				handleFetchOnce,
-				getLink,
-				extractDate, 
-				navigate } = this.props
-			let api = this.api
+		if (isFetch !== prevProps.isFetch) {
+			// let { 
+			// 	username, 
+			// 	fromDate, 
+			// 	toDate, 
+			// 	isFetch, 
+			// 	handleFetchOnce,
+			// 	getLink,
+			// 	extractDate, 
+			// 	navigate } = this.props
 
 			if (isFetch) {
-				handleFetchOnce(false)
-				console.log('1. Fetching Player', username)
+			// 	handleFetchOnce(false)
+			// 	console.log('1. Fetching Player', username)
 
-				// let res = await this.fetchPlayer(username)
+			// 	let res = await this.fetchPlayer(username)
 				// if (res.statusCode === 404) {
 				// 	this.setState({error: true, errorMessage: "User does not exist" })
 				// 	return
@@ -69,23 +73,25 @@ export class ApiContent extends React.Component {
 				// 	[username, extractedToDate.year, extractedToDate.month, extractedStartDate.year, extractedStartDate.month]
 				// )
 
-				let games = []
-				if (username === "bigbadbabar") {
-					games = bbb.reverse()
-				}
-				if (username === "tiger415") {
-					games = drakesGames
-				}
+				// let games = []
+				// if (username === "bigbadbabar") {
+				// 	// games = bbb.reverse()
+				// }
+				// if (username === "tiger415") {
+				// 	// if games = drakesGames
+				// }
 
-				this.setState({ error: false, errorMessage: ""})
-				navigate(getLink(this.props.username, fromDate, toDate, 1))
 
-				let extractedStartDate = extractDate(fromDate)
-				let extractedToDate = extractDate(toDate)
-				this.props.setGames(games, (val) => {
-					let a = this.props
-					console.log('2. back to api', val)
-				})
+
+				// this.setState({ error: false, errorMessage: ""})
+				// navigate(getLink(this.props.username, fromDate, toDate, 1))
+
+				// let extractedStartDate = extractDate(fromDate)
+				// let extractedToDate = extractDate(toDate)
+				// this.props.setGames(games, (val) => {
+				// 	let a = this.props
+				// 	console.log('2. back to api', val)
+				// })
 
 			}
 		}
@@ -126,14 +132,6 @@ export class ApiContent extends React.Component {
 		return (
 			<div style={{border: "solid"}}>
 				API CONTENT
-
-			    {/* Error Message */}
-				{this.state.error && 
-				<div className="alert alert-danger" role="alert" >
-					{this.state.errorMessage}
-				</div>}
-				{/* Error Message */}
-
 			</div>
 		)
 	}
