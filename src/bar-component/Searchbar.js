@@ -5,78 +5,77 @@ import "react-calendar/dist/Calendar.css"
 export class Searchbar extends React.Component {
 	constructor(props) {
 		super(props)
-		console.log(props)
+		// handleUserSearch(), onError() are passed down as props
+
+		//TODO: Refactor to objects someday
 		this.state = {
-			displayFromDate: null,
-			displayToDate: null,
-			formUsername: "",
-			formFromDate: null,
-			formToDate: null,
-			errorMessage: "",
-			error: false,
+			username: "",
+			displayStartDate: null,
+			displayEndDate: null,
+			formStartDate: null,
+			formEndDate: null
 		}
-		this.fromRef = React.createRef()
-		this.toRef = React.createRef()
+		this.startDateRef = React.createRef()
+		this.endDateRef = React.createRef()
 	}
 
-	render() {
-		let { displayFromDate, formFromDate, displayToDate, formToDate, formUsername } = this.state
-		// let { error, errorMessage } = this.props.searchBarState
+	//TODO: Fix Styling
+	render() { 
+		let { formatMonth, onStartMonthClick, onEndMonthClick, handleUserSearch, onUserChange } = this
+		let { displayStartDate, displayEndDate, formStartDate, formEndDate, username } = this.state
+
 		return (
 	    	<div className="row mt-2">
 
 
-		    {/* Error Message */}
-			{this.state.error && 
-			<div className="alert alert-danger" role="alert" >
-				{this.state.errorMessage}
-			</div>}
-			{/* Error Message */}
+	    		{/* Error Message */}
+	    		{this.props.children}
+		    	{/* End Error Message */}
 
 
-	    		{/* First Group: From and To Date */}
+	    		{/* First Group: Start and End Date */}
 	    		<div className="col-md-6">
 					<div className="input-group dropdown-button">
 
 
-						{/* From Button */}
+						{/* Start Button */}
 						<button
-							ref={this.fromRef}
+							ref={this.startDateRef}
 							className="btn btn-secondary dropdown-toggle" 
 							type="button btn-outline" 
 							data-bs-toggle="dropdown" 
 							aria-expanded="false">
 							<span>
-								{!displayFromDate ? "From Month" : this.formatMonth(displayFromDate)}
+								{!displayStartDate ? "From Month" : formatMonth(displayStartDate)}
 							</span>
 						</button>
 						<ul className="dropdown-menu m-0"onClick={e => e.stopPropagation()}>
 							<Calendar 
 								maxDetail="year"
-								value={formFromDate}
-								onClickMonth={this.onFromMonthClick} />
+								value={formStartDate}
+								onClickMonth={onStartMonthClick} />
 						</ul>
-						{/* End From Button */}
+						{/* End End Button */}
 
 
-						{/* To Button */}
+						{/* Start Button */}
 						<button 
-							ref={this.toRef}
+							ref={this.endDateRef}
 							className="btn btn-secondary dropdown-toggle" 
 							type="button" 
 							data-bs-toggle="dropdown" 
 							aria-expanded="false">
 							<span>
-								{!displayToDate ? "To Month" : this.formatMonth(displayToDate)}
+								{!displayEndDate ? "To Month" : formatMonth(displayEndDate)}
 							</span>
 						</button>
 						<ul className="dropdown-menu m-0" onClick={e => e.stopPropagation()}>
 							<Calendar 
 								maxDetail="year"
-								value={formToDate}
-								onClickMonth={this.onToMonthClick} />
+								value={formEndDate}
+								onClickMonth={onEndMonthClick} />
 						</ul>
-						{/* End To Button */}
+						{/* End End Button */}
 
 
 					</div>
@@ -94,8 +93,8 @@ export class Searchbar extends React.Component {
 							type="search"
 							placeholder="Search Username"
 							className="form-control"
-							value={formUsername}
-							onChange={this.onUserChange} 
+							value={username}
+							onChange={onUserChange} 
 							aria-label="Search Username"/>
 						{/* End Username Input */}
 
@@ -104,7 +103,7 @@ export class Searchbar extends React.Component {
 						<button
 							id="usersearch01" 
 							className="btn btn-primary btn-outline" 
-							onClick={this.handleUserSearch}>
+							onClick={handleUserSearch}>
 							Search
 						</button>
 						{/* End Search Button */}
@@ -116,69 +115,79 @@ export class Searchbar extends React.Component {
 		)
 	}
 
-	//Formats date to MM/YYYY format
-	formatMonth = (date) => date.toLocaleString("default", { month: "short", year: "numeric" })
 
-	//On From Calendar Dropdown Click, 
-	//    After setting,
-	//        Trigger From Calendar Dropdown after
-	onFromMonthClick = (date, event) => {
-		this.setState({ 
-			displayFromDate: date, 
-			formFromDate: date, 
-			error: false ,
-			errorMessage: "",
+	/* onStartMonthClick (x)
+		invoker:	Start Month Calendar (date) - User clicks on a date
+		invokee:	App - onError(<bool> value, <str> message)
+		effects: 	binds <dom> StartMonth to React Library
+	*/
+	onStartMonthClick = (date, event) => {
+		this.setState({ displayStartDate: date, formStartDate: date, 
 		}, () => {
-			this.fromRef.current.click()
-			this.toRef.current.click()
+			this.toggleCalendar(true, true)
+			this.props.onError(false, "")
 		})
 	}
 
-	//On To Calendar Dropdown Click,
-	//    If toDate is less than fromDate, 
-	//        Reset dates and give warning
-	onToMonthClick = (date, event) => {
-		if (date < this.state.displayFromDate) {
-			this.setState({ 
-				error: true,
-				errorMessage: "Ending Date cannot be less than Starting Date"
-			})
-			return
-		}
-		this.setState({ 
-			displayToDate: date,
-			formToDate: date,
-			error: false,
-			errorMessage: "",
-		}, () => {
-			this.toRef.current.click()
+
+	/* onEndMonthClick (x)
+		invoker:	A) Start Month Calendar (date) - User clicks on a date
+					B) onStartMonthClick() -> toggleCalendar(true, true) ->
+		invokee:	App - onError(<bool> value, <str> message)
+		effects: 	binds <dom> StartMonth to React Library
+	*/
+	onEndMonthClick = (date, event) => {
+		if (date < this.state.displayStartDate)
+			return this.props.onError(true, "Ending Date cannot be less than Starting Date")
+
+		this.setState({ displayEndDate: date, formEndDate: date }, () => {
+			this.toggleCalendar(false, true)
 		})
 	}
 
-	//Bind input form
-	onUserChange = (event) => {	
-		let formUsername = event.target.value
-		this.setState({ formUsername })
-		console.log(this.state)
-	}
 
-	//Handle Submit
+	// onUserChange (x) - binds <dom> Search Input to React Library
+	onUserChange = (event) => this.setState({ username: event.target.value })
+
+
+	/* handleUserSearch (x)
+		Invoker:	Search Button (username, fromDate, toDate)
+		Invokee:	App - HandleUserSearch (username, fromDate, toDate)
+
+		params: 	<dom> event
+		effect: 	Sends (username, fromDate, toDate) up to the App Component
+	*/
 	handleUserSearch = (event) => {
 		event.preventDefault()
-		let { formUsername, formToDate, formFromDate, error } = {...this.state}
-		if (!formUsername) {
-			this.setState({ error: true, errorMessage: "Please enter a username" })
-			return
-		}
+		let { username, formEndDate, formStartDate, } = {...this.state}
 
-		if (!formToDate || !formFromDate || (formToDate < formFromDate)) {
-			this.setState({ error: true, errorMessage: "Invalid Dates" })
-			return
-		}
+		if (!username)
+			return this.props.onError(true, "Please enter a username!")
+		if (!formEndDate || !formStartDate || (formEndDate < formStartDate))
+			return this.props.onError(true, "Dates are invalid!")
 
-		this.setState({ formUsername: "", error: false, errorMessage: "",}, 
-			() => this.props.handleUserSearch(formUsername, formFromDate, formToDate))
+		this.props.onError(false, "", () => {
+			this.props.handleUserSearch(username, formStartDate, formEndDate)
+		})
 	}
+
+
+
+
+          ////////////////////
+         /* Helper Methods */
+        ////////////////////
+
+
+	// toggleCalendar (x) - Toggles both calendars
+	toggleCalendar = (isStart, isEnd) => {
+		if (isStart) this.startDateRef.current.click()
+		if (isEnd) this.endDateRef.current.click()
+	}
+
+
+	// formatMonth (x) - Helper Method - Formats date to MM/YYYY format
+	formatMonth = (date) => date.toLocaleString("default", { month: "short", year: "numeric" })
 }
 
 export default Searchbar

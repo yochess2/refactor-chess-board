@@ -27,10 +27,10 @@ export class App extends React.Component {
 			chess: new Chess(),
 			gameNum: null, //for use on saving game index num,
 
-			searchBar: {
-				error: false,
-				errorMessage: "",
-			}
+			error: {
+				value: false,
+				message: "",
+			},
 
 		}
 		// console.log(this.state.games)
@@ -46,8 +46,13 @@ export class App extends React.Component {
 	}
 
 	render() {
+		let searchbarFunctions = {
+			handleUserSearch: this.handleUserSearch,
+			onError: this.onError
+		}
 		let props = this.props
 		let { username, fromDate, toDate, games, isFetch } = this.state
+
 		return (<>
 
 		{/* Navbar
@@ -82,8 +87,16 @@ export class App extends React.Component {
 								2. search suggestion (fetch)
 						 */}
 				    	<Searchbar 
-				    		handleUserSearch={this.handleUserSearch}
-				    		searchBarState={this.state.searchBar}  />
+				    		{...searchbarFunctions}
+				    	>
+			    		    {/* Error Message */}
+			    			{this.state.error.value &&
+			    			<div className="alert alert-danger" role="alert" >
+			    				{this.state.error.message}
+			    			</div>
+			    			}{/* Error Message */}
+
+				    	</Searchbar>
 
 		    		    {/* API Content
 		    		    	TODO RIGHT NOW
@@ -205,15 +218,8 @@ export class App extends React.Component {
 		this.setState({
 			games: [...this.state.games, ...games.slice().reverse()]
 		}, (val) => {
-			console.log('1. setting games', this.state.games)
-			callback(val)
-		})
-	}
-
-	//Invoked by Search Component,
-	//isFetch triggers api component
-	handleUserSearch = (username, fromDate, toDate) => {
-		this.setState({ username, toDate, fromDate, isFetch: true, games: []  }, () => {
+			console.log('1. setting games', callback)
+			callback(callback)
 		})
 	}
 
@@ -222,6 +228,44 @@ export class App extends React.Component {
 		this.setState({ isFetch }, () => {
 		})
 	}
+
+
+	/* OnError
+		invoker:	Searchbar
+		invokee:	App - Error
+		params:		<bool> value
+					<str> message
+					[optional] <function> cb
+		effect:		Toggles Error Message
+
+		TODO: 		Make Error Component
+	*/
+	onError = (value, message, cb) => {
+		this.setState(({error}) => ({
+			error: { ...error,
+				value,
+				message
+			}
+		}), () => {
+			if (cb) cb()
+		})
+	}
+
+	/* handleUserSearch
+		invoker:	Searchbar (username, startDate, endDate)
+		invokee:	ApiContent - updateState (username, startDate, endDate, isFetch)
+
+		params: 	<str> username
+					<date> startDate
+					<date> endDate
+		effects: 	Toggles fetch to true, and sends params to ApiContent
+	*/
+	handleUserSearch = (username, fromDate, toDate) => {
+		this.setState({ username, toDate, fromDate, isFetch: true, games: []  }, () => {
+		})
+	}
+
 }
+
 
 export default withRouter(App)

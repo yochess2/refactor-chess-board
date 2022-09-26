@@ -82,7 +82,10 @@ export class ApiContent extends React.Component {
 
 				let extractedStartDate = extractDate(fromDate)
 				let extractedToDate = extractDate(toDate)
-				this.props.setGames(games)
+				this.props.setGames(games, (val) => {
+					let a = this.props
+					console.log('2. back to api', val)
+				})
 
 			}
 		}
