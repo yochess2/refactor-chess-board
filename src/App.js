@@ -44,8 +44,7 @@ export class App extends React.Component {
 	}
 
 	componentDidUpdate(prevProps, prevState) {
-		// this.clearErrorOnPathChange(prevProps.location.pathname)
-		console.log(prevProps, this.props)
+		this.clearErrorOnPathChange(prevProps.location.pathname)
 	}
 
 	// If path changes then set error to false
@@ -57,8 +56,8 @@ export class App extends React.Component {
 	render() {
 		let props = this.props
 		let { location, navigate } = this.props
-		let { username, startDate, endDate, games, isFetch, error } = this.state
-		let { handleUserSearch, onError } = this
+		let { username, startDate, endDate, games, isFetch, error, inputs } = this.state
+		let { handleUserSearch, onError, handleFetchOnce, extractDate, getLink } = this
 
 		return (<>
 		{/* Navbar (x)
@@ -74,8 +73,16 @@ export class App extends React.Component {
 
 
 					{/* Sidebar ( )
-						TODO: FaBar needs styling and doesn't seem to work on my mobile phone.
-						Right now, App is still in early stages, so undecided on the formatting. 
+						purpose: 	Allows user to navigate between links
+						props:	 	<router><obj> location
+						
+						features:	- Collapse bar 
+									- dynamic highlighted links
+									- responsive 
+						
+						TODO: 		- Needs styling
+									- FaBar not showing on mobile
+						
 					*/}
 					<div className="col-md-3">
 						<Sidebar location={location} />
@@ -86,8 +93,9 @@ export class App extends React.Component {
 					<div className="col-md-9">
 
 
-						{/* Err 
-							Under progress
+						{/* Err (x)
+							purpose:	Displays error messages
+							props:		<state><obj> Error
 						*/}
 				    	<Err error={error} />
 						{/* End Err */}
@@ -95,9 +103,12 @@ export class App extends React.Component {
 
 						{/* Searchbar (x)
 							purpose:	To allow user to search for a username by month.
-							inputs: 	<func> handleUserSearch, onError
-							effects:	1) user search - obtains username, start date, and end date
-										2) error - decides if search is valid or invalid
+							props:		<func> handleUserSearch
+										<func> onError
+
+							effects:	- Search input for username, start date, and end date
+										- error handling, decides if search is valid or invalid
+
 
 					    	MVP Searchbar is done, lots of room for add-on features.
 							Potential ideas are
@@ -108,26 +119,25 @@ export class App extends React.Component {
 					    {/* End Searchbar */}
 
 
-		    		    {/* API Content
-		    		    	TODO RIGHT NOW
-		    				MVP is to fetch games based on month
-		    				Potential ideas are
-		    					1. store games in localstorage
-		    						- fetch first the desired dates
+		    		    {/* API Content (  )
+		    		    	purpose:	To fetch from chess.com API
+		    		    	props:		<state><bool> isFetch - Only runs if set to true
+										<state><obj> inputs
+										<func> onError
+										<func> handleFetchOnce 
+										<func> getLink
 		    		    */}
 		    	    	<ApiContent 
-			    	    	// isFetch={isFetch}
+			    	    	isFetch={isFetch}
+			    	    	inputs={inputs}
 		    	    		onError={onError}
-			    	    	username={username}
+			    	    	handleFetchOnce={handleFetchOnce} 
+			    	    	extractDate={extractDate}
+			    	    	getLink={getLink}
 
-			    	    	// fromDate={startDate}
-			    	    	// toDate={endDate}
-
-			    	    	// handleFetchOnce={this.handleFetchOnce} 
 			    	    	// setGames={this.setGames}
-			    	    	// getLink={this.getLink}
 			    	    	// extractDate={this.extractDate} 
-			    	    	/>
+			    	    	{...props} />
 		    		    {/* End API Content */}
 
 
@@ -145,8 +155,8 @@ export class App extends React.Component {
 									element={<GamesComponent 
 										games={games}
 										username={username}
-										fromDate={startDate}
-										toDate={endDate}
+										startDate={startDate}
+										endDate={endDate}
 										isFetch={isFetch}
 										getLink={this.getLink}
 										extractDate={this.extractDate}
@@ -156,19 +166,19 @@ export class App extends React.Component {
 									element={<GamesComponent 
 										games={games}
 										username={username}
-										fromDate={startDate}
-										toDate={endDate}
+										startDate={startDate}
+										endDate={endDate}
 										isFetch={isFetch}
 										getLink={this.getLink}
 										extractDate={this.extractDate}
 										{...props} />} />
 								<Route 
-									path="games/search/:username/:fromDate/:toDate/:id"
+									path="games/:username/:fromDate/:toDate/:id"
 									element={<GamesComponent 
 										games={games}
 										username={username}
 										fromDate={startDate}
-										toDate={endDate}
+										endDate={endDate}
 										isFetch={isFetch}
 										getLink={this.getLink}
 										extractDate={this.extractDate}
@@ -212,20 +222,6 @@ export class App extends React.Component {
 	}
 
 
-	getLink = (username, startDate, endDate, page) => {
-		return `/games/search/${username}/${this.extractDate(startDate).monthYear}/${this.extractDate(endDate).monthYear}/${page}`
-	}
-
-	//sets date as month, year, and month-year format
-	extractDate = (date) => {
-		return {
-			month: date.toLocaleString('default', { month: 'numeric' }),
-			year: date.toLocaleString('default', { year: 'numeric' }),
-			monthYear: date
-				.toLocaleString('default', { month: 'short', year: 'numeric' })
-				.replace(' ', '-')
-		}
-	}
 
 	setGames = (games, callback) => {
 		this.setState({
@@ -236,22 +232,16 @@ export class App extends React.Component {
 		})
 	}
 
-	//Called by ApiContent, resets the need to fetch
-	handleFetchOnce = (isFetch) => {
-		this.setState({ isFetch }, () => {
-		})
-	}
 
-
-	/* OnError (x)
+	/* 1. OnError (x)
 		invoker:	Searchbar - Search Button
+					ApiContent - Error
 					App - ComponentWillUpdate(prevPath, currentPath)
-		invokee:	App - Error Element
+		invokee:	Err Component - updateState (error)
 		params:		<bool> value
 					<str> message
 					[optional] <function> cb
 		effect:		Toggles Error Message
-		TODO: 		Don't have screen render on same error message
 	*/
 	onError = (value, message, cb) => {
 		if (!value && !this.state.error.value && !cb) return
@@ -263,7 +253,7 @@ export class App extends React.Component {
 		})
 	}
 
-	/* handleUserSearch (x)
+	/* 2. handleUserSearch (x)
 		invoker:	Searchbar (username, startDate, endDate)
 		invokee:	ApiContent - updateState (username, startDate, endDate, isFetch)
 
@@ -278,6 +268,45 @@ export class App extends React.Component {
 			isFetch: true,
 			games: []
 		}))
+	}
+
+	/* 3. handleFetchOnce (x)
+		invoker:	Searchbar, ApiContent
+		invokee:	ApiContent - updateState (isFetch)
+		params:		<bool> isFetch
+	*/ 
+	handleFetchOnce = (isFetch) => this.setState({ isFetch })
+
+
+
+
+	  ////////////////////
+	 /* Helper Methods */
+	////////////////////
+
+	/* getLink (x) - Helper Method
+		invoker: 	ApiContent - componentDidMount
+		returns:	link format
+	*/ 
+	getLink = (username, startDate, endDate, pageNum) => {
+		let [from, to] = [this.extractDate(startDate).monthYear, this.extractDate(endDate).monthYear]
+		return `/games/${username}/${from}/${to}/${pageNum}`
+	}
+
+	/*
+		extractDate (x) - Helper Method
+		invoker:	ApiContent - componentDidMount
+		params: 	<date> Date
+		return: 	<obj> formattedDate { <str> Month, <str> Year, <string> MonthYear}
+	*/
+	extractDate = (date) => {
+		return {
+			month: date.toLocaleString('default', { month: 'numeric' }),
+			year: date.toLocaleString('default', { year: 'numeric' }),
+			monthYear: date
+				.toLocaleString('default', { month: 'short', year: 'numeric' })
+				.replace(' ', '-')
+		}
 	}
 }
 

@@ -18,12 +18,18 @@ export class Searchbar extends React.Component {
 		this.endDateRef = React.createRef()
 	}
 
+	//TESTING: Clear when done, checking how many re-renders 
+	componentDidUpdate() {
+		console.log('TEST - searchbar updates')
+	}
+
 	//TODO: Fix Styling
 	render() { 
-		let { formatMonth, onStartMonthClick, onEndMonthClick, handleUserSearch, onUserChange } = this
+		let { formatMonth, onStartMonthClick, onEndMonthClick, handleUserSearch, onUserInput } = this
 		let { displayStartDate, displayEndDate, formStartDate, formEndDate, username } = this.state
 		return (
 	    	<div className="row mt-2">
+
 
 	    		{/* Error Message */}
 	    		{this.props.children}
@@ -91,7 +97,7 @@ export class Searchbar extends React.Component {
 							placeholder="Search Username"
 							className="form-control"
 							value={username}
-							onChange={onUserChange} 
+							onChange={onUserInput} 
 							aria-label="Search Username"/>
 						{/* End Username Input */}
 
@@ -104,6 +110,7 @@ export class Searchbar extends React.Component {
 							Search
 						</button>
 						{/* End Search Button */}
+
 
 					</div>
 				</div>
@@ -127,7 +134,6 @@ export class Searchbar extends React.Component {
 		})
 	}
 
-
 	/* onEndMonthClick (x)
 		invoker:	A) Start Month Calendar (date) - User clicks on a date
 					B) onStartMonthClick() -> toggleCalendar(true, true) ->
@@ -143,10 +149,8 @@ export class Searchbar extends React.Component {
 		})
 	}
 
-
-	// onUserChange (x) - binds <dom> Search Input to React Library
-	onUserChange = (event) => this.setState({ username: event.target.value })
-
+	// onUserInput (x) - binds <dom> Search Input to React Library
+	onUserInput = (event) => this.setState({ username: event.target.value })
 
 	/* handleUserSearch (x)
 		Invoker:	Search Button (username, fromDate, toDate)
@@ -171,7 +175,6 @@ export class Searchbar extends React.Component {
           ////////////////////
          /* Helper Methods */
         ////////////////////
-
 
 	// toggleCalendar (x) - Toggles both calendars (invokes App.onError)
 	toggleCalendar = (isStart, isEnd) => {

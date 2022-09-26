@@ -2,8 +2,8 @@ import React from 'react'
 
 import ChessWebAPI from "chess-web-api"
 
-// import { drakesGames } from "./game-component/samples"
-// import { bbb } from "./game-component/bbb"
+import { drakesGames } from "./game-component/samples"
+import { bbb } from "./game-component/bbb"
 
 export class ApiContent extends React.Component {
 	constructor(props) {
@@ -23,77 +23,69 @@ export class ApiContent extends React.Component {
 
 	// 
 	componentDidUpdate = async (prevProps, prevState) => {
-		let { username, onError, isFetch } = this.props
+		let { inputs, onError, isFetch, handleFetchOnce, extractDate, getLink, navigate } = this.props
+		let { fetchPlayer, getJoinedDate, fixChessDate } = this
+
+		let { username, startDate, endDate } = this.props.inputs
 		let api = this.api
 
-				console.log('>>>>>>', this.props, prevProps)
+		if (isFetch !== prevProps.isFetch && isFetch) {
+			handleFetchOnce(false)
+			
+			 ///////////
+			/* FETCH */
+		   ///////////
 
-		//fetch
-		if (isFetch !== prevProps.isFetch) {
-			// let { 
-			// 	username, 
-			// 	fromDate, 
-			// 	toDate, 
-			// 	isFetch, 
-			// 	handleFetchOnce,
-			// 	getLink,
-			// 	extractDate, 
-			// 	navigate } = this.props
+			// let res = await fetchPlayer(username)
+			// if (res.statusCode === 404)
+			// 	return onError(true, "404 - User doesn't Exist")
 
-			if (isFetch) {
-			// 	handleFetchOnce(false)
-			// 	console.log('1. Fetching Player', username)
+			// if (res.statusCode !== 200)
+			// 	return onError(true, "Unhandled Event, likely no internet")
+			
+			// navigate(getLink(username, startDate, endDate, 1))
+			// let player = res.body
 
-			// 	let res = await this.fetchPlayer(username)
-				// if (res.statusCode === 404) {
-				// 	this.setState({error: true, errorMessage: "User does not exist" })
-				// 	return
-				// }
-				// if (res.statusCode !== 200) {
-				// 	console.log("Unhandled event: ", res)
-				// 	this.setState({ error: true, errorMessage: "Unhandled event" })
-				// 	return
-				// }
-				
-				// this.setState({ error: false, errorMessage: ""})
-				// navigate(getLink(username, fromDate, toDate, 1))
+			// let extractedJoinedDate = extractDate(fixChessDate(player.joined))
 
-				// let player = res.body
-				// let joinedDate = this.getJoinedDate(player.joined)
-				// let extractedJoinedDate = extractDate(joinedDate.date)
+			// let extractedStartDate = extractDate(startDate)
+			// let extractedToDate = extractDate(endDate)
 
-				// let extractedStartDate = extractDate(fromDate)
-				// let extractedToDate = extractDate(toDate)
+			// console.log(extractedStartDate, extractedToDate, extractedJoinedDate)
 
 
-				// this.api.dispatch(
-				// 	this.api.getPlayerCompleteMonthlyArchives, 
-				// 	this.fetchPlayerMonthly, 
-				// 	[username, extractedToDate.year, extractedToDate.month], {},
-				// 	[username, extractedToDate.year, extractedToDate.month, extractedStartDate.year, extractedStartDate.month]
-				// )
-
-				// let games = []
-				// if (username === "bigbadbabar") {
-				// 	// games = bbb.reverse()
-				// }
-				// if (username === "tiger415") {
-				// 	// if games = drakesGames
-				// }
+			// this.api.dispatch(
+			// 	this.api.getPlayerCompleteMonthlyArchives, 
+			// 	this.fetchPlayerMonthly, 
+			// 	[username, extractedToDate.year, extractedToDate.month], {},
+			// 	[username, extractedToDate.year, extractedToDate.month, extractedStartDate.year, extractedStartDate.month]
+			// )
 
 
+			 /////////////
+			/* TESTING */
+		   /////////////
 
-				// this.setState({ error: false, errorMessage: ""})
-				// navigate(getLink(this.props.username, fromDate, toDate, 1))
 
-				// let extractedStartDate = extractDate(fromDate)
-				// let extractedToDate = extractDate(toDate)
-				// this.props.setGames(games, (val) => {
-				// 	let a = this.props
-				// 	console.log('2. back to api', val)
-				// })
+			// let games = []
+			// if (username === "bigbadbabar") {
+			// 	// games = bbb.reverse()
+			// }
+			// if (username === "tiger415") {
+			// 	// if games = drakesGames
+			// }
 
-			}
+			navigate(getLink(username, startDate, endDate, 1))
+
+			let extractedStartDate = extractDate(startDate)
+			let extractedToDate = extractDate(endDate)
+
+
+			// this.props.setGames(games, (val) => {
+				// let a = this.props
+				// console.log('2. back to api', val)
+			// })
+
 		}
 	}
 
@@ -136,7 +128,14 @@ export class ApiContent extends React.Component {
 		)
 	}
 
-	//Fetch user from the database
+
+
+
+
+
+	/* fetchPlayer
+		return: <promise> response
+	*/
 	fetchPlayer = async player => {
 		let response 
 		try {
@@ -147,18 +146,16 @@ export class ApiContent extends React.Component {
 		return response
 	}
 
-	//input: int num passed as a number, probably ms from chess.com
-	//returns joinedDate as { date, month, year}
-	getJoinedDate = (ms) => {
-		let joined = {}
-		joined.date = new Date(+(ms.toString() + "000")) 
-		joined.month = parseInt(joined.date.toLocaleString('default', { month: 'numeric' }))
-		joined.year = parseInt(joined.date.toLocaleString('default', { year: 'numeric' }))
-		return joined
-	}
+
+	  ////////////////////
+	 /* Helper Methods */
+	////////////////////
 
 	//helper method to debug confusing async natures
-	delay = ms => new Promise(resolve => setTimeout(resolve, ms)) 
+	delay = ms => new Promise(resolve => setTimeout(resolve, ms))
+
+	//fixChessDate (x) - Helper Method - Converts fetched date to <date> num
+	fixChessDate = (ms) => new Date(+(ms.toString() + "000"))
 }
 
 export default ApiContent
