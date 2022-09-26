@@ -11,7 +11,7 @@ export class ApiContent extends React.Component {
 		this.state = {
 			// error: false,
 			// errorMessage: null,
-			// games: []
+			games: []
 		}
 
 		this.api = new ChessWebAPI({ queue: true})
@@ -24,42 +24,25 @@ export class ApiContent extends React.Component {
 	// 
 	componentDidUpdate = async (prevProps, prevState) => {
 		let { inputs, onError, isFetch, handleFetchOnce, extractDate, getLink, navigate } = this.props
-		let { fetchPlayer, getJoinedDate, fixChessDate } = this
+		let { fetchPlayerData, getJoinedDate, fixChessDate, getPlayer, getDates } = this
 
 		let { username, startDate, endDate } = this.props.inputs
-		let api = this.api
 
 		if (isFetch !== prevProps.isFetch && isFetch) {
 			handleFetchOnce(false)
-			
-			 ///////////
-			/* FETCH */
-		   ///////////
+			let res = await fetchPlayerData(username)
+			let player = getPlayer(res, onError)
+			if (!player) return
 
-			// let res = await fetchPlayer(username)
-			// if (res.statusCode === 404)
-			// 	return onError(true, "404 - User doesn't Exist")
+			navigate(getLink(username, startDate, endDate, 1))
+			let dates = getDates(inputs, player, extractDate)
 
-			// if (res.statusCode !== 200)
-			// 	return onError(true, "Unhandled Event, likely no internet")
-			
-			// navigate(getLink(username, startDate, endDate, 1))
-			// let player = res.body
-
-			// let extractedJoinedDate = extractDate(fixChessDate(player.joined))
-
-			// let extractedStartDate = extractDate(startDate)
-			// let extractedToDate = extractDate(endDate)
-
-			// console.log(extractedStartDate, extractedToDate, extractedJoinedDate)
-
-
-			// this.api.dispatch(
-			// 	this.api.getPlayerCompleteMonthlyArchives, 
-			// 	this.fetchPlayerMonthly, 
-			// 	[username, extractedToDate.year, extractedToDate.month], {},
-			// 	[username, extractedToDate.year, extractedToDate.month, extractedStartDate.year, extractedStartDate.month]
-			// )
+			this.api.dispatch(
+				this.api.getPlayerCompleteMonthlyArchives, 
+				this.fetchPlayerMonthly, 
+				[username, dates.endDate.year, dates.endDate.month], {},
+				[username, dates.endDate.year, dates.endDate.month, dates.startDate.year, dates.startDate.month]
+			)
 
 
 			 /////////////
@@ -75,10 +58,10 @@ export class ApiContent extends React.Component {
 			// 	// if games = drakesGames
 			// }
 
-			navigate(getLink(username, startDate, endDate, 1))
+			// navigate(getLink(username, startDate, endDate, 1))
 
-			let extractedStartDate = extractDate(startDate)
-			let extractedToDate = extractDate(endDate)
+			// let extractedStartDate = extractDate(startDate)
+			// let extractedToDate = extractDate(endDate)
 
 
 			// this.props.setGames(games, (val) => {
@@ -95,12 +78,13 @@ export class ApiContent extends React.Component {
 			console.log('>> response is not working', error)
 			return
 		}
-		console.log('>> response is working', response.body.games)
+		console.log('>> response is working', this.state.games)
 		console.log(endYear, endMonth, startYear, startMonth)
 
-	    if (response.body.games) {
-			this.props.setGames(response.body.games, (val) => {
-				console.log('trigger callback', val)
+	    // if (response.body.games) {
+			// this.props.setGames(response.body.games, (val) => {
+				console.log('trigger callback')
+				this.setState({games: [...this.state.games, response.body.games]})
 			    if ((endYear <= startYear) && (endMonth <= startMonth)) {
 			    	return
 			    }	    
@@ -116,8 +100,8 @@ export class ApiContent extends React.Component {
 			    	[username, endYear, endMonth], {},
 			    	[username, endYear, endMonth, startYear, startMonth]
 			    )
-			})
-		}
+			// })
+		// }
 	}
 
 	render() {
@@ -133,10 +117,10 @@ export class ApiContent extends React.Component {
 
 
 
-	/* fetchPlayer
+	/* 1. fetchPlayerData
 		return: <promise> response
 	*/
-	fetchPlayer = async player => {
+	fetchPlayerData = async player => {
 		let response 
 		try {
 			response = await this.api.getPlayer(player)
@@ -147,15 +131,42 @@ export class ApiContent extends React.Component {
 	}
 
 
+
 	  ////////////////////
 	 /* Helper Methods */
 	////////////////////
 
-	//helper method to debug confusing async natures
+	// helper method to debug confusing async natures
 	delay = ms => new Promise(resolve => setTimeout(resolve, ms))
 
-	//fixChessDate (x) - Helper Method - Converts fetched date to <date> num
+	// fixChessDate (x) - Helper Method - Converts fetched date to <date> num
 	fixChessDate = (ms) => new Date(+(ms.toString() + "000"))
+
+	/* getPlayer - Helper Method
+		params: 	<json> response
+		returns: 	<obj> chess.com player data
+	*/
+	getPlayer = (res, onError) => {
+		if (res.statusCode === 404)
+			return onError(true, "404 - User doesn't Exist")
+		if (res.statusCode !== 200)
+			return onError(true, "Unhandled Event, likely no internet")
+		return res.body
+	}
+
+	/* 
+		getDates - Helper Method
+		params: 	<obj> inputs (<str> username, <date> startDate, <date> endDate)
+					<date> joinedDate from chess.com
+					<func> extractDate
+		returns: 	<obj> { <obj> startDate, <obj> endDate, <obj> joinedDate }
+						each formatted like { month: <int> MM, <int> year: YYYY, <monthYear> "Month-YYYY"}
+	*/
+	getDates = (inputs, joinedDate, extractDate) => ({
+			joinedDate: extractDate(this.fixChessDate(joinedDate.joined)),
+			startDate: extractDate(inputs.startDate),
+			endDate: extractDate(inputs.endDate)
+	})	
 }
 
 export default ApiContent

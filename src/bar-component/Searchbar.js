@@ -119,7 +119,7 @@ export class Searchbar extends React.Component {
 	}
 
 
-	/* onStartMonthClick (x)
+	/* 1. onStartMonthClick (x)
 		invoker:	Start Month Calendar (date) - User clicks on a date
 		invokee:	App - onError(<bool> value, <str> message)
 		effects: 	binds <dom> StartMonth to React Library
@@ -134,7 +134,7 @@ export class Searchbar extends React.Component {
 		})
 	}
 
-	/* onEndMonthClick (x)
+	/* 2. onEndMonthClick (x)
 		invoker:	A) Start Month Calendar (date) - User clicks on a date
 					B) onStartMonthClick() -> toggleCalendar(true, true) ->
 		invokee:	App - onError(<bool> value, <str> message)
@@ -149,10 +149,10 @@ export class Searchbar extends React.Component {
 		})
 	}
 
-	// onUserInput (x) - binds <dom> Search Input to React Library
+	// 3. onUserInput (x) - binds <dom> Search Input to React Library
 	onUserInput = (event) => this.setState({ username: event.target.value })
 
-	/* handleUserSearch (x)
+	/* 4. handleUserSearch (x)
 		Invoker:	Search Button (username, fromDate, toDate)
 		Invokee:	App - HandleUserSearch (username, fromDate, toDate)
 

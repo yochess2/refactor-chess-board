@@ -134,10 +134,10 @@ export class App extends React.Component {
 			    	    	handleFetchOnce={handleFetchOnce} 
 			    	    	extractDate={extractDate}
 			    	    	getLink={getLink}
+							navigate={navigate}
 
 			    	    	// setGames={this.setGames}
-			    	    	// extractDate={this.extractDate} 
-			    	    	{...props} />
+			    	    />
 		    		    {/* End API Content */}
 
 
@@ -242,6 +242,7 @@ export class App extends React.Component {
 					<str> message
 					[optional] <function> cb
 		effect:		Toggles Error Message
+		returns:	undefined
 	*/
 	onError = (value, message, cb) => {
 		if (!value && !this.state.error.value && !cb) return
@@ -297,12 +298,12 @@ export class App extends React.Component {
 		extractDate (x) - Helper Method
 		invoker:	ApiContent - componentDidMount
 		params: 	<date> Date
-		return: 	<obj> formattedDate { <str> Month, <str> Year, <string> MonthYear}
+		return: 	<obj> formattedDate { <int> Month, <int> Year, <string> MonthYear}
 	*/
 	extractDate = (date) => {
 		return {
-			month: date.toLocaleString('default', { month: 'numeric' }),
-			year: date.toLocaleString('default', { year: 'numeric' }),
+			month: parseInt(date.toLocaleString('default', { month: 'numeric' })),
+			year: parseInt(date.toLocaleString('default', { year: 'numeric' })),
 			monthYear: date
 				.toLocaleString('default', { month: 'short', year: 'numeric' })
 				.replace(' ', '-')
