@@ -1,7 +1,7 @@
 import React from "react"
 import { Chessboard } from "react-chessboard" 
 
-export class ChessWrapper extends React.Component {
+export class BoardWrapper extends React.Component {
 	componentDidMount() {
 		document.title = "Game - YoChess"
 	}
@@ -114,4 +114,4 @@ export class ChessWrapper extends React.Component {
 	}
 }
 
-export default ChessWrapper
+export default BoardWrapper

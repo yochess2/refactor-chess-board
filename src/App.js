@@ -8,11 +8,14 @@ import { withRouter } from "./utilities/withRouter"
 
 import Home from "./Home"
 import ErrorMessage from "./ErrorMessage"
+
 import Navbar from "./bar-component/Navbar"
 import Searchbar from "./bar-component/Searchbar"
 import Sidebar from "./bar-component/Sidebar"
+
 import GamesWrapper from "./game-component/GamesWrapper"
-import ChessWrapper from "./ChessWrapper"
+import BoardWrapper from "./board-component/BoardWrapper"
+
 import ApiContent from "./ApiContent"
 
 export class App extends React.Component {
@@ -197,7 +200,7 @@ export class App extends React.Component {
 
 								<Route 
 									path="board"
-									element={<ChessWrapper chess={this.state.chess}/>} />
+									element={<BoardWrapper chess={this.state.chess}/>} />
 							</Routes>
 						</div>
 						{/* End Main Content */}
