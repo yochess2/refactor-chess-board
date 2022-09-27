@@ -4,7 +4,7 @@ export class Home extends React.Component {
 	render() {
 		return (
 				<div>
-					Home
+					<h4>Welcome to Tiger415's Chess Game Fetcher</h4>
 				</div>
 		)
 	}

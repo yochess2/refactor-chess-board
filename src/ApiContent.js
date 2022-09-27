@@ -4,132 +4,47 @@ import ChessWebAPI from "chess-web-api"
 import PulseLoader from "react-spinners/PulseLoader"
 import { FaStopCircle } from "react-icons/fa"
 
-import { tiger415 } from "./games/tiger415"
-import { games } from "./games/games"
+import { drakesGames } from "./games/samples"
 
 export class ApiContent extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = {
-			isDisplay: false,
+			count: 0,
 			displayMonth: null,
 			displayYear: null,
+			games: [],
+			isDisplay: false,
 			loading: false,
 			spinner: true,
-			games: [],
-			count: 0,
 		}
-
 		this.api = new ChessWebAPI({ queue: true})
 		this.stop = false
 	}
 
-
 	// dont forget to toggle isFetch, so search bar displays
 	componentDidUpdate = async (prevProps, prevState) => {
-		let { inputs, isFetch, onError, extractDate, getLink, navigate, setGames } = this.props
-		let { fetchPlayerData, getJoinedDate, fixChessDate, getPlayer, getDates } = this
+		let { isFetch, onError, getLink, navigate } = this.props
 		let { username, startDate, endDate } = this.props.inputs
 
 		if (isFetch !== prevProps.isFetch && isFetch) {
-			let res = await fetchPlayerData(username)
-			let player = getPlayer(res)
-			if (!player) return onError(true, res, null, false)
+			// let res = await this.fetchPlayerData(username)
+			// let player = this.getPlayer(res)
+			// if (!player) return onError(true, res, null, false)
+			// this.resetState(0, null, null, [], false, false, true, () => {
+			// 	navigate(getLink(username, startDate, endDate, 1))
+			// 	this.props.handleFetchOnce(true)
+			// 	this.processFetchGames(startDate, endDate, player, username)
+			// })
 
-			//reset state
-			this.setState({
-				isDisplay: false,
-				displayMonth: null,
-				displayYear: null,
-				loading: false,
-				spinner: true,
-				games: [],
-				count: 0,
-			}, () => {
+			this.props.setGames(drakesGames, () => {
 				navigate(getLink(username, startDate, endDate, 1))
-				let dates = getDates(inputs, player, extractDate)
-
-				this.joinedMonth = dates.joinedDate.month
-				this.joinedYear = dates.joinedDate.year
-
-				this.api.dispatch(
-					this.api.getPlayerCompleteMonthlyArchives, 
-					this.fetchPlayerMonthly, 
-					[username, dates.endDate.year, dates.endDate.month], {},
-					[username, dates.endDate.year, dates.endDate.month, dates.startDate.year, dates.startDate.month]
-				)				
+				this.props.handleFetchOnce(false)
 			})
 		}
 	}
 
-	//refer to https://www.npmjs.com/package/chess-web-api#----dispatchmethod-callback-parameters-options-callbackparameters-priority
-	fetchPlayerMonthly = (response, error, username, endYear, endMonth, startYear, startMonth) => {
-		// January is tricky, because it gets set back to December
-	    if 	(((endYear <= startYear) && (endMonth < startMonth)) || 
-	    	((endYear <= this.joinedYear) && (endMonth < this.joinedMonth)) ||
-	    	((endYear < startYear)) || (this.stop)) {
-
-	    	return this.setState({
-	    		loading: false,
-	    		displayMonth: null,
-	    		displayYear: null,
-	    		isDisplay: false,
-	    		count: 0,
-	    	}, () => {
-	    		this.props.handleFetchOnce(false)
-	    		console.log('API: BASE CASE', this.state)
-	    	})
-	    }
-		if (error || !response || !response.body) {
-			return this.setState({
-				loading: false,
-				displayMonth: null,
-				displayYear: null,
-				isDisplay: false,
-				count: 0,
-			}, () => {
-				this.props.onError(true, error, null, false)
-			})
-		}
-		console.log('API: SUCCESS: response is working, my games', response)
-
-		// Logics start here: setting games to parent component
-		this.props.setGames(response.body.games, (val) => {
-			let jsonObj = {
-				id: this.state.games.length+1,
-				month: `${endMonth}`,
-				year: `${endYear}`,
-				games: response.body.games 
-			}
-
-			// setting games to this component
-			this.setState({
-				loading: true,
-				displayMonth: this.toMonthName(endMonth),
-				displayYear: endYear,
-				spinner: !this.state.spinner,
-				isDisplay: true,
-				games: [...this.state.games, jsonObj],
-				count: this.state.count + response.body.games.length, // stackoverflow says it works
-			}, () => {
-			    // Going backwards one month
-			    if (endMonth === 1) {
-			    	endMonth = 12
-			    	endYear-= 1
-			    } else {
-			    	endMonth -=1
-			    }
-			    // recursive call
-			    this.api.dispatch(
-			    	this.api.getPlayerCompleteMonthlyArchives, 
-			    	this.fetchPlayerMonthly, 
-			    	[username, endYear, endMonth], {},
-			    	[username, endYear, endMonth, startYear, startMonth]
-			    )
-			})
-		})
-	}
-
+	// this rendering really needs design work!
 	render() {
 		let { isDisplay, displayMonth, displayYear, spinner } = this.state
 
@@ -155,10 +70,6 @@ export class ApiContent extends React.Component {
 	}
 
 
-
-
-
-
 	/* 1. fetchPlayerData (x)
 		return: <promise> response
 	*/
@@ -172,8 +83,86 @@ export class ApiContent extends React.Component {
 		return response
 	}
 
-	// 2. stopBtn (x) -purpose: Stops fetching, in case of recursion issues or overflow or lag
+	// 2. processFetchGames (x) - gets the necessary params before invoking fetchAndSetGames
+	processFetchGames = (startDate, endDate, player, username) => {
+
+		let dates = this.getDates(startDate, endDate, player, this.props.extractDate)
+
+		// Used to fetch games
+		this.joinedMonth = dates.joinedDate.month
+		this.joinedYear = dates.joinedDate.year
+
+		this.api.dispatch(
+			this.api.getPlayerCompleteMonthlyArchives, 
+			this.fetchAndSetGames, 
+			[username, dates.endDate.year, dates.endDate.month], {},
+			[username, dates.endDate.year, dates.endDate.month, dates.startDate.year, dates.startDate.month]
+		)
+	}
+
+	// 3. stopBtn (x) -purpose: Stops fetching, in case of recursion issues or overflow or lag
 	stopBtn = (e) => this.stop = true
+
+	// 4. fetchAndSetGames (x) - refer to https://www.npmjs.com/package/chess-web-api
+	fetchAndSetGames = (response, error, username, endYear, endMonth, startYear, startMonth) => {
+		// January is tricky, because it gets set back to December
+	    if 	(((endYear <= startYear) && (endMonth < startMonth)) || 
+	    	((endYear <= this.joinedYear) && (endMonth < this.joinedMonth)) ||
+	    	((endYear < startYear)) || (this.stop)) {
+	    	return this.setState({
+	    		count: 0,
+	    		displayMonth: null,
+	    		displayYear: null,
+	    		isDisplay: false,
+	    		loading: false,
+	    	}, () => {
+	    		this.props.handleFetchOnce(false)
+	    		console.log('API: BASE CASE', this.state)
+	    	})
+	    }
+		if (error || !response || !response.body) {
+			return this.setState({
+				count: 0,
+				displayMonth: null,
+				displayYear: null,
+				isDisplay: false,
+				loading: false,
+			}, () => { this.props.onError(true, error, null, false) })
+		}
+		console.log('API: SUCCESS: response is working, my games', response)
+
+		// Logics start here: setting games to parent component
+		this.props.setGames(response.body.games, (val) => {
+			let jsonObj = {
+				id: this.state.games.length+1,
+				month: `${endMonth}`,
+				year: `${endYear}`,
+				games: response.body.games 
+			}
+			// setting games to this component
+			let count = this.state.count + response.body.games.length
+			let month = this.toMonthName(endMonth)
+			let games = [...this.state.games, jsonObj]
+			let spinner = !this.state.spinner
+
+			this.resetState(count ,month, endYear, games, true, true, spinner, () => {
+			    // Going backwards one month
+			    if (endMonth === 1) {
+			    	endMonth = 12
+			    	endYear-= 1
+			    } else {
+			    	endMonth -=1
+			    }
+			    // recursive call
+			    this.api.dispatch(
+			    	this.api.getPlayerCompleteMonthlyArchives, 
+			    	this.fetchAndSetGames, 
+			    	[username, endYear, endMonth], {},
+			    	[username, endYear, endMonth, startYear, startMonth]
+			    )
+			})
+		})
+	}
 
 
 
@@ -211,11 +200,18 @@ export class ApiContent extends React.Component {
 		returns: 	<obj> { <obj> startDate, <obj> endDate, <obj> joinedDate }
 						each formatted like { month: <int> MM, <int> year: YYYY, <monthYear> "Month-YYYY"}
 	*/
-	getDates = (inputs, joinedDate, extractDate) => ({
+	getDates = (startDate, endDate, joinedDate, extractDate) => ({
 			joinedDate: extractDate(this.fixChessDate(joinedDate.joined)),
-			startDate: extractDate(inputs.startDate),
-			endDate: extractDate(inputs.endDate)
-	})	
+			startDate: extractDate(startDate),
+			endDate: extractDate(endDate)
+	})
+
+	// reSetstate (x) - Helper Method
+	resetState = (count, displayMonth, displayYear, games, isDisplay, loading, spinner, cb) => {
+		this.setState({ count, displayMonth, displayYear, games, isDisplay, loading, spinner}, () => {
+			cb()
+		})
+	}
 
 	// toMonthName (x) - https://bobbyhadz.com/blog/javascript-convert-month-number-to-name
 	toMonthName(monthNumber) {

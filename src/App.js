@@ -210,16 +210,6 @@ export class App extends React.Component {
 	}
 
 
-
-	setGames = (games, callback) => {
-		this.setState({
-			games: [...this.state.games, ...games.slice().reverse()]
-		}, (val) => {
-			callback(callback)
-		})
-	}
-
-
 	/* 1. OnError (x)
 		invoker:	Searchbar - Search Button
 					ApiContent - Error
@@ -295,8 +285,21 @@ export class App extends React.Component {
 
 
 
-	/* 4. onPageChange
-		invoker:	GamesWrapper
+	/*  setGames (x)
+		invoker:	ApiContent - fetch all games
+		invokee:	GamesWrapper
+		params:		<array> games
+					<func> callback
+		effects:	populates games in game wrapper, 
+	*/
+	setGames = (games, callback) => {
+		this.setState({
+			games: [...this.state.games, ...games.slice().reverse()]
+		}, (val) => {
+			if (callback)
+				callback()
+		})
+	}
 
 
 	  ////////////////////
