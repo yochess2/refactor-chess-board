@@ -1,6 +1,8 @@
 import React from 'react'
 
 import ChessWebAPI from "chess-web-api"
+import PulseLoader from "react-spinners/PulseLoader"
+import { FaStopCircle } from "react-icons/fa"
 
 import { tiger415 } from "./games/tiger415"
 import { games } from "./games/games"
@@ -12,162 +14,120 @@ export class ApiContent extends React.Component {
 			isDisplay: false,
 			displayMonth: null,
 			displayYear: null,
-			spinner1: "/",
+			loading: false,
+			spinner: true,
 			games: [],
-			testing: ''
+			count: 0,
 		}
 
 		this.api = new ChessWebAPI({ queue: true})
+		this.stop = false
 	}
 
-	componentDidMount() {
-		// console.log('>> mount', this.props, this.state)
-	}
 
-	// 
+	// dont forget to toggle isFetch, so search bar displays
 	componentDidUpdate = async (prevProps, prevState) => {
-		let { inputs, onError, isFetch, handleFetchOnce, extractDate, getLink, navigate, setGames } = this.props
+		let { inputs, isFetch, onError, extractDate, getLink, navigate, setGames } = this.props
 		let { fetchPlayerData, getJoinedDate, fixChessDate, getPlayer, getDates } = this
 		let { username, startDate, endDate } = this.props.inputs
 
-
 		if (isFetch !== prevProps.isFetch && isFetch) {
-			// let res = await fetchPlayerData(username)
-			// let player = getPlayer(res, onError)
-			let player = tiger415 //testing
+			let res = await fetchPlayerData(username)
+			let player = getPlayer(res)
+			if (!player) return onError(true, res, null, false)
 
-			if (!player) return handleFetchOnce(false)
-			navigate(getLink(username, startDate, endDate, 1))
-			let dates = getDates(inputs, player, extractDate)
-			// this.api.dispatch(
-			// 	this.api.getPlayerCompleteMonthlyArchives, 
-			// 	this.fetchPlayerMonthly, 
-			// 	[username, dates.endDate.year, dates.endDate.month], {},
-			// 	[username, dates.endDate.year, dates.endDate.month, dates.startDate.year, dates.startDate.month]
-			// )
+			//reset state
+			this.setState({
+				isDisplay: false,
+				displayMonth: null,
+				displayYear: null,
+				loading: false,
+				spinner: true,
+				games: [],
+				count: 0,
+			}, () => {
+				navigate(getLink(username, startDate, endDate, 1))
+				let dates = getDates(inputs, player, extractDate)
 
+				this.joinedMonth = dates.joinedDate.month
+				this.joinedYear = dates.joinedDate.year
 
-			 /////////////
-			/* TESTING */
-		   /////////////
-				this.setState({testing: this.state.testing+username})		
-
-			if (username.toLowerCase() === "tiger415") {	
-				this.setState({testing: this.state.testing+"O"})		
-				console.log(this.state, this.props)
-				this.setState({isDisplay: true})
-				await fetch("http://localhost:8000/allgames/1/").then(res => res.json()).then((json) => {
-					this.setState({testing: this.state.testing+"M"})
-					// console.log("9. ", json)
-					this.setState({
-						displayMonth: 9,
-						displayYear: 2022,
-						spinner: "\\",
-					}, () => {
-						// console.log('am i first?')
-						setGames(json.games, () => {
-							// console.log('1. am i logged now')
-						})
-					})
-					// return this.delay(5000)
-
-				}).then(() => {
-					console.log('or am i second?')
-					return fetch("http://localhost:8000/allgames/2/")
-				}).then((res) => res.json()).then((json) => {
-					console.log("8. ", json)
-					this.setState({
-						displayMonth: 8,
-						displayYear: 2022,
-						spinner: "/",
-					}, () => {
-						setGames(json.games, () => {
-							console.log('2. am i logged now')
-						})
-					})
-					console.log('2. or am i second?')
-					// return this.delay(1)
-				}).then(() => {
-					return fetch("http://localhost:8000/allgames/3/")
-				}).then((res) => res.json()).then((json) => {
-					console.log("7. ", json)
-					this.setState({
-						displayMonth: 7,
-						displayYear: 2022,
-						spinner: "\\",
-					}, () => {
-						setGames(json.games, () => {
-							console.log('1. am i logged now')
-						})
-					})
-					console.log('3. or am i second?')
-					// return this.delay(4000)
-				}).catch((err) => {
-					this.setState({testing: this.state.testing+err.message})
-					console.log('i made it here')
-					onError(true, "no internet, we made it here")
-					return handleFetchOnce(true)
-				})
-				console.log('done')
-				// this.setState({isDisplay: false})
-						
-
-
-			handleFetchOnce(true, "i dont get it")
-
-
-			return handleFetchOnce(false)
-			}
-			onError(false, "no such user")
-			handleFetchOnce(false)
-
-
+				this.api.dispatch(
+					this.api.getPlayerCompleteMonthlyArchives, 
+					this.fetchPlayerMonthly, 
+					[username, dates.endDate.year, dates.endDate.month], {},
+					[username, dates.endDate.year, dates.endDate.month, dates.startDate.year, dates.startDate.month]
+				)				
+			})
 		}
 	}
 
 	//refer to https://www.npmjs.com/package/chess-web-api#----dispatchmethod-callback-parameters-options-callbackparameters-priority
 	fetchPlayerMonthly = (response, error, username, endYear, endMonth, startYear, startMonth) => {
-		if (!response.body)
-			return console.log('>> response is not working', error)
+		// January is tricky, because it gets set back to December
+	    if 	(((endYear <= startYear) && (endMonth < startMonth)) || 
+	    	((endYear <= this.joinedYear) && (endMonth < this.joinedMonth)) ||
+	    	((endYear < startYear)) || (this.stop)) {
 
-		console.log('>> response is working, my games', this.state.games)
-		console.log(endYear, endMonth, startYear, startMonth)
+	    	return this.setState({
+	    		loading: false,
+	    		displayMonth: null,
+	    		displayYear: null,
+	    		isDisplay: false,
+	    		count: 0,
+	    	}, () => {
+	    		this.props.handleFetchOnce(false)
+	    		console.log('API: BASE CASE', this.state)
+	    	})
+	    }
+		if (error || !response || !response.body) {
+			return this.setState({
+				loading: false,
+				displayMonth: null,
+				displayYear: null,
+				isDisplay: false,
+				count: 0,
+			}, () => {
+				this.props.onError(true, error, null, false)
+			})
+		}
+		console.log('API: SUCCESS: response is working, my games', response)
 
-	    // if (response.body.games) {
-			// this.props.setGames(response.body.games, (val) => {
-				console.log('trigger callback')
+		// Logics start here: setting games to parent component
+		this.props.setGames(response.body.games, (val) => {
+			let jsonObj = {
+				id: this.state.games.length+1,
+				month: `${endMonth}`,
+				year: `${endYear}`,
+				games: response.body.games 
+			}
 
-				let jsonObj = {
-						id: this.state.games.length+1,
-						month: `${endMonth}`,
-						year: `${endYear}`,
-						games: response.body.games 
-				}
-
-				this.setState({ 
-					games:  [...this.state.games, jsonObj]
-
-				})
-			    if ((endYear <= startYear) && (endMonth <= startMonth)) {
-			    	return
-			    }
-
-
-
+			// setting games to this component
+			this.setState({
+				loading: true,
+				displayMonth: this.toMonthName(endMonth),
+				displayYear: endYear,
+				spinner: !this.state.spinner,
+				isDisplay: true,
+				games: [...this.state.games, jsonObj],
+				count: this.state.count + response.body.games.length, // stackoverflow says it works
+			}, () => {
+			    // Going backwards one month
 			    if (endMonth === 1) {
 			    	endMonth = 12
 			    	endYear-= 1
 			    } else {
 			    	endMonth -=1
 			    }
+			    // recursive call
 			    this.api.dispatch(
 			    	this.api.getPlayerCompleteMonthlyArchives, 
 			    	this.fetchPlayerMonthly, 
 			    	[username, endYear, endMonth], {},
 			    	[username, endYear, endMonth, startYear, startMonth]
 			    )
-			// })
-		// }
+			})
+		})
 	}
 
 	render() {
@@ -177,16 +137,18 @@ export class ApiContent extends React.Component {
 			<div>
 
 				{/*Display fetching */}
-				{/*{!this.state.isDisplay ? '' :*/}
+				{this.state.isDisplay ? 
 				<h4>
-					<span>Fetching</span>
-					<span> ..</span>
-					<span>{displayMonth}.</span>
-					<span>..{spinner}..</span>
-					<span>{displayYear}</span>
+					<span><FaStopCircle onClick={this.stopBtn} /></span>
+					<span>Fetched ({this.state.count} Games)</span>
+					<span><PulseLoader /></span>
+					<span>{this.state.displayMonth}</span>
+					<span>.</span>
+					<span>{this.state.spinner ? "\\" : "\/"}</span>
+					<span>.</span>
+					<span>{this.state.displayYear}</span>
 				</h4>
-			<p>	{this.state.testing}</p>
-				{/*}*/}
+				: ''}
 				{/*End Display */}
 			</div>
 		)
@@ -197,7 +159,7 @@ export class ApiContent extends React.Component {
 
 
 
-	/* 1. fetchPlayerData
+	/* 1. fetchPlayerData (x)
 		return: <promise> response
 	*/
 	fetchPlayerData = async player => {
@@ -210,29 +172,34 @@ export class ApiContent extends React.Component {
 		return response
 	}
 
+	// 2. stopBtn (x) -purpose: Stops fetching, in case of recursion issues or overflow or lag
+	stopBtn = (e) => this.stop = true
+
 
 
 	  ////////////////////
 	 /* Helper Methods */
 	////////////////////
 
-	// helper method to debug confusing async natures
-	delay = ms => new Promise(resolve => setTimeout(resolve, ms))
 
 	// fixChessDate (x) - Helper Method - Converts fetched date to <date> num
 	fixChessDate = (ms) => new Date(+(ms.toString() + "000"))
 
-	/* getPlayer - Helper Method
+	/* getPlayer (x) - Helper Method
 		params: 	<json> response
 		returns: 	<obj> chess.com player data
 
-		TODO:	more edge cases
+		TODO:	take a look at various situations
 	*/
-	getPlayer = (res, onError) => {
-		if (res.statusCode === 404)
-			return onError(true, "404 - User doesn't Exist")
-		if (res.statusCode !== 200)
-			return onError(true, "Unhandled Event, likely no internet")
+	getPlayer = (res) => {
+		if (res.statusCode === 404) {
+			console.log('>>>>>>', res)
+			return this.props.onError(true, res, null, false)
+		}
+		if (res.statusCode !== 200) {
+			console.log('>>>>>>', res)
+			return this.props.onError(true, res, null, false)
+		}
 		return res.body
 	}
 
@@ -249,6 +216,32 @@ export class ApiContent extends React.Component {
 			startDate: extractDate(inputs.startDate),
 			endDate: extractDate(inputs.endDate)
 	})	
+
+	// toMonthName (x) - https://bobbyhadz.com/blog/javascript-convert-month-number-to-name
+	toMonthName(monthNumber) {
+		let date = new Date()
+		date.setMonth(monthNumber -1)
+
+		return date.toLocaleString([], {
+			month: 'short',
+		})
+	}
+
+	  ////////////////////////
+	 /* Additional Methods */
+	/*  Used for Testing  */
+   ////////////////////////
+
+
+	// delay (x) - helper method to debug confusing async natures
+	delay = ms => new Promise(resolve => setTimeout(resolve, ms))
+
+	// printResult (x) - Helper Method - Used for testing purposes, pass into dispatch for test
+	printResult = (response, error, username, endYear, endMonth) => {
+		if (!response.body) return
+		if (!response.body.games) return
+		console.log(response)
+	}
 }
 
 export default ApiContent

@@ -7,7 +7,7 @@ import ChessWebAPI from "chess-web-api"
 import { withRouter } from "./utilities/withRouter"
 
 import Home from "./Home"
-import Err from "./Err"
+import ErrorMessage from "./ErrorMessage"
 import Navbar from "./bar-component/Navbar"
 import Searchbar from "./bar-component/Searchbar"
 import Sidebar from "./bar-component/Sidebar"
@@ -98,7 +98,7 @@ export class App extends React.Component {
 							purpose:	Displays error messages
 							props:		<state><obj> Error
 						*/}
-				    	<Err error={error} />
+				    	<ErrorMessage error={error} />
 						{/* End Err */}
 
 
@@ -209,29 +209,6 @@ export class App extends React.Component {
 	</>)
 	}
 
-	fetchGames = (response, error) => {
-	    if (!response.body) {
-	    	console.log('error', response, error)
-	    	return
-	    }
-	    console.log('print results: ', response)
-
-	    this.setState({ games: [...this.state.games, ...response.body.games.reverse()] }, () => {
-	    	console.log('>> Fetched', this.month, this.year, this.state.games)
-		    if (this.month === 1) {
-		    	this.month = 12
-		    	this.year-=1
-		    }
-		    if ((this.year <= this.joinedYear) && (this.month <= this.joinedMonth)) {
-		    	return
-		    }
-		    if (response.body) {
-		    	this.api.dispatch(this.api.getPlayerCompleteMonthlyArchives, this.fetchGames, [this.state.username, this.year, this.month-=1])
-		    }
-	    })
-
-	}
-
 
 
 	setGames = (games, callback) => {
@@ -251,17 +228,45 @@ export class App extends React.Component {
 		params:		<bool> value
 					<str> message
 					[optional] <function> cb
+					[optional] <bool> isFetch
 		effect:		Toggles Error Message
 		returns:	undefined
+
+		TODO: 	- maybe move to err (parent class?) Component`
+				- various edge cases of message/error objects from fetch requests
 	*/
-	onError = (value, message, cb) => {
+	onError = (value, message, cb, isFetch) => {
+		if (!isFetch) {
+			this.setState({ isFetch: false })
+		}
+
 		if (!value && !this.state.error.value && !cb) return
-		if (cb && !this.state.error.value) return cb()
-		this.setState(({error}) => ({ 
+		if (!value && !this.state.error.value && cb) return cb()
+
+		if (typeof message === "string") {
+			// various edge cases from fetch requests goes here
+		} else {
+			if (message.message) {
+				if (this.isJSON(message.message)) {
+					JSON.parse(message.message)
+					if (JSON.parse(message.message).message) {
+						message = JSON.parse(message.message).message
+					} else {
+						console.log(">>:: ", message)
+						message = "Unhandled Case 1"
+					}
+				} else {
+					console.log(">>:: ", message)
+					message = "Unhandled Case 2"
+				}
+			} else {
+				console.log(">>:: ", message)
+				message = "unhandled case 3"
+			}
+		}
+		return this.setState(({error}) => ({ 
 			error: { ...error, value, message }
-		}), () => { 
-			if (cb) cb() 
-		})
+		}), () => { if (cb) cb() })
 	}
 
 	/* 2. handleUserSearch (x)
@@ -322,7 +327,19 @@ export class App extends React.Component {
 				.replace(' ', '-')
 		}
 	}
-}
 
+	// isJSON (x) - got from stackoverflow
+	isJSON = (str) => {
+	    if( typeof( str ) !== 'string' ) { 
+	        return false;
+	    }
+	    try {
+	        JSON.parse(str);
+	        return true;
+	    } catch (e) {
+	        return false;
+	    }
+	}
+}
 
 export default withRouter(App)

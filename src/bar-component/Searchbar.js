@@ -20,7 +20,7 @@ export class Searchbar extends React.Component {
 
 	//TESTING: Clear when done, checking how many re-renders 
 	componentDidUpdate() {
-		console.log('TEST - searchbar updates')
+		// console.log('TEST - searchbar updates')
 	}
 
 	//TODO: Fix Styling
