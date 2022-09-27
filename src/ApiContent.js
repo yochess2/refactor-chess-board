@@ -28,18 +28,20 @@ export class ApiContent extends React.Component {
 		let { username, startDate, endDate } = this.props.inputs
 
 		if (isFetch !== prevProps.isFetch && isFetch) {
-			// let res = await this.fetchPlayerData(username)
-			// let player = this.getPlayer(res)
-			// if (!player) return onError(true, res, null, false)
-			// this.resetState(0, null, null, [], false, false, true, () => {
-			// 	navigate(getLink(username, startDate, endDate, 1))
-			// 	this.props.handleFetchOnce(true)
-			// 	this.processFetchGames(startDate, endDate, player, username)
-			// })
+			this.setState({isDisplay: true})
+			let res = await this.fetchPlayerData(username)
+			let player = this.getPlayer(res)
+			if (!player) {
+				this.setState({isDisplay: false})
+				return onError(true, res, null, false)
+			} 
 
-			this.props.setGames(drakesGames, () => {
-				navigate(getLink(username, startDate, endDate, 1))
-				this.props.handleFetchOnce(false)
+			this.resetState(0, null, null, [], false, false, true, () => { 	// reset API state
+				this.props.setPageChange(0, () => {
+					// navigate(getLink(username, startDate, endDate, 1))		// navigate to page 1
+					this.processFetchGames(startDate, endDate, player, username)
+				})
+
 			})
 		}
 	}
@@ -116,7 +118,7 @@ export class ApiContent extends React.Component {
 	    		isDisplay: false,
 	    		loading: false,
 	    	}, () => {
-	    		this.props.handleFetchOnce(false)
+	    		this.props.isFetching(false)
 	    		console.log('API: BASE CASE', this.state)
 	    	})
 	    }

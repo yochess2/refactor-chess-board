@@ -35,20 +35,19 @@ export class App extends React.Component {
 			},
 
 			isFetch: false,
-			pageIndex: null,
-
+			pageIndex: 0,
 			games: [],
+
+
 			chess: new Chess(),
 			gameNum: null, //for use on saving game index num,
 
 
 		}
-		// console.log(this.state.games)
-		this.chess = new Chess()
-		// this.api = new ChessWebAPI
 	}
 
 	componentDidUpdate(prevProps, prevState) {
+		console.log(this.state)
 		this.clearErrorOnPathChange(prevProps.location.pathname)
 	}
 
@@ -62,7 +61,7 @@ export class App extends React.Component {
 		let props = this.props
 		let { location, navigate } = this.props
 		let { username, startDate, endDate, games, isFetch, error, inputs, pageIndex } = this.state
-		let { handleUserSearch, onError, handleFetchOnce, extractDate, getLink, setGames } = this
+		let { handleUserSearch, onError, isFetching, extractDate, getLink, setPageChange, setGames } = this
 
 		return (<>
 		{/* Navbar (x)
@@ -136,7 +135,7 @@ export class App extends React.Component {
 		    		    	props:		<state><bool> isFetch - Only runs if set to true
 										<state><obj> inputs
 										<func> onError
-										<func> handleFetchOnce 
+										<func> isFetching 
 										<func> getLink
 										<func> navigate
 										<func> setGames
@@ -145,7 +144,9 @@ export class App extends React.Component {
 			    	    	isFetch={isFetch}
 			    	    	inputs={inputs}
 		    	    		onError={onError}
-			    	    	handleFetchOnce={handleFetchOnce} 
+			    	    	isFetching={isFetching}
+			    	    	setPageChange={setPageChange}
+
 			    	    	extractDate={extractDate}
 			    	    	getLink={getLink}
 							navigate={navigate}
@@ -167,11 +168,12 @@ export class App extends React.Component {
 									element={<GamesWrapper
 										games={games}
 										inputs={inputs}
-										pageIndex={pageIndex}
-
-
 										isFetch={isFetch}
+										pageIndex={pageIndex}
 										getLink={this.getLink}
+										setPageChange={this.setPageChange}
+
+
 										extractDate={this.extractDate}
 										{...props} />} />
 								<Route 
@@ -179,11 +181,12 @@ export class App extends React.Component {
 									element={<GamesWrapper
 										games={games}
 										inputs={inputs}
-										pageIndex={pageIndex}
-
-
 										isFetch={isFetch}
+										pageIndex={pageIndex}
 										getLink={this.getLink}
+										setPageChange={this.setPageChange}
+
+
 										extractDate={this.extractDate}
 										{...props} />} />
 								<Route 
@@ -191,11 +194,12 @@ export class App extends React.Component {
 									element={<GamesWrapper
 										games={games}
 										inputs={inputs}
-										pageIndex={pageIndex}
-
-
 										isFetch={isFetch}
+										pageIndex={pageIndex}
 										getLink={this.getLink}
+										setPageChange={this.setPageChange}
+
+
 										extractDate={this.extractDate}
 										{...props} />} />
 
@@ -280,28 +284,45 @@ export class App extends React.Component {
 		}))
 	}
 
-	/* 3. handleFetchOnce (x)
-		invoker:	Searchbar, ApiContent
+	/* 3. isFetching (x)
+		invoker:	Searchbar -> APP.handleUserSearch
+					ApiContent when done
 		invokee:	ApiContent - updateState (isFetch)
+						few more times by API
 		params:		<bool> isFetch
+
+		effects: 	searchbar sets isFetch to true which tells ApiContent to fetch.
+					perform a lot of tasks in between (may get confusing now)
+					When it's done, it is set back to false. The search bar toggles as a result.
 	*/ 
-	handleFetchOnce = (isFetch) => this.setState({ isFetch })
+	isFetching = (isFetch, cb) => {
+		this.setState({ isFetch }, () => { if (cb) cb() })
+	}
 
 
+	/* 4. setPageChange (x)
+		invoker:	ApiFetcher - on success, reset page to 0
+				 	GamesWrapper - onPageClick, save stage of page on page change
 
-	/*  setGames (x)
+	*/
+	setPageChange = (num, cb) => {
+		this.setState({ pageIndex: num}, () => {
+			if (cb) cb()
+		})
+	}
+
+	/* 5. setGames (x)
 		invoker:	ApiContent - fetch all games
 		invokee:	GamesWrapper
 		params:		<array> games
 					<func> callback
-		effects:	populates games in game wrapper, 
+		effects:	
 	*/
 	setGames = (games, callback) => {
 		this.setState({
 			games: [...this.state.games, ...games.slice().reverse()]
 		}, (val) => {
-			if (callback)
-				callback()
+			if (callback) callback()
 		})
 	}
 

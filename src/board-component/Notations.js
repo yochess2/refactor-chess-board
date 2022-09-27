@@ -5,15 +5,15 @@ class Notations extends React.Component {
 		super(props)
 		this.state = {
 			history: props.history,
-			scrolled: false,
+			// scrolled: false,
 		}
 	}
 
 	componentDidMount() {
-		console.log('    Notations - ComponentDidMount')
-		document.addEventListener("scroll", () => {
-			this.setState({ scrolled: true })
-		})
+		// console.log('    Notations - ComponentDidMount')
+		// document.addEventListener("scroll", () => {
+		// 	this.setState({ scrolled: true })
+		// })
 	}
 
 	componentDidUpdate(prevProps, prevState) {
@@ -23,15 +23,15 @@ class Notations extends React.Component {
 	}
 
 	componentWillUnmount(prevProps, prevState) {
-		console.log('    Notations - ComponentWillUnmount')
+		// console.log('    Notations - ComponentWillUnmount')
 	}
 
 	componentDidCatch(error, info) {
-		console.log('    Notations - ComponentDidCatch')
+		// console.log('    Notations - ComponentDidCatch')
 	}
 
 	render() {
-		console.log('    Notations - render')
+		// console.log('    Notations - render')
 		return (
 			<div style={{ fontSize: '24px', overflow: 'auto' }}>
 				<table>

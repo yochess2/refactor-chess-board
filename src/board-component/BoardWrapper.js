@@ -33,13 +33,13 @@ export class BoardWrapper extends React.Component {
 	}
 
 	componentDidMount() {
-		console.log("ChessWrapper - componentDidMount")
+		document.title = "YoChess - Games"
+		// console.log("ChessWrapper - componentDidMount")
 		window.addEventListener("resize", this.handleResize)
 		this.handleResize()
 	}
 
 	componentWillUnmount = () => {
-		console.log("ChessWrapper - componentWillUnmount")
 		window.removeEventListener("resize", this.handleResize)
 	}
 
