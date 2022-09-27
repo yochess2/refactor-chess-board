@@ -33,7 +33,7 @@ class Notations extends React.Component {
 	render() {
 		console.log('    Notations - render')
 		return (
-			<div style={{ fontSize: '24px', height: '520px', overflow: 'auto' }}>
+			<div style={{ fontSize: '24px', overflow: 'auto' }}>
 				<table>
 					<thead>
 						<tr>

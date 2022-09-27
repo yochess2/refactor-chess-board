@@ -1,6 +1,8 @@
 import React from "react"
 import { Chessboard } from "react-chessboard" 
 
+import Notations from "./Notations"
+
 export class BoardWrapper extends React.Component {
 	componentDidMount() {
 		document.title = "Game - YoChess"
@@ -85,7 +87,11 @@ export class BoardWrapper extends React.Component {
 
 					{/* Notations */}
 					<div className="col-sm-4 d-none d-sm-block" style={{border: "solid"}}>
-						<h1>Notations</h1>
+						<Notations 
+							history={this.state.history}
+							onMoveClick={this.handleMoveClick}
+							ply={0}
+						/>
 					</div>
 				</div>
 

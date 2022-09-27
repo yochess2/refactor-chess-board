@@ -13,10 +13,11 @@ import Navbar from "./bar-component/Navbar"
 import Searchbar from "./bar-component/Searchbar"
 import Sidebar from "./bar-component/Sidebar"
 
+import ApiContent from "./ApiContent"
 import GamesWrapper from "./game-component/GamesWrapper"
+
 import BoardWrapper from "./board-component/BoardWrapper"
 
-import ApiContent from "./ApiContent"
 
 export class App extends React.Component {
 	constructor(props) {
