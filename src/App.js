@@ -1,7 +1,6 @@
 import "./index.css"
 import React from "react"
 import { Route, Routes } from "react-router-dom"
-import { Chess } from "chess.js"
 
 import { withRouter } from "./utilities/withRouter"
 
@@ -43,15 +42,9 @@ export class App extends React.Component {
 			pageIndex: 0,
 			games: [],
 
-			// board
-			fen: 'start',
-			history: [],
-			
-			
-
-
-
-
+			// board, need to heavily redo
+			// just getting MVP out
+			chesscom: null,
 		}
 	}
 
@@ -186,9 +179,7 @@ export class App extends React.Component {
 								<Route 
 									path="board"
 									element={<BoardWrapper 
-										chess={this.state.fen}
-										fen={this.state.fen}
-										history={this.state.history}
+										chesscom={this.state.chesscom}
 										/>} />
 							</Routes>
 						</div>
@@ -314,17 +305,10 @@ export class App extends React.Component {
 	}
 
 	/* 6. getGame */
+	// getting MVP out first
 	getGame = (game) => {
-		let newGame = new Chess()
-		newGame.loadPgn(game.pgn)
-
-		let fen = newGame.fen()
-		let history = newGame.history()
-
-
 		this.setState({
-			fen,
-			history,
+			chesscom: game
 		}, () => {
 			this.props.navigate('/board')
 		})

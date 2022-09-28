@@ -1,5 +1,13 @@
 import React from "react"
 import { Chessboard } from "react-chessboard" 
+import { Chess } from "chess.js"
+
+import { 
+	FaAngleLeft,
+	FaAngleRight,
+	FaAngleDoubleLeft,
+	FaAngleDoubleRight 
+} from "react-icons/fa"
 
 import Notations from "./Notations"
 
@@ -8,9 +16,13 @@ export class BoardWrapper extends React.Component {
 		super(props)
 
 		this.state = {
+			// chesscom: this.props.chesscom, //placeholder for now
 			boardWidth: "256",
-			fen: props.fen,
-			history: props.history,
+			game: new Chess(),
+
+
+			fen: "start",
+			history: [],
 			timestamps: [],
 			black_time: "",
 			white_time: "",
@@ -27,7 +39,7 @@ export class BoardWrapper extends React.Component {
 			games: [],
 		}
 
-		console.log(props)
+		// console.log(props)
 	}
 
 	componentDidMount() {
@@ -35,6 +47,10 @@ export class BoardWrapper extends React.Component {
 		// console.log("ChessWrapper - componentDidMount")
 		window.addEventListener("resize", this.handleResize)
 		this.handleResize()
+
+		if (this.props.chesscom) {
+			this.handleGameClick(this.props.chesscom)
+		}
 	}
 
 	componentWillUnmount = () => {
@@ -43,7 +59,7 @@ export class BoardWrapper extends React.Component {
 
 	handleResize = () => {
 		let display = document.getElementsByClassName("chess-board-wrapper")[0];
-		console.log("handle resize", window.innerWidth)
+		// console.log("handle resize", window.innerWidth)
 		this.setState({ boardWidth: display.offsetWidth - 20 })
 	}
 
@@ -56,10 +72,15 @@ export class BoardWrapper extends React.Component {
 
 					{/* Black Player Info and Black Clock */}
 					<div className="col-8 col-sm-4" style={{border: "solid"}}>
-						<span>Player Info</span>
+						<h4>
+							{this.state.black.name || this.state.black.username}
+							({this.state.black.rating})
+						</h4>
 					</div>
 					<div className="col-4" style={{border: "solid"}}>
-						<span>Clock</span>
+						<h4 className={this.state.game.turn() === 'b' ? 'highlight-clock' : ''}>
+							{this.state.white_time}
+						</h4>
 					</div>
 
 					{/* Empty Space */}
@@ -75,10 +96,11 @@ export class BoardWrapper extends React.Component {
 							<Chessboard 
 								id="BasicBoard" 
 								position={this.state.fen}
-								boardWidth={this.state.boardWidth}
 								showBoardNotation={true}
+								onPieceDrop={this.handlePieceDrop}
 								animationDuration={0}
 								areArrowsAllowed={true}
+								boardWidth={this.state.boardWidth}
 							/>
 						</div>
 					</div>
@@ -88,7 +110,8 @@ export class BoardWrapper extends React.Component {
 						<Notations 
 							history={this.state.history}
 							onMoveClick={this.handleMoveClick}
-							ply={0}
+							ply={this.state.game.history && this.state.game.history().length}
+
 						/>
 					</div>
 				</div>
@@ -100,21 +123,202 @@ export class BoardWrapper extends React.Component {
 					{/*<div className="col-8">*/}
 						{/*<div className="row">*/}
 							<div className="col-8 col-sm-4" style={{border: "solid"}}>
-								<span>Player Info</span>
+								<h4>
+									{this.state.white.name || this.state.white.username}
+									({this.state.white.rating})
+								</h4>
 							</div>
 							<div className="col-4 col-sm-4" style={{border: "solid"}}>
-								<span>Clock</span>
+								<h4 className={this.state.game.turn() === 'w' ? 'highlight-clock' : ''}>
+									{this.state.white_time}
+								</h4>
 							</div>
 						{/*</div>*/}
 					{/*</div>*/}
 
 					{/* Buttons */}
-					<div className="col-sm-4" style={{border: "solid"}}>
-						<span>Buttons</span>
+					<div className="col-sm-4">
+						<div className="row">
+							<div className="col-sm-3" style={{ border: 'solid'}}>
+								<FaAngleDoubleLeft 
+									className="hand-icon" 
+									size="2em"
+									onClick={this.handleDoubleLeftClick}
+								/>
+							</div>
+							<div className="col-sm-3" style={{ border: 'solid'}}>
+								<FaAngleLeft 
+									className="hand-icon" 
+									size="2em"
+									onClick={this.handleLeftClick}
+								/>
+							</div>
+							<div className="col-sm-3" style={{ border: 'solid'}}>
+								<FaAngleRight 
+									className="hand-icon" 
+									size="2em"
+									onClick={this.handleRightClick}
+								/>
+							</div>
+							<div className="col-sm-3" style={{ border: 'solid'}}>
+								<FaAngleDoubleRight 
+									className="hand-icon" 
+									size="2em"
+									onClick={this.handleDoubleRightClick}
+								/>
+							</div>
+						</div>
 					</div>
 				</div>
 			</>
 		)
+	}
+
+
+	//When user drops a piece, the move gets input into the chess instance
+	//  if the chess instance says the move is illegal then nothing happens
+	//  else the chess instance gets updated and fen's state changes 
+	//Returns: a value of true or false as required by the chessboard instance
+	handlePieceDrop = (sourceSquare, targetSquare, piece) => {		
+		let moved = this.state.game.move({
+			from: sourceSquare, 
+			to: targetSquare
+		})
+
+		let currentHistory = this.state.game.history()
+		let notationHistory = this.state.history
+		let index = currentHistory.length-1
+
+		if (!moved) {
+			return false
+		}
+
+		let history
+		if (currentHistory.length >= notationHistory.length) {
+			history = this.state.game.history()
+		} else {
+			if (currentHistory[index] === notationHistory[index]) {
+				history = this.state.history
+			} else {
+				history = this.state.game.history()
+			}
+		}
+		this.setState({
+			fen: this.state.game.fen(),
+			history: history,
+		})
+		return true
+	}
+
+	//Load game, set timer
+	//Odd on length is white, even on index is black
+	//Subtract 1 to get other side, just guess and check, don't think too hard!
+	//edge case are abortions, figure out logic on that later!
+	handleGameClick = (game) => {
+		console.log(game)
+		let newGame = new Chess()
+		newGame.loadPgn(game.pgn)
+		let comments = newGame.getComments()
+		let totalPly = newGame.getComments().length
+
+		// console.log(comments[totalPly-2].comment)
+		this.setState({ 
+			game: newGame,
+			fen: newGame.fen(),
+			history: newGame.history(),
+			white: game.white,
+			black: game.black,
+			timestamps: comments.map((obj) => obj.comment),
+			white_time: newGame.turn() === "w" ? comments[totalPly-2].comment : comments[totalPly-1].comment,
+			black_time: newGame.turn() === "w" ? comments[totalPly-1].comment : comments[totalPly-2].comment,
+		})
+	}
+
+	//done
+	//Method is invoked from Notations.onMoveClick()
+	//When invoked, it resets the game and board to that point in time,
+	//Notation is not affected
+	//Returns: Nothing
+	handleMoveClick = (moveNum) => {
+		this.state.game.reset()
+		for (let index = 0; index <= moveNum; index++) {
+			this.handleRightClick()
+		}
+
+	}
+
+	//Done, just reset fen and timers, nothing else!
+	handleDoubleLeftClick = () => {
+		this.state.game.reset()
+		this.setState({ 
+			fen: this.state.game.fen(),
+			white_time: this.state.timestamps[0],
+			black_time: this.state.timestamps[0],
+		})
+	}
+
+	//done, just invoke handlerightclick
+	handleDoubleRightClick = () => {
+		let length = this.state.game.history().length
+		for (let index = length; index < this.state.timestamps.length; index++) {
+			this.handleRightClick()
+		}
+	}
+
+	//done, hard edge cases on 2 and 1
+	handleLeftClick = () => {
+		this.state.game.undo()
+		let comments = this.state.game.getComments()
+		let totalPly = 0
+
+		if (comments) {
+			totalPly = this.state.game.getComments().length
+		} 
+
+		if (totalPly === 1) {
+			this.setState({ 
+				fen: this.state.game.fen(), 
+				white_time: comments[0].comment,
+				black_time: comments[0].comment,
+			})
+		} else if (totalPly === 0) {
+			this.setState({ 
+				fen: this.state.game.fen(),
+			})
+		} else 
+		this.setState({ 
+			fen: this.state.game.fen(), 
+			white_time: this.state.game.turn() === "w" ? comments[totalPly-2].comment : comments[totalPly-1].comment,
+			black_time: this.state.game.turn() === "w" ? comments[totalPly-1].comment : comments[totalPly-2].comment,
+		})
+	}
+
+	//Done, edge cases are beginning and end
+	handleRightClick = () => {
+		let index = this.state.game.history().length
+		let move = this.state.history[index]
+		console.log('move needs more efficiency: ', move)
+		this.state.game.move(move)
+
+		if (index === 0) {
+			this.setState({ 
+				fen: this.state.game.fen(), 
+				white_time: this.state.timestamps[index],
+				black_time: this.state.timestamps[index],
+			})
+		} else if (index >= this.state.timestamps.length) {
+			this.setState({
+				fen: this.state.game.fen(),
+			})
+		}else {
+			this.setState({ 
+				fen: this.state.game.fen(),
+				white_time: this.state.game.turn() === "w" ? this.state.timestamps[index-1] : this.state.timestamps[index],
+				black_time: this.state.game.turn() === "w" ? this.state.timestamps[index] : this.state.timestamps[index-1],
+			})
+
+		}
+
 	}
 }
 

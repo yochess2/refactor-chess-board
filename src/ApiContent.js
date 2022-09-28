@@ -4,8 +4,8 @@ import ChessWebAPI from "chess-web-api"
 import PulseLoader from "react-spinners/PulseLoader"
 import { FaStopCircle } from "react-icons/fa"
 
-import { games } from "./games/samples"
-import { tiger415 } from "./games/tiger415profile"
+// import { games } from "./games/samples"
+// import { tiger415 } from "./games/tiger415profile"
 
 export class ApiContent extends React.Component {
 	constructor(props) {
@@ -32,19 +32,19 @@ export class ApiContent extends React.Component {
 
 		// if search is invoked, go fetch player and the player's games
 		if (isFetch !== prevProps.isFetch && isFetch) {
-			// let res = await this.fetchPlayerData(username)
-			// let player = this.getPlayer(res)
-			// if (!player) { return this.props.onError(true, res, null, false) } 
-			let player = tiger415
+			let res = await this.fetchPlayerData(username)
+			let player = this.getPlayer(res)
+			if (!player) { return this.props.onError(true, res, null, false) } 
+			// let player = tiger415
 
 			// if player is found, reset API and then go look for games
 			this.setApi(0, null, null, [], false, false, () => { 	// reset API state
-				// this.fetchAndProcessGames(startDate, endDate, player, username)
-				this.setState({loading: true, games: games}, () => {
-					this.props.setGames(games, () => {
-						this.props.isFetching(false)							
-					})
-				})
+				this.fetchAndProcessGames(startDate, endDate, player, username)
+				// this.setState({loading: true, games: games}, () => {
+					// this.props.setGames(games, () => {
+						// this.props.isFetching(false)							
+					// })
+				// })
 			})
 		}
 
@@ -72,7 +72,9 @@ export class ApiContent extends React.Component {
 				<div className="row">
 					<div className="col-6">
 						<h6> 
+							{loading && <>
 							<FaStopCircle type="button" onClick={this.stopBtn} />
+							
 							<span> .</span>
 							<span>{spinner ? "/" : "\\"}</span>
 							<span>.</span>
@@ -80,10 +82,13 @@ export class ApiContent extends React.Component {
 							<span>.</span>
 							<span>{spinner ? "/" : "\\"}</span>
 							<span>.</span>
+							</>}
 						</h6>
 					</div>
 					<div className="col-6">
-						<h6>{displayMonth} {displayYear}</h6>
+						{loading &&
+						<PulseLoader />
+						}
 					</div>
 					<div className="col-6">					
 						<h6>
@@ -94,7 +99,7 @@ export class ApiContent extends React.Component {
 						</h6>
 					</div>
 					<div className="col-6">					
-						<PulseLoader />
+						<h6>{displayMonth} {displayYear}</h6>
 					</div>
 				</div>
 
