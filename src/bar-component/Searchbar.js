@@ -12,7 +12,7 @@ export class Searchbar extends React.Component {
 			displayStartDate: null,
 			displayEndDate: null,
 			formStartDate: null,
-			formEndDate: null
+			formEndDate: null,
 		}
 		this.startDateRef = React.createRef()
 		this.endDateRef = React.createRef()
@@ -26,7 +26,7 @@ export class Searchbar extends React.Component {
 	//TODO: Fix Styling
 	render() { 
 		let { formatMonth, onStartMonthClick, onEndMonthClick, handleUserSearch, onUserInput } = this
-		let { displayStartDate, displayEndDate, formStartDate, formEndDate, username } = this.state
+		let { displayStartDate, displayEndDate, formStartDate, formEndDate, username, isDisabled } = this.state
 		return (
 	    	<div className="row mt-2">
 
@@ -46,6 +46,7 @@ export class Searchbar extends React.Component {
 							ref={this.startDateRef}
 							className="btn btn-secondary dropdown-toggle" 
 							type="button btn-outline" 
+							disabled={this.props.isFetch}
 							data-bs-toggle="dropdown" 
 							aria-expanded="false">
 							<span>
@@ -66,6 +67,7 @@ export class Searchbar extends React.Component {
 							ref={this.endDateRef}
 							className="btn btn-secondary dropdown-toggle" 
 							type="button" 
+							disabled={this.props.isFetch}
 							data-bs-toggle="dropdown" 
 							aria-expanded="false">
 							<span>
@@ -96,6 +98,7 @@ export class Searchbar extends React.Component {
 							type="search"
 							placeholder="Search Username"
 							className="form-control"
+							disabled={this.props.isFetch}
 							value={username}
 							onChange={onUserInput} 
 							aria-label="Search Username"/>
@@ -105,6 +108,7 @@ export class Searchbar extends React.Component {
 						{/* Search Button */}
 						<button
 							id="usersearch01" 
+							disabled={this.props.isFetch}
 							className="btn btn-primary btn-outline" 
 							onClick={handleUserSearch}>
 							Search

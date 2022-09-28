@@ -4,7 +4,7 @@ import ChessWebAPI from "chess-web-api"
 import PulseLoader from "react-spinners/PulseLoader"
 import { FaStopCircle } from "react-icons/fa"
 
-import { drakesGames } from "./games/samples"
+// import { drakesGames } from "./games/samples"
 
 export class ApiContent extends React.Component {
 	constructor(props) {
@@ -14,7 +14,7 @@ export class ApiContent extends React.Component {
 			displayMonth: null,
 			displayYear: null,
 			games: [],
-			isDisplay: false,
+			// isDisplay: false,
 			loading: false,
 			spinner: true,
 		}
@@ -22,50 +22,77 @@ export class ApiContent extends React.Component {
 		this.stop = false
 	}
 
-	// dont forget to toggle isFetch, so search bar displays
+	// dont forget to toggle back isFetch, so search bar displays
 	componentDidUpdate = async (prevProps, prevState) => {
-		let { isFetch, onError, getLink, navigate } = this.props
+		let { isFetch, onError, getLink, navigate, location } = this.props
 		let { username, startDate, endDate } = this.props.inputs
+		let { loading } = this.state
 
+
+		// if search is invoked, go fetch player and the player's games
 		if (isFetch !== prevProps.isFetch && isFetch) {
-			this.setState({isDisplay: true})
 			let res = await this.fetchPlayerData(username)
 			let player = this.getPlayer(res)
-			if (!player) {
-				this.setState({isDisplay: false})
-				return onError(true, res, null, false)
-			} 
+			if (!player) { return onError(true, res, null, false) } 
 
-			this.resetState(0, null, null, [], false, false, true, () => { 	// reset API state
-				this.props.setPageChange(0, () => {
-					// navigate(getLink(username, startDate, endDate, 1))		// navigate to page 1
-					this.processFetchGames(startDate, endDate, player, username)
-				})
-
+			// if player is found, reset API and then go look for games
+			this.setApi(0, null, null, [], false, false, () => { 	// reset API state
+				this.fetchAndProcessGames(startDate, endDate, player, username)
 			})
+		}
+
+		// if game is found then loading is set to true, navigate to game link
+		if (loading !== prevState.loading && loading) {
+			this.props.flipPage(0, () => {
+				if (location.pathname.slice(1,6) !== "games")
+					navigate(getLink(username, startDate, endDate, 1))		// navigate to page 1
+			})
+		}
+
+		// after clicking stop and setting to true, this.stop gets toggled right back to false
+		if (!loading && this.stop === true) {
+			this.stop = false
 		}
 	}
 
 	// this rendering really needs design work!
 	render() {
-		let { isDisplay, displayMonth, displayYear, spinner } = this.state
+		let { displayMonth, displayYear, spinner, count, loading } = this.state
 
 		return (
-			<div>
-
+			<div className="mt-md-5 mt-2 text-start">
 				{/*Display fetching */}
-				{this.state.isDisplay ? 
-				<h4>
-					<span><FaStopCircle onClick={this.stopBtn} /></span>
-					<span>Fetched ({this.state.count} Games)</span>
-					<span><PulseLoader /></span>
-					<span>{this.state.displayMonth}</span>
-					<span>.</span>
-					<span>{this.state.spinner ? "\\" : "\/"}</span>
-					<span>.</span>
-					<span>{this.state.displayYear}</span>
-				</h4>
-				: ''}
+				<div className="row">
+					<div className="col-6">
+						<h6> 
+							<FaStopCircle type="button" onClick={this.stopBtn} />
+							<span> .</span>
+							<span>{spinner ? "/" : "\\"}</span>
+							<span>.</span>
+							<span>{spinner ? "\\" : "/"}</span>
+							<span>.</span>
+							<span>{spinner ? "/" : "\\"}</span>
+							<span>.</span>
+						</h6>
+					</div>
+					<div className="col-6">
+						<h6>{displayMonth} {displayYear}</h6>
+					</div>
+					<div className="col-6">					
+						<h6>
+							{loading ? 
+							<span>Fetching </span> 	:
+							<span>Fetched </span>	}
+							({count} Games)
+						</h6>
+					</div>
+					<div className="col-6">					
+						<PulseLoader />
+					</div>
+				</div>
+
+
+
 				{/*End Display */}
 			</div>
 		)
@@ -86,7 +113,7 @@ export class ApiContent extends React.Component {
 	}
 
 	// 2. processFetchGames (x) - gets the necessary params before invoking fetchAndSetGames
-	processFetchGames = (startDate, endDate, player, username) => {
+	fetchAndProcessGames = (startDate, endDate, player, username) => {
 
 		let dates = this.getDates(startDate, endDate, player, this.props.extractDate)
 
@@ -103,7 +130,11 @@ export class ApiContent extends React.Component {
 	}
 
 	// 3. stopBtn (x) -purpose: Stops fetching, in case of recursion issues or overflow or lag
-	stopBtn = (e) => this.stop = true
+	stopBtn = async (e) => 
+	{
+		this.stop = true
+		console.log(this.stop)
+	}
 
 	// 4. fetchAndSetGames (x) - refer to https://www.npmjs.com/package/chess-web-api
 	fetchAndSetGames = (response, error, username, endYear, endMonth, startYear, startMonth) => {
@@ -112,10 +143,6 @@ export class ApiContent extends React.Component {
 	    	((endYear <= this.joinedYear) && (endMonth < this.joinedMonth)) ||
 	    	((endYear < startYear)) || (this.stop)) {
 	    	return this.setState({
-	    		count: 0,
-	    		displayMonth: null,
-	    		displayYear: null,
-	    		isDisplay: false,
 	    		loading: false,
 	    	}, () => {
 	    		this.props.isFetching(false)
@@ -124,17 +151,11 @@ export class ApiContent extends React.Component {
 	    }
 		if (error || !response || !response.body) {
 			return this.setState({
-				count: 0,
-				displayMonth: null,
-				displayYear: null,
-				isDisplay: false,
 				loading: false,
 			}, () => { this.props.onError(true, error, null, false) })
 		}
-		console.log('API: SUCCESS: response is working, my games', response)
-
 		// Logics start here: setting games to parent component
-		this.props.setGames(response.body.games, (val) => {
+		this.props.setGames(response.body.games, (gamesLength) => {
 			let jsonObj = {
 				id: this.state.games.length+1,
 				month: `${endMonth}`,
@@ -145,9 +166,9 @@ export class ApiContent extends React.Component {
 			let count = this.state.count + response.body.games.length
 			let month = this.toMonthName(endMonth)
 			let games = [...this.state.games, jsonObj]
+			let loading = gamesLength > 0
 			let spinner = !this.state.spinner
-
-			this.resetState(count ,month, endYear, games, true, true, spinner, () => {
+			this.setApi(count ,month, endYear, games, loading, spinner, () => {
 			    // Going backwards one month
 			    if (endMonth === 1) {
 			    	endMonth = 12
@@ -208,9 +229,9 @@ export class ApiContent extends React.Component {
 			endDate: extractDate(endDate)
 	})
 
-	// reSetstate (x) - Helper Method
-	resetState = (count, displayMonth, displayYear, games, isDisplay, loading, spinner, cb) => {
-		this.setState({ count, displayMonth, displayYear, games, isDisplay, loading, spinner}, () => {
+	// setApi (x) - Helper Method
+	setApi = (count, displayMonth, displayYear, games, loading, spinner, cb) => {
+		this.setState({ count, displayMonth, displayYear, games, loading, spinner}, () => {
 			cb()
 		})
 	}

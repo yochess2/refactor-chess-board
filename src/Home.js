@@ -3,8 +3,8 @@ import React from "react"
 export class Home extends React.Component {
 	render() {
 		return (
-				<div>
-					<h4>Welcome to Tiger415's Chess Game Fetcher</h4>
+				<div className="text-center">
+					<h4>Welcome</h4>
 				</div>
 		)
 	}

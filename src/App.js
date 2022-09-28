@@ -35,6 +35,7 @@ export class App extends React.Component {
 			},
 
 			isFetch: false,
+
 			pageIndex: 0,
 			games: [],
 
@@ -47,7 +48,7 @@ export class App extends React.Component {
 	}
 
 	componentDidUpdate(prevProps, prevState) {
-		console.log(this.state)
+		// console.log(this.state)
 		this.clearErrorOnPathChange(prevProps.location.pathname)
 	}
 
@@ -61,7 +62,7 @@ export class App extends React.Component {
 		let props = this.props
 		let { location, navigate } = this.props
 		let { username, startDate, endDate, games, isFetch, error, inputs, pageIndex } = this.state
-		let { handleUserSearch, onError, isFetching, extractDate, getLink, setPageChange, setGames } = this
+		let { handleUserSearch, onError, isFetching, extractDate, getLink, flipPage, setGames } = this
 
 		return (<>
 		{/* Navbar (x)
@@ -90,19 +91,45 @@ export class App extends React.Component {
 					*/}
 					<div className="col-md-3">
 						<Sidebar location={location} />
-					</div>
 					{/* End Sidebar */}
+
+	    		    {/* API Content (  ) basically done, just using mock data for now
+
+	    		    	purpose:	To fetch from chess.com API
+	    		    	props:		<state><bool> isFetch - Only runs if set to true
+									<state><obj> inputs
+									<func> onError
+									<func> isFetching 
+									<func> getLink
+									<func> navigate
+									<func> setGames
+	    		    */}
+	    	    	<ApiContent 
+		    	    	isFetch={isFetch}
+		    	    	inputs={inputs}
+	    	    		onError={onError}
+		    	    	isFetching={isFetching}
+		    	    	flipPage={flipPage}
+
+		    	    	extractDate={extractDate}
+		    	    	getLink={getLink}
+						navigate={navigate}
+		    	    	setGames={setGames} 
+		    	    	location={location} />
+	    		    {/* End API Content */}
+						
+					</div>
 
 
 					<div className="col-md-9">
 
 
-						{/* Err (x)
+						{/* ErrorMessage (x)
 							purpose:	Displays error messages
 							props:		<state><obj> Error
 						*/}
 				    	<ErrorMessage error={error} />
-						{/* End Err */}
+						{/* End ErrorMessage */}
 
 
 						{/* Searchbar (x)
@@ -120,38 +147,13 @@ export class App extends React.Component {
 								1. search history (localstorage)
 								2. search suggestion (fetch or localstorage)
 						 */}
-						{!isFetch &&
 				    	<Searchbar 
 				    		handleUserSearch={handleUserSearch} 
 				    		onError={onError} 
-				    		inputs={inputs} 
+				    		inputs={inputs}
+				    		isFetch={isFetch}
 				    	/>
-					    }{/* End Searchbar */}
-
-
-		    		    {/* API Content (  ) basically done, just using mock data for now
-
-		    		    	purpose:	To fetch from chess.com API
-		    		    	props:		<state><bool> isFetch - Only runs if set to true
-										<state><obj> inputs
-										<func> onError
-										<func> isFetching 
-										<func> getLink
-										<func> navigate
-										<func> setGames
-		    		    */}
-		    	    	<ApiContent 
-			    	    	isFetch={isFetch}
-			    	    	inputs={inputs}
-		    	    		onError={onError}
-			    	    	isFetching={isFetching}
-			    	    	setPageChange={setPageChange}
-
-			    	    	extractDate={extractDate}
-			    	    	getLink={getLink}
-							navigate={navigate}
-			    	    	setGames={setGames} />
-		    		    {/* End API Content */}
+					    {/* End Searchbar */}
 
 
 					    {/* Main Content */}
@@ -171,7 +173,7 @@ export class App extends React.Component {
 										isFetch={isFetch}
 										pageIndex={pageIndex}
 										getLink={this.getLink}
-										setPageChange={this.setPageChange}
+										flipPage={this.flipPage}
 
 
 										extractDate={this.extractDate}
@@ -184,7 +186,7 @@ export class App extends React.Component {
 										isFetch={isFetch}
 										pageIndex={pageIndex}
 										getLink={this.getLink}
-										setPageChange={this.setPageChange}
+										flipPage={this.flipPage}
 
 
 										extractDate={this.extractDate}
@@ -197,7 +199,7 @@ export class App extends React.Component {
 										isFetch={isFetch}
 										pageIndex={pageIndex}
 										getLink={this.getLink}
-										setPageChange={this.setPageChange}
+										flipPage={this.flipPage}
 
 
 										extractDate={this.extractDate}
@@ -255,7 +257,7 @@ export class App extends React.Component {
 					}
 				} else {
 					console.log(">>:: ", message)
-					message = "Unhandled Case 2"
+					message = "Unhandled Case 2, likely no internet"
 				}
 			} else {
 				console.log(">>:: ", message)
@@ -299,13 +301,13 @@ export class App extends React.Component {
 		this.setState({ isFetch }, () => { if (cb) cb() })
 	}
 
-
-	/* 4. setPageChange (x)
+	/* 4. flipPage (x)
 		invoker:	ApiFetcher - on success, reset page to 0
 				 	GamesWrapper - onPageClick, save stage of page on page change
+		callback:	
 
 	*/
-	setPageChange = (num, cb) => {
+	flipPage = (num, cb) => {
 		this.setState({ pageIndex: num}, () => {
 			if (cb) cb()
 		})
@@ -316,13 +318,16 @@ export class App extends React.Component {
 		invokee:	GamesWrapper
 		params:		<array> games
 					<func> callback
-		effects:	
+		
+		effects:	callback passes back gamesLength to Api.
+						If game length is greater than 0, trigger loading (fetchAndSetGames)
+						Once loading is triggered, reset state of API and goto page 1 of games component
 	*/
 	setGames = (games, callback) => {
 		this.setState({
 			games: [...this.state.games, ...games.slice().reverse()]
 		}, (val) => {
-			if (callback) callback()
+			if (callback) callback(this.state.games.length)
 		})
 	}
 

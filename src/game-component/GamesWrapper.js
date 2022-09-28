@@ -1,11 +1,7 @@
 import React from "react"
-import ChessWebAPI from "chess-web-api"
 import ReactPaginate from "react-paginate"
-import Calendar from "react-calendar"
 
 import Games from "./Games"
-import Game from "./Game"
-
 
 // TODO: Take some time to slowly document this, tired now
 // Hacked around until numbers worked. Took a lot of guess and checking
@@ -20,11 +16,13 @@ export class GamesWrapper extends React.Component {
 
 	componentDidMount() {
 		document.title = "YoChess - Games"
+		// console.log('>>i am loading')
 		let pages = this.getPages(this.props.games.length, this.state.perPage)
 		this.setState({ pages })
 	}
 
 	componentDidUpdate(prevProps, prevState) {
+		// console.log('i am also loading')
 		if (this.props.games.length !== prevProps.games.length) {
 			let pages = this.getPages(this.props.games.length, this.state.perPage)
 			this.setState({ pages })
@@ -32,6 +30,7 @@ export class GamesWrapper extends React.Component {
 	}
 
 	render() {
+		console.log(this.props)
 		return (<>
 			{!this.props.games || this.props.games.length <= 0 ? 
 
@@ -47,7 +46,7 @@ export class GamesWrapper extends React.Component {
 						perPage={this.state.perPage} />				
 					<ReactPaginate
 						initialPage={this.props.pageIndex}
-						onPageChange={this.setPageChange}
+						onPageChange={this.flipPage}
 						pageCount={this.state.pages}
 						renderOnZeroPageCount={null}
 						nextLabel=" >"
@@ -80,11 +79,11 @@ export class GamesWrapper extends React.Component {
 		return paginatedGames
 	}
 
-	setPageChange = (event) => {
+	flipPage = (event) => {
 		let { inputs, navigate, getLink } = this.props
 		let { username, startDate, endDate } = inputs
 		let pageIndex = event.selected
-		this.props.setPageChange(pageIndex, () => {
+		this.props.flipPage(pageIndex, () => {
 			navigate(getLink(username, startDate, endDate, pageIndex+1))
 
 		})
