@@ -60,9 +60,16 @@ export class Game extends React.Component {
 
 	//TODO: figure out what inputs are
 	getTimeControl = (s) => {
+		console.log("time control is:", s)
 		let timer
-		if (s === "180") {
+		if (s === "60") {
+			timer = "1 min"
+		} else if (s === "180") {
 			timer = "3 min"
+		} else if (s === "300") {
+			timer = "5 min"
+		} else if (s === "600") {
+			timer = "10 min"
 		}
 		return timer
 	}

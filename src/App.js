@@ -49,7 +49,6 @@ export class App extends React.Component {
 	}
 
 	componentDidUpdate(prevProps, prevState) {
-		// console.log(this.state)
 		this.clearErrorOnPathChange(prevProps.location.pathname)
 	}
 

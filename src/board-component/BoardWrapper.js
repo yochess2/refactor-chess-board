@@ -38,13 +38,10 @@ export class BoardWrapper extends React.Component {
 			},
 			games: [],
 		}
-
-		// console.log(props)
 	}
 
 	componentDidMount() {
 		document.title = "YoChess - Board"
-		// console.log("ChessWrapper - componentDidMount")
 		window.addEventListener("resize", this.handleResize)
 		this.handleResize()
 
@@ -59,7 +56,6 @@ export class BoardWrapper extends React.Component {
 
 	handleResize = () => {
 		let display = document.getElementsByClassName("chess-board-wrapper")[0];
-		// console.log("handle resize", window.innerWidth)
 		this.setState({ boardWidth: display.offsetWidth - 20 })
 	}
 
@@ -219,13 +215,22 @@ export class BoardWrapper extends React.Component {
 	//Subtract 1 to get other side, just guess and check, don't think too hard!
 	//edge case are abortions, figure out logic on that later!
 	handleGameClick = (game) => {
-		console.log(game)
+		console.log("game loaded: ", game)
 		let newGame = new Chess()
 		newGame.loadPgn(game.pgn)
+		console.log(game)
+
 		let comments = newGame.getComments()
 		let totalPly = newGame.getComments().length
 
-		// console.log(comments[totalPly-2].comment)
+		if (comments.length === 0) {
+			comments = Array.from(Array(10).keys()).map(x => {
+				return {comment: 'NA'}
+			})
+			totalPly = comments.length
+
+		}
+
 		this.setState({ 
 			game: newGame,
 			fen: newGame.fen(),
@@ -301,7 +306,6 @@ export class BoardWrapper extends React.Component {
 	handleRightClick = () => {
 		let index = this.state.game.history().length
 		let move = this.state.history[index]
-		console.log('move needs more efficiency: ', move)
 		this.state.game.move(move)
 
 		if (index === 0) {

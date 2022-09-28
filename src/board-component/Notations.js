@@ -8,28 +8,6 @@ class Notations extends React.Component {
 			// scrolled: false,
 		}
 	}
-
-	componentDidMount() {
-		// console.log('    Notations - ComponentDidMount')
-		// document.addEventListener("scroll", () => {
-		// 	this.setState({ scrolled: true })
-		// })
-	}
-
-	componentDidUpdate(prevProps, prevState) {
-		// console.log('    Notations - ComponentDidUpdate', prevProps, this.props)
-		// console.log('    Notations - ComponentDidUpdate')
-		// console.log(this.props)
-	}
-
-	componentWillUnmount(prevProps, prevState) {
-		// console.log('    Notations - ComponentWillUnmount')
-	}
-
-	componentDidCatch(error, info) {
-		// console.log('    Notations - ComponentDidCatch')
-	}
-
 	render() {
 		// console.log('    Notations - render')
 		return (
@@ -79,9 +57,6 @@ class Notations extends React.Component {
 
 	//Helper method for rendering the moves
 	formatHistory = (history) => {
-		// if (history.length === 0) {
-		// 	return
-		// }
 		let formattedHistory = []
 		let move;
 		history.forEach((ply, index) => {
