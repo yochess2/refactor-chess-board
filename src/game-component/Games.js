@@ -3,10 +3,6 @@ import React from 'react'
 import Game from "./Game"
 
 export class Games extends React.Component {
-	constructor(props) {
-		super(props)
-	}
-
 	render() {
 		return (
 			<table className="table table-hover table-striped">
@@ -29,6 +25,7 @@ export class Games extends React.Component {
 						index={index}
 						pageIndex={this.props.pageIndex}
 						perPage={this.props.perPage}
+						getGame={this.props.getGame}
 					/>
 				)}
 				</tbody>
@@ -45,7 +42,10 @@ export class Games extends React.Component {
 	}
 
 	formatCaption = (pageIndex, perPage, paginatedGamesLength, gamesLength) => {
-		return 	`Displaying ${pageIndex*perPage+1} to ${paginatedGamesLength+pageIndex*perPage} of ${gamesLength} games`
+		if (gamesLength === 0) return null
+		let startNum = pageIndex*perPage+1
+		let endNum = paginatedGamesLength+pageIndex*perPage
+		return 	`Displaying ${startNum} to ${endNum} of ${gamesLength} games`
 	}
 }
 

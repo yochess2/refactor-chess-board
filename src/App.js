@@ -58,10 +58,9 @@ export class App extends React.Component {
 	}
 
 	render() {
-		let props = this.props
 		let { location, navigate } = this.props
 		let { games, isFetch, error, inputs, pageIndex } = this.state
-		let { handleUserSearch, onError, isFetching, extractDate, getLink, flipPage, setGames } = this
+		let { handleUserSearch, onError, isFetching, extractDate, getLink, flipPage, setGames, getGame } = this
 
 		return (<>
 		{/* Navbar (x)
@@ -171,39 +170,10 @@ export class App extends React.Component {
 										inputs={inputs}
 										isFetch={isFetch}
 										pageIndex={pageIndex}
-										getLink={this.getLink}
-										flipPage={this.flipPage}
-
-
-										extractDate={this.extractDate}
-										{...props} />} />
-								<Route 
-									path="games/:username/"
-									element={<GamesWrapper
-										games={games}
-										inputs={inputs}
-										isFetch={isFetch}
-										pageIndex={pageIndex}
-										getLink={this.getLink}
-										flipPage={this.flipPage}
-
-
-										extractDate={this.extractDate}
-										{...props} />} />
-								<Route 
-									path="games/:username/:fromDate/:toDate/:id"
-									element={<GamesWrapper
-										games={games}
-										inputs={inputs}
-										isFetch={isFetch}
-										pageIndex={pageIndex}
-										getLink={this.getLink}
-										flipPage={this.flipPage}
-
-
-										extractDate={this.extractDate}
-										{...props} />} />
-
+										getLink={getLink}
+										flipPage={flipPage}
+										extractDate={extractDate} 
+										getGame={getGame} />} />
 								<Route 
 									path="board"
 									element={<BoardWrapper chess={this.state.chess}/>} />
@@ -323,7 +293,6 @@ export class App extends React.Component {
 						Once loading is triggered, reset state of API and goto page 1 of games component
 	*/
 	setGames = (games, callback) => {
-		console.log('2', games)
 		this.setState({
 			games: [...this.state.games, ...games.slice().reverse()]
 		}, (val) => {
@@ -331,6 +300,10 @@ export class App extends React.Component {
 		})
 	}
 
+	/* 6. getGame */
+	getGame = (game) => {
+		console.log(game)
+	}
 
 	  ////////////////////
 	 /* Helper Methods */
@@ -339,10 +312,13 @@ export class App extends React.Component {
 	/* getLink (x) - Helper Method
 		invoker: 	ApiContent - componentDidMount
 		returns:	link format
+
+		TODO: I am just gonna forgo params, this is not a good way of using these functions
 	*/ 
 	getLink = (username, startDate, endDate, pageNum) => {
-		let [from, to] = [this.extractDate(startDate).monthYear, this.extractDate(endDate).monthYear]
-		return `/games/${username}/${from}/${to}/${pageNum}`
+		// let [from, to] = [this.extractDate(startDate).monthYear, this.extractDate(endDate).monthYear]
+		// return `/games/${username}/${from}/${to}/${pageNum}`
+		return "/games"
 	}
 
 	/*

@@ -1,13 +1,12 @@
 import React from 'react'
 
 export class Game extends React.Component {
-	constructor(props) {
-		super(props)
-	}
-
 	render() {
 		return (
-			<tr className="hand-icon game-detail">
+			<tr 
+				className="hand-icon game-detail"
+				onClick={(event) => { this.onGameClick(event, this.props.index) }}
+			>
 				<td className="align-middle">
 					<div>{this.getGameNum(this.props.index, this.props.pageIndex, this.props.perPage)}</div>
 				</td>
@@ -31,6 +30,13 @@ export class Game extends React.Component {
 				</td>
 			</tr>
 		)
+	}
+
+	onGameClick = (event, index) => {
+		console.log(this.props.game)
+		let game = this.props.game[index]
+		this.props.getGame(game, index)
+		// console.log(game)
 	}
 
 	getGameNum = (index, pageIndex, perPage) => {

@@ -1,13 +1,7 @@
 import React, { Component } from "react"
 import { NavLink } from "react-router-dom"
 
-import Searchbar from "./Searchbar"
-
 export class Navbar extends Component {
-	constructor(props) {
-		super(props) // location is passed as prop
-	}
-
 	render() {
 		let location = this.props.location
 		return (

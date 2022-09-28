@@ -11,18 +11,17 @@ export class GamesWrapper extends React.Component {
 		this.state = {
 			perPage: 20,
 			pages: this.getPages(props.games.length, 20),
+			pageIndex: this.props.pageIndex
 		}
 	}
 
 	componentDidMount() {
 		document.title = "YoChess - Games"
-		// console.log('>>i am loading')
 		let pages = this.getPages(this.props.games.length, this.state.perPage)
 		this.setState({ pages })
 	}
 
 	componentDidUpdate(prevProps, prevState) {
-		// console.log('i am also loading')
 		if (this.props.games.length !== prevProps.games.length) {
 			let pages = this.getPages(this.props.games.length, this.state.perPage)
 			this.setState({ pages })
@@ -30,41 +29,35 @@ export class GamesWrapper extends React.Component {
 	}
 
 	render() {
-		console.log(this.props)
 		return (<>
-			{!this.props.games || this.props.games.length <= 0 ? 
-
-				/* If no games */
-				'' :
-
-				/* else */
-				<>
-					<Games 
-						paginatedGames={this.getPaginatedGames(this.props.games)}
-						gamesLength={this.props.games.length}
-						pageIndex={this.props.pageIndex}
-						perPage={this.state.perPage} />				
-					<ReactPaginate
-						initialPage={this.props.pageIndex}
-						onPageChange={this.flipPage}
-						pageCount={this.state.pages}
-						renderOnZeroPageCount={null}
-						nextLabel=" >"
-						previousLabel="<"
-						containerClassName="pagination"
-						activeClassName='active'
-						pageClassName="page-item"
-				        pageLinkClassName="page-link"
-				        previousClassName="page-item"
-				        previousLinkClassName="page-link"
-				        breakLabel="..."
-				        breakClassName="page-item"
-				        breakLinkClassName="page-link"
-				        nextClassName="page-item"
-				        nextLinkClassName="page-link" />
-				</>
-			}
-	</>)
+			<Games 
+				paginatedGames={this.getPaginatedGames(this.props.games)}
+				gamesLength={this.props.games.length}
+				pageIndex={this.props.pageIndex}
+				perPage={this.state.perPage} 
+				getGame={this.props.getGame}
+			/>		
+			<ReactPaginate
+				pageCount={this.state.pages}
+				// initialPage={this.props.pageIndex}
+				forcePage={this.props.pageIndex || -1}
+				onPageChange={this.flipPage}
+				renderOnZeroPageCount={null}
+				nextLabel=" >"
+				previousLabel="<"
+				containerClassName="pagination"
+				activeClassName='active'
+				pageClassName="page-item"
+		        pageLinkClassName="page-link"
+		        previousClassName="page-item"
+		        previousLinkClassName="page-link"
+		        breakLabel="..."
+		        breakClassName="page-item"
+		        breakLinkClassName="page-link"
+		        nextClassName="page-item"
+		        nextLinkClassName="page-link" 
+			/>
+		</>)
 	}
 
 	getPages = (gamesLength, perPage) => {
@@ -80,13 +73,8 @@ export class GamesWrapper extends React.Component {
 	}
 
 	flipPage = (event) => {
-		let { inputs, navigate, getLink } = this.props
-		let { username, startDate, endDate } = inputs
 		let pageIndex = event.selected
-		this.props.flipPage(pageIndex, () => {
-			navigate(getLink(username, startDate, endDate, pageIndex+1))
-
-		})
+		this.props.flipPage(pageIndex)
 	}
 }
 

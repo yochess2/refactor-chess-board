@@ -26,7 +26,7 @@ export class Searchbar extends React.Component {
 	//TODO: Fix Styling
 	render() { 
 		let { formatMonth, onStartMonthClick, onEndMonthClick, handleUserSearch, onUserInput } = this
-		let { displayStartDate, displayEndDate, formStartDate, formEndDate, username, isDisabled } = this.state
+		let { displayStartDate, displayEndDate, formStartDate, formEndDate, username } = this.state
 		return (
 	    	<div className="row mt-2">
 

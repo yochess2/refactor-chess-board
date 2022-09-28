@@ -1,10 +1,6 @@
 import React from 'react'
 
 export class ErrorMessage extends React.Component {
-	constructor(props) {
-		super(props) // error is passed down
-	}
-
 	render(props) {
 		return (
 			<div>
