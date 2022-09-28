@@ -17,6 +17,7 @@ export class ApiContent extends React.Component {
 			games: [],
 			isDisplay: false,
 			loading: false,
+			preLoading: false,
 			spinner: true,
 		}
 		this.api = new ChessWebAPI({ queue: true})
@@ -37,10 +38,9 @@ export class ApiContent extends React.Component {
 			if (!player) { return this.props.onError(true, res, null, false) } 
 			// console.log('player: ', player)
 			// let player = tiger415
-
 			this.props.setPlayer(player)
 			// if player is found, reset API and then go look for games
-			this.setApi(0, null, null, [], true, false, false, () => { 	// reset API state
+			this.setApi(0, null, null, [], true, false, true, false, () => { 	// reset API state				
 				this.fetchAndProcessGames(startDate, endDate, player, username)
 				// this.setState({loading: true, games: games}, () => {
 					// this.props.setGames(games, () => {
@@ -66,7 +66,7 @@ export class ApiContent extends React.Component {
 
 	// this rendering really needs design work!
 	render() {
-		let { displayMonth, displayYear, spinner, count, loading, isDisplay } = this.state
+		let { displayMonth, displayYear, spinner, count, loading, isDisplay, preLoading } = this.state
 
 		return (
 			<div className="mt-md-2 text-start">
@@ -87,10 +87,14 @@ export class ApiContent extends React.Component {
 							<span>. </span>
 							</>}
 
+							{preLoading &&
+								<span>Processing...</span>
+							}
+
 						</h6>
 					</div>
 					<div className="col-6">
-						{loading &&
+						{(loading || preLoading) &&
 						<PulseLoader />
 						}
 					</div>
@@ -99,7 +103,7 @@ export class ApiContent extends React.Component {
 							{!loading &&
 							<FaTimesCircle onClick={() => { this.setState({ isDisplay: false }) }}/>
 							}
-							{loading ? 
+							{loading || preLoading ? 
 							<span> Fetching </span> 	:
 							<span> Fetched </span>	}
 							({count})
@@ -131,8 +135,8 @@ export class ApiContent extends React.Component {
 	}
 
 	// 2. processFetchGames (x) - gets the necessary params before invoking fetchAndSetGames
-	fetchAndProcessGames = (startDate, endDate, player, username) => {
-
+	fetchAndProcessGames = async (startDate, endDate, player, username) => {
+		await this.delay(5000)
 		let dates = this.getDates(startDate, endDate, player, this.props.extractDate)
 
 		// Used to fetch games
@@ -185,7 +189,7 @@ export class ApiContent extends React.Component {
 			let games = [...this.state.games, jsonObj]
 			let loading = gamesLength > 0
 			let spinner = !this.state.spinner
-			this.setApi(count ,month, endYear, games, true, loading, spinner, () => {
+			this.setApi(count ,month, endYear, games, true, loading, false, spinner, () => {
 			    // Going backwards one month
 			    if (endMonth === 1) {
 			    	endMonth = 12
@@ -247,8 +251,8 @@ export class ApiContent extends React.Component {
 	})
 
 	// setApi (x) - Helper Method
-	setApi = (count, displayMonth, displayYear, games, isDisplay, loading, spinner, cb) => {
-		this.setState({ count, displayMonth, displayYear, games, isDisplay, loading, spinner}, () => {
+	setApi = (count, displayMonth, displayYear, games, isDisplay, loading, preLoading, spinner, cb) => {
+		this.setState({ count, displayMonth, displayYear, games, isDisplay, loading, preLoading, spinner}, () => {
 			cb()
 		})
 	}
