@@ -3,6 +3,7 @@ import React from "react"
 import { Route, Routes } from "react-router-dom"
 
 import { withRouter } from "./utilities/withRouter"
+import { FaTimesCircle } from "react-icons/fa"
 
 import Home from "./Home"
 import ErrorMessage from "./ErrorMessage"
@@ -37,6 +38,9 @@ export class App extends React.Component {
 
 			// api mostly
 			isFetch: false,
+
+			// player info
+			player: {},
 
 			// gameswrapper
 			pageIndex: 0,
@@ -103,13 +107,40 @@ export class App extends React.Component {
 									<func> navigate
 									<func> setGames
 	    		    */}
+
+
+		    		{/* TODO, feature ideas */}
+
+		    		{this.state.player.username &&
+		    		    <div className="row mt-md-5" style={{border:"solid"}}>
+			    		    <h2><FaTimesCircle type="button" onClick={this.handleClick}/> Player Info </h2>
+			    		    <p className="m-0">
+			    		    	username: {this.state.player.username}
+			    		    </p>
+			    		    
+			    		    <p className="m-0">
+			    		    	real name: {this.state.player.real}
+			    		    </p>
+			    		    
+			    		    <p className="m-0">
+			    		    	joined date: {this.state.player.joined}
+			    		    </p>
+			    		    
+			    		    <p className="m-0">
+			    		    	last seen: {this.state.player.last}
+			    		    </p>
+
+
+		    		    </div>
+		    		}
+
 	    	    	<ApiContent 
 		    	    	isFetch={isFetch}
 		    	    	inputs={inputs}
 	    	    		onError={onError}
 		    	    	isFetching={isFetching}
 		    	    	flipPage={flipPage}
-
+		    	    	setPlayer={this.setPlayer}
 		    	    	extractDate={extractDate}
 		    	    	getLink={getLink}
 						navigate={navigate}
@@ -258,6 +289,36 @@ export class App extends React.Component {
 		}))
 	}
 
+
+
+
+
+
+
+	// added so users do not get confused if a player does not exist
+	setPlayer = (player) => {
+		let username = player.username
+		let real = player.name
+		let location = player.location  
+		let joined = player.joined && this.extractDate(this.fixChessDate(player.joined)).monthYear
+		let last = player.last_online && this.extractDate(this.fixChessDate(player.last_online)).monthYear
+
+		this.setState({player: {...player, username, real, location, joined, last}})
+	}
+
+	handleClick = (e) => {
+		this.setState({player: {}})
+		console.log(this.state.player)
+		console.log(!!this.state.player)
+	}
+
+
+
+
+
+
+
+
 	/* 3. isFetching (x)
 		invoker:	Searchbar -> APP.handleUserSearch
 					ApiContent when done
@@ -357,6 +418,10 @@ export class App extends React.Component {
 	        return false;
 	    }
 	}
+
+	// used in apicontent as well
+	fixChessDate = (ms) => new Date(+(ms.toString() + "000"))
+
 }
 
 export default withRouter(App)

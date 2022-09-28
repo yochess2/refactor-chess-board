@@ -2,7 +2,7 @@ import React from 'react'
 
 import ChessWebAPI from "chess-web-api"
 import PulseLoader from "react-spinners/PulseLoader"
-import { FaStopCircle } from "react-icons/fa"
+import { FaStopCircle, FaTimesCircle } from "react-icons/fa"
 
 // import { games } from "./games/samples"
 // import { tiger415 } from "./games/tiger415profile"
@@ -15,7 +15,7 @@ export class ApiContent extends React.Component {
 			displayMonth: null,
 			displayYear: null,
 			games: [],
-			// isDisplay: false,
+			isDisplay: false,
 			loading: false,
 			spinner: true,
 		}
@@ -35,10 +35,12 @@ export class ApiContent extends React.Component {
 			let res = await this.fetchPlayerData(username)
 			let player = this.getPlayer(res)
 			if (!player) { return this.props.onError(true, res, null, false) } 
+			console.log('player: ', player)
 			// let player = tiger415
 
+			this.props.setPlayer(player)
 			// if player is found, reset API and then go look for games
-			this.setApi(0, null, null, [], false, false, () => { 	// reset API state
+			this.setApi(0, null, null, [], true, false, false, () => { 	// reset API state
 				this.fetchAndProcessGames(startDate, endDate, player, username)
 				// this.setState({loading: true, games: games}, () => {
 					// this.props.setGames(games, () => {
@@ -64,25 +66,27 @@ export class ApiContent extends React.Component {
 
 	// this rendering really needs design work!
 	render() {
-		let { displayMonth, displayYear, spinner, count, loading } = this.state
+		let { displayMonth, displayYear, spinner, count, loading, isDisplay } = this.state
 
 		return (
-			<div className="mt-md-5 mt-2 text-start">
+			<div className="mt-md-2 text-start">
 				{/*Display fetching */}
-				<div className="row">
+				{isDisplay &&
+				<div className="row" style={{border:"solid"}}>
 					<div className="col-6">
 						<h6> 
 							{loading && <>
-							<FaStopCircle type="button" onClick={this.stopBtn} />
 							
+							<FaStopCircle type="button" onClick={this.stopBtn} />
 							<span> .</span>
 							<span>{spinner ? "/" : "\\"}</span>
 							<span>.</span>
 							<span>{spinner ? "\\" : "/"}</span>
 							<span>.</span>
 							<span>{spinner ? "/" : "\\"}</span>
-							<span>.</span>
+							<span>. </span>
 							</>}
+
 						</h6>
 					</div>
 					<div className="col-6">
@@ -92,18 +96,20 @@ export class ApiContent extends React.Component {
 					</div>
 					<div className="col-6">					
 						<h6>
+							{!loading &&
+							<FaTimesCircle onClick={() => { this.setState({ isDisplay: false }) }}/>
+							}
 							{loading ? 
-							<span>Fetching </span> 	:
-							<span>Fetched </span>	}
-							({count} Games)
+							<span> Fetching </span> 	:
+							<span> Fetched </span>	}
+							({count})
 						</h6>
 					</div>
 					<div className="col-6">					
 						<h6>{displayMonth} {displayYear}</h6>
 					</div>
 				</div>
-
-
+				}
 
 				{/*End Display */}
 			</div>
@@ -180,7 +186,7 @@ export class ApiContent extends React.Component {
 			let games = [...this.state.games, jsonObj]
 			let loading = gamesLength > 0
 			let spinner = !this.state.spinner
-			this.setApi(count ,month, endYear, games, loading, spinner, () => {
+			this.setApi(count ,month, endYear, games, true, loading, spinner, () => {
 			    // Going backwards one month
 			    if (endMonth === 1) {
 			    	endMonth = 12
@@ -242,8 +248,8 @@ export class ApiContent extends React.Component {
 	})
 
 	// setApi (x) - Helper Method
-	setApi = (count, displayMonth, displayYear, games, loading, spinner, cb) => {
-		this.setState({ count, displayMonth, displayYear, games, loading, spinner}, () => {
+	setApi = (count, displayMonth, displayYear, games, isDisplay, loading, spinner, cb) => {
+		this.setState({ count, displayMonth, displayYear, games, isDisplay, loading, spinner}, () => {
 			cb()
 		})
 	}

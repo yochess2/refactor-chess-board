@@ -140,32 +140,24 @@ export class BoardWrapper extends React.Component {
 					<div className="col-sm-4">
 						<div className="row">
 							<div className="col-3" style={{border: "solid"}}>
-								<FaAngleDoubleLeft 
-									className="hand-icon" 
-									size="2em"
-									onClick={this.handleDoubleLeftClick}
-								/>
+								<button onClick={this.handleDoubleLeftClick}>
+									<FaAngleDoubleLeft className="hand-icon" size="2em" />
+								</button>
 							</div>
 							<div className="col-3" style={{border: "solid"}}>
-								<FaAngleLeft 
-									className="hand-icon" 
-									size="2em"
-									onClick={this.handleLeftClick}
-								/>
+								<button onClick={this.handleLeftClick}>
+									<FaAngleLeft className="hand-icon" size="2em" />
+								</button>
 							</div>
 							<div className="col-3" style={{border: "solid"}}>
-								<FaAngleRight 
-									className="hand-icon" 
-									size="2em"
-									onClick={this.handleRightClick}
-								/>
+								<button onClick={this.handleRightClick}>
+									<FaAngleRight className="hand-icon" size="2em" />
+								</button>
 							</div>
 							<div className="col-3" style={{border: "solid"}}>
-								<FaAngleDoubleRight 
-									className="hand-icon" 
-									size="2em"
-									onClick={this.handleDoubleRightClick}
-								/>
+								<button onClick={this.handleDoubleRightClick}>
+									<FaAngleDoubleRight className="hand-icon" size="2em" />
+								</button>
 							</div>
 						</div>
 					</div>
