@@ -2,7 +2,6 @@ import "./index.css"
 import React from "react"
 import { Route, Routes } from "react-router-dom"
 import { Chess } from "chess.js"
-import ChessWebAPI from "chess-web-api"
 
 import { withRouter } from "./utilities/withRouter"
 
@@ -61,7 +60,7 @@ export class App extends React.Component {
 	render() {
 		let props = this.props
 		let { location, navigate } = this.props
-		let { username, startDate, endDate, games, isFetch, error, inputs, pageIndex } = this.state
+		let { games, isFetch, error, inputs, pageIndex } = this.state
 		let { handleUserSearch, onError, isFetching, extractDate, getLink, flipPage, setGames } = this
 
 		return (<>
@@ -324,6 +323,7 @@ export class App extends React.Component {
 						Once loading is triggered, reset state of API and goto page 1 of games component
 	*/
 	setGames = (games, callback) => {
+		console.log('2', games)
 		this.setState({
 			games: [...this.state.games, ...games.slice().reverse()]
 		}, (val) => {

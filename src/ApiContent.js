@@ -4,7 +4,8 @@ import ChessWebAPI from "chess-web-api"
 import PulseLoader from "react-spinners/PulseLoader"
 import { FaStopCircle } from "react-icons/fa"
 
-// import { drakesGames } from "./games/samples"
+import { games } from "./games/samples"
+import { tiger415 } from "./games/tiger415profile"
 
 export class ApiContent extends React.Component {
 	constructor(props) {
@@ -24,7 +25,7 @@ export class ApiContent extends React.Component {
 
 	// dont forget to toggle back isFetch, so search bar displays
 	componentDidUpdate = async (prevProps, prevState) => {
-		let { isFetch, onError, getLink, navigate, location } = this.props
+		let { isFetch, getLink, navigate, location } = this.props
 		let { username, startDate, endDate } = this.props.inputs
 		let { loading } = this.state
 
@@ -32,12 +33,18 @@ export class ApiContent extends React.Component {
 		// if search is invoked, go fetch player and the player's games
 		if (isFetch !== prevProps.isFetch && isFetch) {
 			let res = await this.fetchPlayerData(username)
-			let player = this.getPlayer(res)
-			if (!player) { return onError(true, res, null, false) } 
+			// let player = this.getPlayer(res)
+			let player = tiger415
+			if (!player) { return this.props.onError(true, res, null, false) } 
 
 			// if player is found, reset API and then go look for games
 			this.setApi(0, null, null, [], false, false, () => { 	// reset API state
-				this.fetchAndProcessGames(startDate, endDate, player, username)
+				// this.fetchAndProcessGames(startDate, endDate, player, username)
+				this.setState({loading: true, games: games}, () => {
+					this.props.setGames(games, () => {
+						this.props.isFetching(false)							
+					})
+				})
 			})
 		}
 
