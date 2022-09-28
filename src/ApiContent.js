@@ -35,7 +35,7 @@ export class ApiContent extends React.Component {
 			let res = await this.fetchPlayerData(username)
 			let player = this.getPlayer(res)
 			if (!player) { return this.props.onError(true, res, null, false) } 
-			console.log('player: ', player)
+			// console.log('player: ', player)
 			// let player = tiger415
 
 			this.props.setPlayer(player)
@@ -151,7 +151,6 @@ export class ApiContent extends React.Component {
 	stopBtn = async (e) => 
 	{
 		this.stop = true
-		console.log(this.stop)
 	}
 
 	// 4. fetchAndSetGames (x) - refer to https://www.npmjs.com/package/chess-web-api
@@ -164,7 +163,7 @@ export class ApiContent extends React.Component {
 	    		loading: false,
 	    	}, () => {
 	    		this.props.isFetching(false)
-	    		console.log('API: BASE CASE', this.state)
+	    		// console.log('API: BASE CASE', this.state)
 	    	})
 	    }
 		if (error || !response || !response.body) {
@@ -223,11 +222,11 @@ export class ApiContent extends React.Component {
 	*/
 	getPlayer = (res) => {
 		if (res.statusCode === 404) {
-			console.log('>>>>>>', res)
+			// console.log('>>>>>>', res)
 			return this.props.onError(true, res, null, false)
 		}
 		if (res.statusCode !== 200) {
-			console.log('>>>>>>', res)
+			// console.log('>>>>>>', res)
 			return this.props.onError(true, res, null, false)
 		}
 		return res.body

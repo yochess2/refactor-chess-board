@@ -34,7 +34,7 @@ export class BoardWrapper extends React.Component {
 			black: {
 				name: "Black Player",
 				username: "Black User",
-				rating: "1200",
+				rating: "1000",
 			},
 			games: [],
 		}
@@ -70,13 +70,13 @@ export class BoardWrapper extends React.Component {
 					<div className="col-8 col-sm-4">
 						<h4>
 							{this.state.black.name || this.state.black.username}
-							({this.state.black.rating})
+							<span> ({this.state.black.rating})</span>
 						</h4>
 					</div>
-					<div className="col-4">
+					<div className="col-4 text-end">
 						<h4>
 							<span className={this.state.game.turn() === 'b' ? 'highlight-clock' : ''}>
-								{this.state.white_time}
+								{this.state.black_time && this.state.black_time.slice(5, this.state.black_time.length-1)}
 							</span>
 						</h4>
 					</div>
@@ -123,13 +123,13 @@ export class BoardWrapper extends React.Component {
 							<div className="col-8 col-sm-4">
 								<h4>
 									{this.state.white.name || this.state.white.username}
-									({this.state.white.rating})
+									<span> ({this.state.white.rating})</span>
 								</h4>
 							</div>
-							<div className="col-4 col-sm-4">
+							<div className="col-4 col-sm-4 text-end">
 								<h4>
 									<span className={this.state.game.turn() === 'w' ? 'highlight-clock' : ''}>
-										{this.state.white_time}
+										{this.state.white_time && this.state.white_time.slice(5, this.state.white_time.length-1)}
 									</span>
 								</h4>
 							</div>
@@ -139,25 +139,17 @@ export class BoardWrapper extends React.Component {
 					{/* Buttons */}
 					<div className="col-sm-4">
 						<div className="row">
-							<div className="col-3" style={{border: "solid"}}>
-								<button onClick={this.handleDoubleLeftClick}>
-									<FaAngleDoubleLeft className="hand-icon" size="2em" />
-								</button>
+							<div className="col-3 hand-icon" style={{backgroundColor: "#8FBC8F", border: "solid"}} onClick={this.handleDoubleLeftClick}>
+								<FaAngleDoubleLeft/>
 							</div>
-							<div className="col-3" style={{border: "solid"}}>
-								<button onClick={this.handleLeftClick}>
-									<FaAngleLeft className="hand-icon" size="2em" />
-								</button>
+							<div className="col-3 hand-icon" style={{backgroundColor: "lightgray", border: "solid"}} onClick={this.handleLeftClick}>
+								<FaAngleLeft/>
 							</div>
-							<div className="col-3" style={{border: "solid"}}>
-								<button onClick={this.handleRightClick}>
-									<FaAngleRight className="hand-icon" size="2em" />
-								</button>
+							<div className="col-3 hand-icon" style={{backgroundColor: "lightgray", border: "solid"}} onClick={this.handleRightClick}>
+								<FaAngleRight/>
 							</div>
-							<div className="col-3" style={{border: "solid"}}>
-								<button onClick={this.handleDoubleRightClick}>
-									<FaAngleDoubleRight className="hand-icon" size="2em" />
-								</button>
+							<div className="col-3 hand-icon" style={{backgroundColor: "#8FBC8F", border: "solid"}} onClick={this.handleDoubleRightClick}>
+								<FaAngleDoubleRight/>
 							</div>
 						</div>
 					</div>
@@ -207,10 +199,10 @@ export class BoardWrapper extends React.Component {
 	//Subtract 1 to get other side, just guess and check, don't think too hard!
 	//edge case are abortions, figure out logic on that later!
 	handleGameClick = (game) => {
-		console.log("game loaded: ", game)
+		// console.log("game loaded: ", game)
 		let newGame = new Chess()
 		newGame.loadPgn(game.pgn)
-		console.log(game)
+		// console.log(game)
 
 		let comments = newGame.getComments()
 		let totalPly = newGame.getComments().length
@@ -301,6 +293,7 @@ export class BoardWrapper extends React.Component {
 		this.state.game.move(move)
 
 		if (index === 0) {
+			// console.log(this.state.timestamps[index].slice(5, this.state.timestamps[index].length-1))
 			this.setState({ 
 				fen: this.state.game.fen(), 
 				white_time: this.state.timestamps[index],

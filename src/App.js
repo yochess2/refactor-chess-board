@@ -255,15 +255,15 @@ export class App extends React.Component {
 					if (JSON.parse(message.message).message) {
 						message = JSON.parse(message.message).message
 					} else {
-						console.log(">>:: ", message)
+						// console.log(">>:: ", message)
 						message = "Unhandled Case 1"
 					}
 				} else {
-					console.log(">>:: ", message)
+					// console.log(">>:: ", message)
 					message = "Unhandled Case 2, likely no internet"
 				}
 			} else {
-				console.log(">>:: ", message)
+				// console.log(">>:: ", message)
 				message = "unhandled case 3"
 			}
 		}
@@ -308,8 +308,8 @@ export class App extends React.Component {
 
 	handleClick = (e) => {
 		this.setState({player: {}})
-		console.log(this.state.player)
-		console.log(!!this.state.player)
+		// console.log(this.state.player)
+		// console.log(!!this.state.player)
 	}
 
 
