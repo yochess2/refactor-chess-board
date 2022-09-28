@@ -23,24 +23,33 @@ export class App extends React.Component {
 		super(props) // navigate() and location passed down as props
 
 		this.state = {
+			// error handling
 			error: {
 				value: false,
 				message: "",
 			},
+
+			// form input mostly
 			inputs: {
 				username: null,
 				startDate: null,
 				endDate: null,
 			},
 
+			// api mostly
 			isFetch: false,
 
+			// gameswrapper
 			pageIndex: 0,
 			games: [],
 
+			// board
+			fen: 'start',
+			history: [],
+			
+			
 
-			chess: new Chess(),
-			gameNum: null, //for use on saving game index num,
+
 
 
 		}
@@ -176,7 +185,11 @@ export class App extends React.Component {
 										getGame={getGame} />} />
 								<Route 
 									path="board"
-									element={<BoardWrapper chess={this.state.chess}/>} />
+									element={<BoardWrapper 
+										chess={this.state.fen}
+										fen={this.state.fen}
+										history={this.state.history}
+										/>} />
 							</Routes>
 						</div>
 						{/* End Main Content */}
@@ -302,7 +315,19 @@ export class App extends React.Component {
 
 	/* 6. getGame */
 	getGame = (game) => {
-		console.log(game)
+		let newGame = new Chess()
+		newGame.loadPgn(game.pgn)
+
+		let fen = newGame.fen()
+		let history = newGame.history()
+
+
+		this.setState({
+			fen,
+			history,
+		}, () => {
+			this.props.navigate('/board')
+		})
 	}
 
 	  ////////////////////

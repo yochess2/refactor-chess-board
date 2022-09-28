@@ -32,10 +32,10 @@ export class ApiContent extends React.Component {
 
 		// if search is invoked, go fetch player and the player's games
 		if (isFetch !== prevProps.isFetch && isFetch) {
-			let res = await this.fetchPlayerData(username)
+			// let res = await this.fetchPlayerData(username)
 			// let player = this.getPlayer(res)
+			// if (!player) { return this.props.onError(true, res, null, false) } 
 			let player = tiger415
-			if (!player) { return this.props.onError(true, res, null, false) } 
 
 			// if player is found, reset API and then go look for games
 			this.setApi(0, null, null, [], false, false, () => { 	// reset API state

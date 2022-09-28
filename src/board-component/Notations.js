@@ -79,6 +79,9 @@ class Notations extends React.Component {
 
 	//Helper method for rendering the moves
 	formatHistory = (history) => {
+		// if (history.length === 0) {
+		// 	return
+		// }
 		let formattedHistory = []
 		let move;
 		history.forEach((ply, index) => {

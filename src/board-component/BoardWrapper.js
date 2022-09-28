@@ -4,17 +4,13 @@ import { Chessboard } from "react-chessboard"
 import Notations from "./Notations"
 
 export class BoardWrapper extends React.Component {
-	componentDidMount() {
-		document.title = "Game - YoChess"
-	}
-
 	constructor(props) {
 		super(props)
 
 		this.state = {
 			boardWidth: "256",
-			fen: this.props.chess.fen(),
-			history: this.props.chess.history(),
+			fen: props.fen,
+			history: props.history,
 			timestamps: [],
 			black_time: "",
 			white_time: "",
@@ -30,10 +26,12 @@ export class BoardWrapper extends React.Component {
 			},
 			games: [],
 		}
+
+		console.log(props)
 	}
 
 	componentDidMount() {
-		document.title = "YoChess - Games"
+		document.title = "YoChess - Board"
 		// console.log("ChessWrapper - componentDidMount")
 		window.addEventListener("resize", this.handleResize)
 		this.handleResize()
@@ -86,7 +84,7 @@ export class BoardWrapper extends React.Component {
 					</div>
 
 					{/* Notations */}
-					<div className="col-sm-4 d-none d-sm-block" style={{border: "solid"}}>
+					<div className="col-sm-4 d-none d-sm-block" style={{border: "solid", height: this.state.boardWidth, overflow: "auto"}}>
 						<Notations 
 							history={this.state.history}
 							onMoveClick={this.handleMoveClick}
