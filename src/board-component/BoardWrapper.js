@@ -71,15 +71,17 @@ export class BoardWrapper extends React.Component {
 				<div className="row">
 
 					{/* Black Player Info and Black Clock */}
-					<div className="col-8 col-sm-4" style={{border: "solid"}}>
+					<div className="col-8 col-sm-4">
 						<h4>
 							{this.state.black.name || this.state.black.username}
 							({this.state.black.rating})
 						</h4>
 					</div>
-					<div className="col-4" style={{border: "solid"}}>
-						<h4 className={this.state.game.turn() === 'b' ? 'highlight-clock' : ''}>
-							{this.state.white_time}
+					<div className="col-4">
+						<h4>
+							<span className={this.state.game.turn() === 'b' ? 'highlight-clock' : ''}>
+								{this.state.white_time}
+							</span>
 						</h4>
 					</div>
 
@@ -122,15 +124,17 @@ export class BoardWrapper extends React.Component {
 					{/* Black Player Info and Black Clock */}
 					{/*<div className="col-8">*/}
 						{/*<div className="row">*/}
-							<div className="col-8 col-sm-4" style={{border: "solid"}}>
+							<div className="col-8 col-sm-4">
 								<h4>
 									{this.state.white.name || this.state.white.username}
 									({this.state.white.rating})
 								</h4>
 							</div>
-							<div className="col-4 col-sm-4" style={{border: "solid"}}>
-								<h4 className={this.state.game.turn() === 'w' ? 'highlight-clock' : ''}>
-									{this.state.white_time}
+							<div className="col-4 col-sm-4">
+								<h4>
+									<span className={this.state.game.turn() === 'w' ? 'highlight-clock' : ''}>
+										{this.state.white_time}
+									</span>
 								</h4>
 							</div>
 						{/*</div>*/}
@@ -139,28 +143,28 @@ export class BoardWrapper extends React.Component {
 					{/* Buttons */}
 					<div className="col-sm-4">
 						<div className="row">
-							<div className="col-sm-3" style={{ border: 'solid'}}>
+							<div className="col-3" style={{border: "solid"}}>
 								<FaAngleDoubleLeft 
 									className="hand-icon" 
 									size="2em"
 									onClick={this.handleDoubleLeftClick}
 								/>
 							</div>
-							<div className="col-sm-3" style={{ border: 'solid'}}>
+							<div className="col-3" style={{border: "solid"}}>
 								<FaAngleLeft 
 									className="hand-icon" 
 									size="2em"
 									onClick={this.handleLeftClick}
 								/>
 							</div>
-							<div className="col-sm-3" style={{ border: 'solid'}}>
+							<div className="col-3" style={{border: "solid"}}>
 								<FaAngleRight 
 									className="hand-icon" 
 									size="2em"
 									onClick={this.handleRightClick}
 								/>
 							</div>
-							<div className="col-sm-3" style={{ border: 'solid'}}>
+							<div className="col-3" style={{border: "solid"}}>
 								<FaAngleDoubleRight 
 									className="hand-icon" 
 									size="2em"
