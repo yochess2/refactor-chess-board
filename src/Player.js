@@ -4,7 +4,6 @@ import { FaTimesCircle } from "react-icons/fa"
 
 export class Player extends React.Component {
 	render() {
-		console.log(this.props)
 		let { extractDate, fixChessDate } = this.props
 		let player = this.props.player
 		return (<>
