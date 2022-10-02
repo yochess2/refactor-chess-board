@@ -1,45 +1,29 @@
 import "./index.css"
+
 import React from "react"
 import { Route, Routes } from "react-router-dom"
 
 import { withRouter } from "./utilities/withRouter"
-import { FaTimesCircle } from "react-icons/fa"
-
-import Home from "./Home"
 import ErrorMessage from "./ErrorMessage"
 
+import Home from "./Home"
 import Navbar from "./bar-component/Navbar"
-import Searchbar from "./bar-component/Searchbar"
 import Sidebar from "./bar-component/Sidebar"
-
+import Searchbar from "./bar-component/Searchbar"
 import ApiContent from "./ApiContent"
+import Player from "./Player"
+
 import GamesWrapper from "./game-component/GamesWrapper"
-
 import BoardWrapper from "./board-component/BoardWrapper"
-
 
 export class App extends React.Component {
 	constructor(props) {
 		super(props) // navigate() and location passed down as props
 
 		this.state = {
-			// error handling
-			error: {
-				value: false,
-				message: "",
-			},
-
-			// form input mostly
-			inputs: {
-				username: null,
-				startDate: null,
-				endDate: null,
-			},
-
-			// api mostly
+			error: { value: false, message: "", },
+			inputs: { username: null, startDate: null, endDate: null, },
 			isFetch: false,
-
-			// player info
 			player: {},
 
 			// gameswrapper
@@ -51,34 +35,50 @@ export class App extends React.Component {
 			chesscom: null,
 		}
 	}
-
 	componentDidUpdate(prevProps, prevState) {
 		this.clearErrorOnPathChange(prevProps.location.pathname)
 	}
-
-	// If path changes then set error to false
 	clearErrorOnPathChange = (prevLocation) => {
 		if (prevLocation !== this.props.location.pathname) 
-			if (this.state.error.value) this.onError(false, "")
+			if (this.state.error.value) this.handleError(false, "")
 	}
-
 	render() {
-		let { location, navigate } = this.props
-		let { games, isFetch, error, inputs, pageIndex } = this.state
-		let { handleUserSearch, onError, isFetching, extractDate, getLink, flipPage, setGames, getGame } = this
+		const { location, navigate } = this.props
+		const { games, isFetch, error, inputs, pageIndex, player } = this.state
+
+
+
+		const { 
+			handleError, 
+			handleUserSearch, 
+			handlePlayer, 
+			
+			isFetching, 
+			extractDate, 
+			getLink, 
+			flipPage, 
+			setGames, 
+			getGame, 
+			fixChessDate 
+		} = this
+
+		const ErrorProps = { error }
+		const NavbarProps = { location }
+		const SidebarProps = { location }
+		const SearchbarProps = { handleUserSearch, handleError }
+		const PlayerProps = { extractDate, fixChessDate, handlePlayer }
+		const ApiContentProps = { handleError, isFetching, flipPage, handlePlayer, extractDate, getLink, setGames, location, navigate}
 
 		return (<>
 		{/* Navbar (x)
 			Minor Fix: annoying bug with react router and active on index page fixed
 			with a conditional statement on if location === "/" 
 		*/}
-			<Navbar location={location} />
+			<Navbar {...NavbarProps} />
 		{/* End Navbar */}
-
 
 			<div className="container">
 				<div className="row">
-
 
 					{/* Sidebar ( )
 						purpose: 	Allows user to navigate between links
@@ -90,10 +90,9 @@ export class App extends React.Component {
 						
 						TODO: 		- Needs styling
 									- FaBar not showing on mobile
-						
 					*/}
 					<div className="col-md-3">
-						<Sidebar location={location} />
+						<Sidebar {...SidebarProps} />
 					{/* End Sidebar */}
 
 	    		    {/* API Content (  ) basically done, just using mock data for now
@@ -101,7 +100,7 @@ export class App extends React.Component {
 	    		    	purpose:	To fetch from chess.com API
 	    		    	props:		<state><bool> isFetch - Only runs if set to true
 									<state><obj> inputs
-									<func> onError
+									<func> handleError
 									<func> isFetching 
 									<func> getLink
 									<func> navigate
@@ -111,45 +110,13 @@ export class App extends React.Component {
 
 		    		{/* TODO, feature ideas */}
 
-		    		{this.state.player.username &&
-		    		    <div className="row mt-md-5" style={{border:"solid"}}>
-			    		    <h2><FaTimesCircle type="button" onClick={this.handleClick}/> Player Info </h2>
-			    		    <p className="m-0">
-			    		    	username: {this.state.player.username}
-			    		    </p>
-			    		    
-			    		    <p className="m-0">
-			    		    	real name: {this.state.player.real}
-			    		    </p>
-			    		    
-			    		    <p className="m-0">
-			    		    	joined date: {this.state.player.joined}
-			    		    </p>
-			    		    
-			    		    <p className="m-0">
-			    		    	last seen: {this.state.player.last}
-			    		    </p>
+			    	{/* Displays Player Profile */}
+		    		<Player player={player} {...PlayerProps} />
 
-
-		    		    </div>
-		    		}
-
-	    	    	<ApiContent 
-		    	    	isFetch={isFetch}
-		    	    	inputs={inputs}
-	    	    		onError={onError}
-		    	    	isFetching={isFetching}
-		    	    	flipPage={flipPage}
-		    	    	setPlayer={this.setPlayer}
-		    	    	extractDate={extractDate}
-		    	    	getLink={getLink}
-						navigate={navigate}
-		    	    	setGames={setGames} 
-		    	    	location={location} />
+	    	    	<ApiContent isFetch={isFetch} inputs={inputs} {...ApiContentProps} />
 	    		    {/* End API Content */}
 						
 					</div>
-
 
 					<div className="col-md-9">
 
@@ -158,14 +125,14 @@ export class App extends React.Component {
 							purpose:	Displays error messages
 							props:		<state><obj> Error
 						*/}
-				    	<ErrorMessage error={error} />
+				    	<ErrorMessage {...ErrorProps} />
 						{/* End ErrorMessage */}
 
 
 						{/* Searchbar (x)
 							purpose:	To allow user to search for a username by month.
 							props:		<func> handleUserSearch
-										<func> onError
+										<func> handleError
 										<state><bool><isFetch>
 							effects:	- Search input for username, start date, and end date
 										- Error handling, decides if search is valid or invalid
@@ -177,24 +144,15 @@ export class App extends React.Component {
 								1. search history (localstorage)
 								2. search suggestion (fetch or localstorage)
 						 */}
-				    	<Searchbar 
-				    		handleUserSearch={handleUserSearch} 
-				    		onError={onError} 
-				    		inputs={inputs}
-				    		isFetch={isFetch}
-				    	/>
+				    	<Searchbar inputs={inputs} isFetch={isFetch} {...SearchbarProps} />
 					    {/* End Searchbar */}
 
 
 					    {/* Main Content */}
 						<div className="table-responsive-md mt-2">
 							<Routes>
-								<Route 
-									path="/"
-									element={<></>} />
-								<Route 
-									path="home"
-									element={<Home />} />
+								<Route path="/" element={<></>} />
+								<Route path="home" element={<Home />} />
 								<Route 
 									path="games"
 									element={<GamesWrapper
@@ -222,8 +180,7 @@ export class App extends React.Component {
 	</>)
 	}
 
-
-	/* 1. OnError (x)
+	/* 1. handleError (x)
 		invoker:	Searchbar - Search Button
 					ApiContent - Error
 					App - ComponentWillUpdate(prevPath, currentPath)
@@ -238,35 +195,12 @@ export class App extends React.Component {
 		TODO: 	- maybe move to err (parent class?) Component`
 				- various edge cases of message/error objects from fetch requests
 	*/
-	onError = (value, message, cb, isFetch) => {
-		if (!isFetch) {
-			this.setState({ isFetch: false })
-		}
+	handleError = (value, message, cb, isFetch) => {
+		if (!isFetch) this.setState({ isFetch: false })
 
 		if (!value && !this.state.error.value && !cb) return
 		if (!value && !this.state.error.value && cb) return cb()
-
-		if (typeof message === "string") {
-			// various edge cases from fetch requests goes here
-		} else {
-			if (message.message) {
-				if (this.isJSON(message.message)) {
-					JSON.parse(message.message)
-					if (JSON.parse(message.message).message) {
-						message = JSON.parse(message.message).message
-					} else {
-						// console.log(">>:: ", message)
-						message = "Unhandled Case 1"
-					}
-				} else {
-					// console.log(">>:: ", message)
-					message = "Unhandled Case 2, likely no internet"
-				}
-			} else {
-				// console.log(">>:: ", message)
-				message = "unhandled case 3"
-			}
-		}
+		message = this.checkMessage(message)
 		return this.setState(({error}) => ({ 
 			error: { ...error, value, message }
 		}), () => { if (cb) cb() })
@@ -289,37 +223,12 @@ export class App extends React.Component {
 		}))
 	}
 
-
-
-
-
-
-
-	// added so users do not get confused if a player does not exist
-	setPlayer = (player) => {
-		let username = player.username
-		let real = player.name
-		let location = player.location  
-		let joined = player.joined && this.extractDate(this.fixChessDate(player.joined)).monthYear
-		let last = player.last_online && this.extractDate(this.fixChessDate(player.last_online)).monthYear
-
-		this.setState({player: {...player, username, real, location, joined, last}})
+	// 3. handlePlayerFound - invoker: ApiContent - Component
+	handlePlayer = (player, cb) => {
+		this.setState({player: player}, () => { if (cb) cb() })
 	}
 
-	handleClick = (e) => {
-		this.setState({player: {}})
-		// console.log(this.state.player)
-		// console.log(!!this.state.player)
-	}
-
-
-
-
-
-
-
-
-	/* 3. isFetching (x)
+	/* 4. isFetching (x)
 		invoker:	Searchbar -> APP.handleUserSearch
 					ApiContent when done
 		invokee:	ApiContent - updateState (isFetch)
@@ -341,9 +250,7 @@ export class App extends React.Component {
 
 	*/
 	flipPage = (num, cb) => {
-		this.setState({ pageIndex: num}, () => {
-			if (cb) cb()
-		})
+		this.setState({ pageIndex: num}, () => { if (cb) cb() })
 	}
 
 	/* 5. setGames (x)
@@ -377,6 +284,35 @@ export class App extends React.Component {
 	  ////////////////////
 	 /* Helper Methods */
 	////////////////////
+
+	// checkMessage (x) - Helper Method
+	// More edge cases to come
+	checkMessage(message) {
+		let newMessage
+		if (typeof message === "string") {
+			// various edge cases from fetch requests goes here
+			newMessage = message
+		} else {
+			if (message.message) {
+				if (this.isJSON(message.message)) {
+					JSON.parse(message.message)
+					if (JSON.parse(message.message).message) {
+						newMessage = JSON.parse(message.message).message
+					} else {
+						// console.log(">>:: ", message)
+						newMessage = "Unhandled Case 1"
+					}
+				} else {
+					// console.log(">>:: ", message)
+					newMessage = "Unhandled Case 2, likely no internet"
+				}
+			} else {
+				// console.log(">>:: ", message)
+				newMessage = "unhandled case 3"
+			}
+		}
+		return newMessage
+	}
 
 	/* getLink (x) - Helper Method
 		invoker: 	ApiContent - componentDidMount

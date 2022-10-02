@@ -4,8 +4,8 @@ import ChessWebAPI from "chess-web-api"
 import PulseLoader from "react-spinners/PulseLoader"
 import { FaStopCircle, FaTimesCircle } from "react-icons/fa"
 
-// import { games } from "./games/samples"
-// import { tiger415 } from "./games/tiger415profile"
+import { games } from "./games/samples"
+import { tiger415 } from "./games/tiger415profile"
 
 export class ApiContent extends React.Component {
 	constructor(props) {
@@ -30,22 +30,26 @@ export class ApiContent extends React.Component {
 		let { username, startDate, endDate } = this.props.inputs
 		let { loading } = this.state
 
-
-		// if search is invoked, go fetch player and the player's games
 		if (isFetch !== prevProps.isFetch && isFetch) {
 			let res = await this.fetchPlayerData(username)
 			let player = this.getPlayer(res)
-			if (!player) { return this.props.onError(true, res, null, false) } 
+
+			if (!player) { return this.props.handleError(true, res, null, false) } 
 			// console.log('player: ', player)
 			// let player = tiger415
-			this.props.setPlayer(player)
+
+			this.props.handlePlayer(player)
 			// if player is found, reset API and then go look for games
 			this.setApi(0, null, null, [], true, false, true, false, () => { 	// reset API state				
+			
 				this.fetchAndProcessGames(startDate, endDate, player, username)
+			
 				// this.setState({loading: true, games: games}, () => {
-					// this.props.setGames(games, () => {
-						// this.props.isFetching(false)							
-					// })
+				// 	this.props.setGames(games, () => {
+				// 		this.props.isFetching(false)
+				// 		this.setState({loading: false, preLoading: false})
+			
+				// 	})
 				// })
 			})
 		}
@@ -54,7 +58,7 @@ export class ApiContent extends React.Component {
 		if (loading !== prevState.loading && loading) {
 			this.props.flipPage(0, () => {
 				if (location.pathname.slice(1,6) !== "games")
-					navigate(getLink(username, startDate, endDate, 1))		// navigate to page 1
+					navigate(getLink(username, startDate, endDate, 1))	// navigate to page 1
 			})
 		}
 
@@ -173,7 +177,7 @@ export class ApiContent extends React.Component {
 		if (error || !response || !response.body) {
 			return this.setState({
 				loading: false,
-			}, () => { this.props.onError(true, error, null, false) })
+			}, () => { this.props.handleError(true, error, null, false) })
 		}
 		// Logics start here: setting games to parent component
 		this.props.setGames(response.body.games, (gamesLength) => {
@@ -227,11 +231,11 @@ export class ApiContent extends React.Component {
 	getPlayer = (res) => {
 		if (res.statusCode === 404) {
 			// console.log('>>>>>>', res)
-			return this.props.onError(true, res, null, false)
+			return this.props.handleError(true, res, null, false)
 		}
 		if (res.statusCode !== 200) {
 			// console.log('>>>>>>', res)
-			return this.props.onError(true, res, null, false)
+			return this.props.handleError(true, res, null, false)
 		}
 		return res.body
 	}
