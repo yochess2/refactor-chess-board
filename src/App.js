@@ -169,6 +169,9 @@ export class App extends React.Component {
 									element={<BoardWrapper 
 										chesscom={this.state.chesscom}
 										/>} />
+								<Route
+									path="*"
+									element={<h2>404</h2>} />
 							</Routes>
 						</div>
 						{/* End Main Content */}

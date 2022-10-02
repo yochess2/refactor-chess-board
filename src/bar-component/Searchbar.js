@@ -5,8 +5,6 @@ import "react-calendar/dist/Calendar.css"
 export class Searchbar extends React.Component {
 	constructor(props) {
 		super(props) // handleUserSearch(), handleError() are passed down as props
-		console.log(this.props)
-		//TODO: Refactor to objects someday
 		this.state = {
 			username: "",
 			displayStartDate: null,

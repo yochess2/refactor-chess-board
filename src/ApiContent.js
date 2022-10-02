@@ -4,8 +4,8 @@ import ChessWebAPI from "chess-web-api"
 import PulseLoader from "react-spinners/PulseLoader"
 import { FaStopCircle, FaTimesCircle } from "react-icons/fa"
 
-import { games } from "./games/samples"
-import { tiger415 } from "./games/tiger415profile"
+// import { games } from "./games/samples"
+// import { tiger415 } from "./games/tiger415profile"
 
 export class ApiContent extends React.Component {
 	constructor(props) {
@@ -76,12 +76,12 @@ export class ApiContent extends React.Component {
 			<div className="mt-md-2 text-start">
 				{/*Display fetching */}
 				{isDisplay &&
-				<div className="row" style={{border:"solid"}}>
+				<div className="row">
 					<div className="col-6">
 						<h6> 
 							{loading && <>
 							
-							<FaStopCircle type="button" onClick={this.stopBtn} />
+							<FaStopCircle className="hand-icon" type="button" onClick={this.stopBtn} />
 							<span> .</span>
 							<span>{spinner ? "/" : "\\"}</span>
 							<span>.</span>
@@ -105,7 +105,9 @@ export class ApiContent extends React.Component {
 					<div className="col-6">					
 						<h6>
 							{!loading &&
-							<FaTimesCircle onClick={() => { this.setState({ isDisplay: false }) }}/>
+							<FaTimesCircle 
+									className="hand-icon" 
+									onClick={() => { this.setState({ isDisplay: false }) }}/>
 							}
 							{loading || preLoading ? 
 							<span> Fetching </span> 	:
