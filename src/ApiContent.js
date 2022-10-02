@@ -46,7 +46,7 @@ export class ApiContent extends React.Component {
 			
 				// this.setState({loading: true, games: games}, () => {
 				// 	this.props.setGames(games, () => {
-				// 		this.props.isFetching(false)
+				// 		this.props.handleFetching(false)
 				// 		this.setState({loading: false, preLoading: false})
 			
 				// 	})
@@ -172,7 +172,7 @@ export class ApiContent extends React.Component {
 	    	return this.setState({
 	    		loading: false,
 	    	}, () => {
-	    		this.props.isFetching(false)
+	    		this.props.handleFetching(false)
 	    		// console.log('API: BASE CASE', this.state)
 	    	})
 	    }

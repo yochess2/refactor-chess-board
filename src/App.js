@@ -53,7 +53,7 @@ export class App extends React.Component {
 			handleUserSearch, 
 			handlePlayer, 
 			
-			isFetching, 
+			handleFetching, 
 			extractDate, 
 			getLink, 
 			flipPage, 
@@ -67,7 +67,7 @@ export class App extends React.Component {
 		const SidebarProps = { location }
 		const SearchbarProps = { handleUserSearch, handleError }
 		const PlayerProps = { extractDate, fixChessDate, handlePlayer }
-		const ApiContentProps = { handleError, isFetching, flipPage, handlePlayer, extractDate, getLink, setGames, location, navigate}
+		const ApiContentProps = { handleError, handleFetching, flipPage, handlePlayer, extractDate, getLink, setGames, location, navigate}
 
 		return (<>
 		{/* Navbar (x)
@@ -101,7 +101,7 @@ export class App extends React.Component {
 	    		    	props:		<state><bool> isFetch - Only runs if set to true
 									<state><obj> inputs
 									<func> handleError
-									<func> isFetching 
+									<func> handleFetching 
 									<func> getLink
 									<func> navigate
 									<func> setGames
@@ -231,7 +231,7 @@ export class App extends React.Component {
 		this.setState({player: player}, () => { if (cb) cb() })
 	}
 
-	/* 4. isFetching (x)
+	/* 4. handleFetching (x)
 		invoker:	Searchbar -> APP.handleUserSearch
 					ApiContent when done
 		invokee:	ApiContent - updateState (isFetch)
@@ -242,7 +242,7 @@ export class App extends React.Component {
 					perform a lot of tasks in between (may get confusing now)
 					When it's done, it is set back to false. The search bar toggles as a result.
 	*/ 
-	isFetching = (isFetch, cb) => {
+	handleFetching = (isFetch, cb) => {
 		this.setState({ isFetch }, () => { if (cb) cb() })
 	}
 

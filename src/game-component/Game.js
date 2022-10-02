@@ -69,6 +69,16 @@ export class Game extends React.Component {
 			type = "5 min"
 		} else if (s === "600") {
 			type = "10 min"
+		} else if (s === "900") {
+			type = "15 min"
+		} else if (s === "1800") {
+			type = "30 min"
+		} else if (s === "2700") {
+			type = "45 min"
+		} else if (s === "3600") {
+			type = "60 min"
+		} else if (s === "1/259200") {
+			type = "Slow"
 		}
 		return type
 	}

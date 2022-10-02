@@ -11,27 +11,27 @@ export class Player extends React.Component {
 
     		{this.props.player.username &&
 
-			<div className="card mt-md-5">
+			<div className="card mt-md-5 mt-2">
 				<div class="card-header">
 	    		<h2><FaTimesCircle type="button" onClick={this.onClick}/> {player.username}</h2>
 					
 				</div>
 				<div className="card-body">
 					{player.avatar &&
-					<img src={player.avatar} class="card-img-top" alt="Logo" />
+					<img src={player.avatar} className="card-img-top d-none d-sm-block" alt="Logo" />
 					}
-					<ul class="list-group list-group-flush">
-		    		<li class="list-group-item">
+					<ul className="list-group list-group-flush">
+		    		<li className="list-group-item">
 		    		    name: {player.name}
 		    		</li>
 		    		    
 		    		{player.joined &&
-		    		<li class="list-group-item">
+		    		<li className="list-group-item">
 		    		    join date: {extractDate(fixChessDate(player.joined)).monthYear}
 		    		</li>
 	    			}
 	    		    
-	    		    <li class="list-group-item">
+	    		    <li className="list-group-item">
 	    		    	last seen: {extractDate(fixChessDate(player.last_online)).monthYear}
 	    		    </li>
 	    		    </ul>
