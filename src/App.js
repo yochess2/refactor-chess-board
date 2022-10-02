@@ -151,6 +151,9 @@ export class App extends React.Component {
 					    {/* Main Content */}
 						<div className="table-responsive-md mt-2">
 							<Routes>
+								<Route
+									path="*"
+									element={<h2>404</h2>} />
 								<Route path="/" element={<></>} />
 								<Route path="home" element={<Home />} />
 								<Route 
@@ -169,9 +172,6 @@ export class App extends React.Component {
 									element={<BoardWrapper 
 										chesscom={this.state.chesscom}
 										/>} />
-								<Route
-									path="*"
-									element={<h2>404</h2>} />
 							</Routes>
 						</div>
 						{/* End Main Content */}
