@@ -22,12 +22,12 @@ export class Player extends React.Component {
 					}
 					<ul class="list-group list-group-flush">
 		    		<li class="list-group-item">
-		    		    real name: {player.name}
+		    		    name: {player.name}
 		    		</li>
 		    		    
 		    		{player.joined &&
 		    		<li class="list-group-item">
-		    		    joined date: {extractDate(fixChessDate(player.joined)).monthYear}
+		    		    join date: {extractDate(fixChessDate(player.joined)).monthYear}
 		    		</li>
 	    			}
 	    		    
