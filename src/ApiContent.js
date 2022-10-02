@@ -81,7 +81,7 @@ export class ApiContent extends React.Component {
 						<h6> 
 							{loading && <>
 							
-							<FaStopCircle className="hand-icon" type="button" onClick={this.stopBtn} />
+							<FaStopCircle className="hand-icon" onClick={this.stopBtn} />
 							<span> .</span>
 							<span>{spinner ? "/" : "\\"}</span>
 							<span>.</span>
@@ -170,6 +170,7 @@ export class ApiContent extends React.Component {
 	    	((endYear <= this.joinedYear) && (endMonth < this.joinedMonth)) ||
 	    	((endYear < startYear)) || (this.stop)) {
 	    	return this.setState({
+	    		preLoading: false,
 	    		loading: false,
 	    	}, () => {
 	    		this.props.handleFetching(false)
@@ -178,8 +179,11 @@ export class ApiContent extends React.Component {
 	    }
 		if (error || !response || !response.body) {
 			return this.setState({
+				preLoading: false,
 				loading: false,
-			}, () => { this.props.handleError(true, error, null, false) })
+			}, () => { 
+				this.props.handleError(true, error, null, false) 
+			})
 		}
 		// Logics start here: setting games to parent component
 		this.props.setGames(response.body.games, (gamesLength) => {

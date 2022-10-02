@@ -11,9 +11,8 @@ export class Player extends React.Component {
     		{this.props.player.username &&
 
 			<div className="card mt-md-5 mt-2">
-				<div class="card-header">
-	    		<h2><FaTimesCircle type="button" onClick={this.onClick}/> {player.username}</h2>
-					
+				<div className="card-header">
+	    		<h2><FaTimesCircle className="hand-icon" onClick={this.onClick}/> {player.username}</h2>
 				</div>
 				<div className="card-body">
 					{player.avatar &&

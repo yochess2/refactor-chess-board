@@ -40,11 +40,6 @@ export class Sidebar extends React.Component {
 				<div className="show mt-2" id="sidemenu">
 					<div className="list-group">
 						<NavLink 
-							to="home" 
-							className="list-group-item list-group-item-action">
-							Home
-						</NavLink>
-						<NavLink 
 							to="board" 
 							className="list-group-item list-group-item-action">
 							Board
@@ -53,6 +48,11 @@ export class Sidebar extends React.Component {
 							to="games" 
 							className="list-group-item list-group-item-action">
 							Games
+						</NavLink>
+						<NavLink 
+							to="about" 
+							className="list-group-item list-group-item-action">
+							About
 						</NavLink>
 					</div>
 				</div>

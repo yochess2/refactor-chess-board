@@ -27,14 +27,6 @@ export class Navbar extends Component {
 						<ul className="navbar-nav me-auto mb-2 mb-lg-0">
 							<li className="nav-item">
 								<NavLink 
-									to="home" 
-									className="navbar-brand nav-link">
-									Home
-								</NavLink>	
-
-							</li>
-							<li className="nav-item">
-								<NavLink 
 									to="board" 
 									className="navbar-brand nav-link">
 									Board
@@ -46,6 +38,13 @@ export class Navbar extends Component {
 									className="navbar-brand nav-link">
 									Games
 								</NavLink>
+							</li>
+							<li className="nav-item">
+								<NavLink 
+									to="about" 
+									className="navbar-brand nav-link">
+									About
+								</NavLink>	
 							</li>
 						</ul>
 					</div>

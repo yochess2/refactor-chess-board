@@ -7,6 +7,7 @@ import { withRouter } from "./utilities/withRouter"
 import ErrorMessage from "./ErrorMessage"
 
 import Home from "./Home"
+import About from "./About"
 import Navbar from "./bar-component/Navbar"
 import Sidebar from "./bar-component/Sidebar"
 import Searchbar from "./bar-component/Searchbar"
@@ -154,8 +155,7 @@ export class App extends React.Component {
 								<Route
 									path="*"
 									element={<h2>404</h2>} />
-								<Route path="/" element={<></>} />
-								<Route path="home" element={<Home />} />
+								<Route exact path="/" element={<Home />} />
 								<Route 
 									path="games"
 									element={<GamesWrapper
@@ -172,6 +172,9 @@ export class App extends React.Component {
 									element={<BoardWrapper 
 										chesscom={this.state.chesscom}
 										/>} />
+								<Route 
+									path="about"
+									element={<About />} />
 							</Routes>
 						</div>
 						{/* End Main Content */}
