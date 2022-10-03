@@ -308,7 +308,6 @@ export class BoardWrapper extends React.Component {
 	//Subtract 1 to get other side, just guess and check, don't think too hard!
 	//edge case are abortions, figure out logic on that later!
 	handleGameClick = (game) => {
-		// console.log("game loaded: ", game)
 		let newGame = new Chess()
 		newGame.loadPgn(game.pgn)
 		// console.log(game)
@@ -333,6 +332,8 @@ export class BoardWrapper extends React.Component {
 			timestamps: comments.map((obj) => obj.comment),
 			white_time: newGame.turn() === "w" ? comments[totalPly-2].comment : comments[totalPly-1].comment,
 			black_time: newGame.turn() === "w" ? comments[totalPly-1].comment : comments[totalPly-2].comment,
+		}, () => {
+			console.log('game loaded', this.state)
 		})
 	}
 
@@ -369,19 +370,17 @@ export class BoardWrapper extends React.Component {
 
 	//done, hard edge cases on 2 and 1
 	handleLeftClick = () => {
+		console.log('left', this.state)
 		this.state.game.undo()
-		let comments = this.state.game.getComments()
-		let totalPly = 0
 
-		if (comments) {
-			totalPly = this.state.game.getComments().length
-		} 
+		let comments = this.state.timestamps
+		let totalPly = this.state.game.history().length
 
 		if (totalPly === 1) {
 			this.setState({ 
 				fen: this.state.game.fen(), 
-				white_time: comments[0].comment,
-				black_time: comments[0].comment,
+				white_time: comments[0],
+				black_time: comments[0],
 			})
 		} else if (totalPly === 0) {
 			this.setState({ 
@@ -390,13 +389,14 @@ export class BoardWrapper extends React.Component {
 		} else 
 		this.setState({ 
 			fen: this.state.game.fen(), 
-			white_time: this.state.game.turn() === "w" ? comments[totalPly-2].comment : comments[totalPly-1].comment,
-			black_time: this.state.game.turn() === "w" ? comments[totalPly-1].comment : comments[totalPly-2].comment,
+			white_time: this.state.game.turn() === "w" ? comments[totalPly-2] : comments[totalPly-1],
+			black_time: this.state.game.turn() === "w" ? comments[totalPly-1] : comments[totalPly-2],
 		})
 	}
 
 	//Done, edge cases are beginning and end
 	handleRightClick = () => {
+		console.log('right', this.state)
 		let index = this.state.game.history().length
 		let move = this.state.history[index]
 		this.state.game.move(move)
@@ -413,6 +413,7 @@ export class BoardWrapper extends React.Component {
 				fen: this.state.game.fen(),
 			})
 		}else {
+			console.log(this.state, index)
 			this.setState({ 
 				fen: this.state.game.fen(),
 				white_time: this.state.game.turn() === "w" ? this.state.timestamps[index-1] : this.state.timestamps[index],

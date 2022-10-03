@@ -3,8 +3,6 @@ import React from 'react'
 class Notations extends React.Component {
 	componentDidUpdate() {
 		if (this.ref) this.ref.scrollIntoView()
-
-		console.log(this.ref)
 	}
 
 	render() {
