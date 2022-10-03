@@ -310,7 +310,6 @@ export class BoardWrapper extends React.Component {
 	handleGameClick = (game) => {
 		let newGame = new Chess()
 		newGame.loadPgn(game.pgn)
-		// console.log(game)
 
 		let comments = newGame.getComments()
 		let totalPly = newGame.getComments().length
@@ -332,8 +331,6 @@ export class BoardWrapper extends React.Component {
 			timestamps: comments.map((obj) => obj.comment),
 			white_time: newGame.turn() === "w" ? comments[totalPly-2].comment : comments[totalPly-1].comment,
 			black_time: newGame.turn() === "w" ? comments[totalPly-1].comment : comments[totalPly-2].comment,
-		}, () => {
-			console.log('game loaded', this.state)
 		})
 	}
 
@@ -370,7 +367,6 @@ export class BoardWrapper extends React.Component {
 
 	//done, hard edge cases on 2 and 1
 	handleLeftClick = () => {
-		console.log('left', this.state)
 		this.state.game.undo()
 
 		let comments = this.state.timestamps
@@ -396,13 +392,11 @@ export class BoardWrapper extends React.Component {
 
 	//Done, edge cases are beginning and end
 	handleRightClick = () => {
-		console.log('right', this.state)
 		let index = this.state.game.history().length
 		let move = this.state.history[index]
 		this.state.game.move(move)
 
 		if (index === 0) {
-			// console.log(this.state.timestamps[index].slice(5, this.state.timestamps[index].length-1))
 			this.setState({ 
 				fen: this.state.game.fen(), 
 				white_time: this.state.timestamps[index],
@@ -413,7 +407,6 @@ export class BoardWrapper extends React.Component {
 				fen: this.state.game.fen(),
 			})
 		}else {
-			console.log(this.state, index)
 			this.setState({ 
 				fen: this.state.game.fen(),
 				white_time: this.state.game.turn() === "w" ? this.state.timestamps[index-1] : this.state.timestamps[index],

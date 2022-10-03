@@ -45,7 +45,7 @@ export class ApiContent extends React.Component {
 				this.fetchAndProcessGames(startDate, endDate, player, username)
 			
 				// this.setState({loading: true, games: games}, () => {
-				// 	this.props.setGames(games, () => {
+				// 	this.props.handleGames(games, () => {
 				// 		this.props.handleFetching(false)
 				// 		this.setState({loading: false, preLoading: false})
 			
@@ -56,7 +56,7 @@ export class ApiContent extends React.Component {
 
 		// if game is found then loading is set to true, navigate to game link
 		if (loading !== prevState.loading && loading) {
-			this.props.flipPage(0, () => {
+			this.props.handlePage(0, () => {
 				if (location.pathname.slice(1,6) !== "games")
 					navigate(getLink(username, startDate, endDate, 1))	// navigate to page 1
 			})
@@ -185,7 +185,7 @@ export class ApiContent extends React.Component {
 			})
 		}
 		// Logics start here: setting games to parent component
-		this.props.setGames(response.body.games, (gamesLength) => {
+		this.props.handleGames(response.body.games, (gamesLength) => {
 			let jsonObj = {
 				id: this.state.games.length+1,
 				month: `${endMonth}`,
@@ -196,9 +196,9 @@ export class ApiContent extends React.Component {
 			let count = this.state.count + response.body.games.length
 			let month = this.toMonthName(endMonth)
 			let games = [...this.state.games, jsonObj]
-			let loading = gamesLength > 0
+			// let loading = gamesLength > 0
 			let spinner = !this.state.spinner
-			this.setApi(count ,month, endYear, games, true, loading, false, spinner, () => {
+			this.setApi(count ,month, endYear, games, true, true, false, spinner, () => {
 			    // Going backwards one month
 			    if (endMonth === 1) {
 			    	endMonth = 12

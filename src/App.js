@@ -60,9 +60,9 @@ export class App extends React.Component {
 			handleFetching, 
 			extractDate, 
 			getLink, 
-			flipPage, 
-			setGames, 
-			getGame, 
+			handlePage, 
+			handleGames, 
+			handleGameClick, 
 			fixChessDate 
 		} = this
 
@@ -71,7 +71,7 @@ export class App extends React.Component {
 		const SidebarProps = { location }
 		const SearchbarProps = { handleUserSearch, handleError }
 		const PlayerProps = { extractDate, fixChessDate, handlePlayer }
-		const ApiContentProps = { handleError, handleFetching, flipPage, handlePlayer, extractDate, getLink, setGames, location, navigate}
+		const ApiContentProps = { handleError, handleFetching, handlePage, handlePlayer, extractDate, getLink, handleGames, location, navigate}
 
 		return (<>
 		{/* Navbar (x)
@@ -108,7 +108,7 @@ export class App extends React.Component {
 									<func> handleFetching 
 									<func> getLink
 									<func> navigate
-									<func> setGames
+									<func> handleGames
 	    		    */}
 
 
@@ -167,9 +167,9 @@ export class App extends React.Component {
 										isFetch={isFetch}
 										pageIndex={pageIndex}
 										getLink={getLink}
-										flipPage={flipPage}
+										handlePage={handlePage}
 										extractDate={extractDate} 
-										getGame={getGame} />} />
+										handleGameClick={handleGameClick} />} />
 								<Route 
 									path="board"
 									element={<BoardWrapper 
@@ -252,17 +252,17 @@ export class App extends React.Component {
 		this.setState({ isFetch }, () => { if (cb) cb() })
 	}
 
-	/* 4. flipPage (x)
+	/* 4. handlePage (x)
 		invoker:	ApiFetcher - on success, reset page to 0
 				 	GamesWrapper - onPageClick, save stage of page on page change
 		callback:	
 
 	*/
-	flipPage = (num, cb) => {
+	handlePage = (num, cb) => {
 		this.setState({ pageIndex: num}, () => { if (cb) cb() })
 	}
 
-	/* 5. setGames (x)
+	/* 5. handleGames (x)
 		invoker:	ApiContent - fetch all games
 		invokee:	GamesWrapper
 		params:		<array> games
@@ -272,7 +272,7 @@ export class App extends React.Component {
 						If game length is greater than 0, trigger loading (fetchAndSetGames)
 						Once loading is triggered, reset state of API and goto page 1 of games component
 	*/
-	setGames = (games, callback) => {
+	handleGames = (games, callback) => {
 		this.setState({
 			games: [...this.state.games, ...games.slice().reverse()]
 		}, (val) => {
@@ -280,9 +280,9 @@ export class App extends React.Component {
 		})
 	}
 
-	/* 6. getGame */
+	/* 6. handleGameClick */
 	// getting MVP out first
-	getGame = (game) => {
+	handleGameClick = (game) => {
 		this.setState({
 			chesscom: game
 		}, () => {

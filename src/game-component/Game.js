@@ -33,7 +33,7 @@ export class Game extends React.Component {
 	}
 
 	onGameClick = (event, index) => {
-		this.props.getGame(this.props.game, index)
+		this.props.handleGameClick(this.props.game, index)
 	}
 
 	getGameNum = (index, pageIndex, perPage) => {

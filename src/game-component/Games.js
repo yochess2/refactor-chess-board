@@ -25,7 +25,7 @@ export class Games extends React.Component {
 						index={index}
 						pageIndex={this.props.pageIndex}
 						perPage={this.props.perPage}
-						getGame={this.props.getGame}
+						handleGameClick={this.props.handleGameClick}
 					/>
 				)}
 				</tbody>
