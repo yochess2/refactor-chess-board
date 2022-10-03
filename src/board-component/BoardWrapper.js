@@ -286,26 +286,30 @@ export class BoardWrapper extends React.Component {
 		let notationHistory = this.state.history
 		let timestamps = [...this.state.timestamps]
 		let index = gameHistory.length-1
-		let totalPly = gameHistory.length
 		let history = []
 		let offset = 0
 
-		if ((totalPly % 2 === 0 && this.game.turn() === 'b') || 
-			(totalPly % 2 === 1 && this.game.turn() === 'w')) {
+		// if black is first to move in initial position, set some offsets
+		if ((gameHistory.length % 2 === 0 && this.game.turn() === 'b') || 
+			(gameHistory.length % 2 === 1 && this.game.turn() === 'w')) {
 			index+=1
-			totalPly+=1
-			offset-=1
+			offset+=1
 			history.push(null)
 		}
 
 		// if gameHistory.length is greater than notationHistory.length
-		if (totalPly > notationHistory.length) {
+		//   then rewrite history and clear timestamps
+		if (gameHistory.length+offset > notationHistory.length) {
 			history = [...history, ...this.game.history()]
 			timestamps = []
 		} else {
-			if (gameHistory[index+offset] === notationHistory[index]) {
+			// else if move is the same
+			//    then keep current history
+			if (gameHistory[index-offset] === notationHistory[index]) {
 				history = [...this.state.history]
 			} else {
+				// else move is different
+				//    then rewrite history and clear timestamps
 				history = [...history, ...this.game.history()]
 				timestamps = []
 			}
