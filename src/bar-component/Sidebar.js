@@ -37,7 +37,7 @@ export class Sidebar extends React.Component {
 
 			{/* Sidebar Content */}
 			<div className="sidebar-container">
-				<div className="show mt-2" id="sidemenu">
+				<div className="show" id="sidemenu">
 					<div className="list-group">
 						<NavLink 
 							to="board" 

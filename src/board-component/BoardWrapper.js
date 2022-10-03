@@ -6,7 +6,8 @@ import {
 	FaAngleLeft,
 	FaAngleRight,
 	FaAngleDoubleLeft,
-	FaAngleDoubleRight 
+	FaAngleDoubleRight,
+	FaArrowsAltV,
 } from "react-icons/fa"
 
 import Notations from "./Notations"
@@ -37,6 +38,11 @@ export class BoardWrapper extends React.Component {
 				rating: "1000",
 			},
 			games: [],
+
+			boardOrientation: true,
+
+			leftArrow: { backgroundColor: "lightgray", borderStyle: "ridge" },
+			rightArrow: { backgroundColor: "lightgray", borderStyle: "ridge" },
 		}
 	}
 
@@ -45,18 +51,63 @@ export class BoardWrapper extends React.Component {
 		window.addEventListener("resize", this.handleResize)
 		this.handleResize()
 
+		window.addEventListener("keydown", this.handleKey)
+
 		if (this.props.chesscom) {
 			this.handleGameClick(this.props.chesscom)
 		}
 	}
 
 	componentWillUnmount = () => {
-		window.removeEventListener("resize", this.handleResize)
+		window.removeEventListener("keydown", this.handleKey)
 	}
 
 	handleResize = () => {
 		let display = document.getElementsByClassName("chess-board-wrapper")[0];
-		this.setState({ boardWidth: display.offsetWidth - 20 })
+		this.setState({ boardWidth: display.offsetWidth})
+	}
+
+	handleKey = (e) => {
+		if (e.key === "ArrowRight") {
+			this.handleRightClick()
+			this.setState({
+				rightArrow: {
+					backgroundColor: "orange",
+					borderStyle: "ridge"
+				}
+			}, () => {
+				setTimeout(() => {
+					this.setState({
+						rightArrow: {
+							backgroundColor: "lightgray", 
+							borderStyle: "ridge"
+						}
+					})
+
+				}, 100)
+
+			})
+		}
+		if (e.key === "ArrowLeft") {
+			this.handleLeftClick()
+			this.setState({
+				leftArrow: {
+					backgroundColor: "orange",
+					borderStyle: "ridge"
+				}
+			}, () => {
+				setTimeout(() => {
+					this.setState({
+						leftArrow: {
+							backgroundColor: "lightgray", 
+							borderStyle: "ridge"
+						}
+					})
+
+				}, 100)
+
+			})
+		}
 	}
 
 
@@ -68,17 +119,35 @@ export class BoardWrapper extends React.Component {
 
 					{/* Black Player Info and Black Clock */}
 					<div className="col-8 col-sm-4">
+
+						{this.state.boardOrientation ? 
 						<h4>
 							{this.state.black.name || this.state.black.username}
 							<span> ({this.state.black.rating})</span>
 						</h4>
+						:
+						<h4>
+							{this.state.white.name || this.state.white.username}
+							<span> ({this.state.white.rating})</span>
+						</h4>
+						}
+
 					</div>
 					<div className="col-4 text-end">
+						{this.state.boardOrientation ? 
 						<h4>
 							<span className={this.state.game.turn() === 'b' ? 'highlight-clock' : ''}>
-								{this.state.black_time && this.state.black_time.slice(5, this.state.black_time.length-1)}
+								{this.state.black_time && this.state.black_time.slice(5, 13)}
 							</span>
 						</h4>
+						:
+						<h4>
+							<span className={this.state.game.turn() === 'w' ? 'highlight-clock' : ''}>
+								{this.state.white_time && this.state.white_time.slice(5, 13)}
+							</span>
+						</h4>
+						}
+
 					</div>
 
 					{/* Empty Space */}
@@ -95,6 +164,7 @@ export class BoardWrapper extends React.Component {
 								id="BasicBoard" 
 								position={this.state.fen}
 								showBoardNotation={true}
+								boardOrientation={this.state.boardOrientation ? "white" : "black"}
 								onPieceDrop={this.handlePieceDrop}
 								animationDuration={0}
 								areArrowsAllowed={true}
@@ -104,7 +174,7 @@ export class BoardWrapper extends React.Component {
 					</div>
 
 					{/* Notations */}
-					<div className="col-sm-4 d-none d-sm-block" style={{border: "solid", height: this.state.boardWidth, overflow: "auto"}}>
+					<div className="col-sm-4 d-none d-sm-block" style={{height: this.state.boardWidth, overflow: "auto"}}>
 						<Notations 
 							history={this.state.history}
 							onMoveClick={this.handleMoveClick}
@@ -121,17 +191,34 @@ export class BoardWrapper extends React.Component {
 					{/*<div className="col-8">*/}
 						{/*<div className="row">*/}
 							<div className="col-8 col-sm-4">
+								
+								{this.state.boardOrientation ? 
 								<h4>
 									{this.state.white.name || this.state.white.username}
 									<span> ({this.state.white.rating})</span>
 								</h4>
+								:
+								<h4>
+									{this.state.black.name || this.state.black.username}
+									<span> ({this.state.black.rating})</span>
+								</h4>
+								}
+
 							</div>
 							<div className="col-4 col-sm-4 text-end">
+								{this.state.boardOrientation ?
 								<h4>
 									<span className={this.state.game.turn() === 'w' ? 'highlight-clock' : ''}>
-										{this.state.white_time && this.state.white_time.slice(5, this.state.white_time.length-1)}
+										{this.state.white_time && this.state.white_time.slice(5, 13)}
 									</span>
 								</h4>
+								:
+								<h4>
+									<span className={this.state.game.turn() === 'b' ? 'highlight-clock' : ''}>
+										{this.state.black_time && this.state.black_time.slice(5, 13)}
+									</span>
+								</h4>
+								}
 							</div>
 						{/*</div>*/}
 					{/*</div>*/}
@@ -139,23 +226,35 @@ export class BoardWrapper extends React.Component {
 					{/* Buttons */}
 					<div className="col-sm-4">
 						<div className="row">
-							<div className="col-3 hand-icon" style={{backgroundColor: "#8FBC8F", border: "solid"}} onClick={this.handleDoubleLeftClick}>
+
+							<div className="col-2 hand-icon text-center double-left-arrow" style={{backgroundColor: "#8FBC8F", borderStyle: "ridge"}} onClick={this.handleDoubleLeftClick}>
 								<FaAngleDoubleLeft/>
 							</div>
-							<div className="col-3 hand-icon" style={{backgroundColor: "lightgray", border: "solid"}} onClick={this.handleLeftClick}>
+							<div className="col-2 hand-icon text-center left-arrow" style={this.state.leftArrow} onClick={this.handleLeftClick}>
 								<FaAngleLeft/>
 							</div>
-							<div className="col-3 hand-icon" style={{backgroundColor: "lightgray", border: "solid"}} onClick={this.handleRightClick}>
+							<div className="col-2 hand-icon text-center right-arrow" style={this.state.rightArrow} onClick={this.handleRightClick}>
 								<FaAngleRight/>
 							</div>
-							<div className="col-3 hand-icon" style={{backgroundColor: "#8FBC8F", border: "solid"}} onClick={this.handleDoubleRightClick}>
+							<div className="col-2 hand-icon text-center double-right-arrow" style={{backgroundColor: "#8FBC8F", borderStyle: "ridge" }} onClick={this.handleDoubleRightClick}>
 								<FaAngleDoubleRight/>
 							</div>
+							<div className="col-1"></div>
+							<div className="col-2 hand-icon text-center double-left-arrow" style={{backgroundColor: "lightblue", borderStyle: "ridge"}} onClick={this.toggleBoard}>
+								<FaArrowsAltV />
+							</div>
+							<div className="col-1"></div>
 						</div>
+					</div>
+					<div style={{height: "10px"}}>
 					</div>
 				</div>
 			</>
 		)
+	}
+
+	toggleBoard = () => {
+		this.setState({boardOrientation: !this.state.boardOrientation})
 	}
 
 
@@ -208,7 +307,7 @@ export class BoardWrapper extends React.Component {
 		let totalPly = newGame.getComments().length
 
 		if (comments.length === 0) {
-			comments = Array.from(Array(10).keys()).map(x => {
+			comments = Array.from(Array(1000).keys()).map(x => {
 				return {comment: 'NA'}
 			})
 			totalPly = comments.length

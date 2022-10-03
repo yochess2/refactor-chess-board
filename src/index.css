@@ -24,7 +24,7 @@ body {
 }
 
 .highlight-move {
-	background-color: #00FFFF;
+	background-color: #00FFFF !important;
 }
 
 .collapse-sidebar-btn {
@@ -34,4 +34,36 @@ body {
 .sidebar-heading {
 	font-size: 28px;
 	font-weight: bold;
+}
+
+.double-left-arrow:active {
+	color: yellow;
+}
+
+.double-left-arrow:hover{
+	background: orange !important;
+}
+
+.left-arrow:active {
+	color: yellow;
+}
+
+.left-arrow:hover{
+	background: orange !important;
+}
+
+.double-right-arrow:active {
+	color: yellow;
+}
+
+.double-right-arrow:hover{
+	background: orange !important;
+}
+
+.right-arrow:active {
+	color: yellow;
+}
+
+.right-arrow:hover{
+	background: orange !important;
 }

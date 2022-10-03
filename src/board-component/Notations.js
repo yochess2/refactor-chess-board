@@ -1,19 +1,15 @@
 import React from 'react'
 
 class Notations extends React.Component {
-	constructor(props) {
-		super(props)
-		this.state = {
-			history: props.history,
-			// scrolled: false,
-		}
+	componentDidUpdate() {
+		if (this.ref) this.ref.scrollIntoView()
 	}
+
 	render() {
-		// console.log('    Notations - render')
 		return (
-			<div style={{ fontSize: '24px', overflow: 'auto' }}>
-				<table>
-					<thead>
+			// <div style={{ fontSize: '12px'}}>
+				<table className="table table-striped table-bordered mb-0">
+					<thead className="table-dark">
 						<tr>
 							<td>#</td>
 							<td>White</td>
@@ -23,7 +19,11 @@ class Notations extends React.Component {
 					<tbody>
 						{this.formatHistory(this.props.history).map((move, index) => {
 							return (
-								<tr key={index}>
+								<tr key={index} ref={(el) => {
+									if (index*2+1 === this.props.ply || (index+1)*2 === this.props.ply) {
+										this.ref = el
+									}
+								}}>
 									<td>
 										<span>{move[0]}</span>
 									</td>
@@ -51,7 +51,7 @@ class Notations extends React.Component {
 						})}
 					</tbody>
 				</table>
-			</div>
+			// </div>
 		)
 	}
 
