@@ -19,6 +19,14 @@ body {
 	cursor: pointer;
 }
 
+.hand-icon:hover {
+	color: gray;
+}
+
+.hand-icon:active {
+	color: orange;
+}
+
 .highlight-clock {
 	background-color: #ffb6c1;
 }

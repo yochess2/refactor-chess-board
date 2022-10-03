@@ -6,11 +6,11 @@ export class Searchbar extends React.Component {
 	constructor(props) {
 		super(props) // handleUserSearch(), handleError() are passed down as props
 		this.state = {
-			username: "",
-			displayStartDate: null,
-			displayEndDate: null,
-			formStartDate: null,
-			formEndDate: null,
+			username: "hikaru",
+			displayStartDate: new Date(),
+			displayEndDate: new Date(),
+			formStartDate: new Date(),
+			formEndDate: new Date(),
 		}
 		this.startDateRef = React.createRef()
 		this.endDateRef = React.createRef()
@@ -26,14 +26,7 @@ export class Searchbar extends React.Component {
 		let { formatMonth, onStartMonthClick, onEndMonthClick, handleUserSearch, onUserInput } = this
 		let { displayStartDate, displayEndDate, formStartDate, formEndDate, username } = this.state
 		return (
-	    	<div className="row mt-2">
-
-
-	    		{/* Error Message */}
-	    		{this.props.children}
-		    	{/* End Error Message */}
-
-
+	    	<div className="row mt-lg-2">
 	    		{/* First Group: Start and End Date */}
 	    		<div className="col-md-6">
 					<div className="input-group dropdown-button">
@@ -98,6 +91,7 @@ export class Searchbar extends React.Component {
 							className="form-control"
 							disabled={this.props.isFetch}
 							value={username}
+							placeholder="Enter username"
 							onChange={onUserInput} 
 							aria-label="Search Username"/>
 						{/* End Username Input */}
@@ -169,6 +163,12 @@ export class Searchbar extends React.Component {
 		if (!formEndDate || !formStartDate || (formEndDate < formStartDate))
 			return this.props.handleError(true, "Dates are invalid!")
 		this.props.handleError(false, "", () => {
+			if (this.startDateRef.current.ariaExpanded === "true") {
+				this.toggleCalendar(true, false)
+			}
+			if (this.endDateRef.current.ariaExpanded === "true") {
+				this.toggleCalendar(false, true)
+			}
 			this.props.handleUserSearch(username, formStartDate, formEndDate)
 		})
 	}

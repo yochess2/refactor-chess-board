@@ -142,6 +142,9 @@ export class ApiContent extends React.Component {
 
 	// 2. processFetchGames (x) - gets the necessary params before invoking fetchAndSetGames
 	fetchAndProcessGames = async (startDate, endDate, player, username) => {
+		let today = new Date()
+		if (endDate > today) endDate = today
+
 		let dates = this.getDates(startDate, endDate, player, this.props.extractDate)
 
 		// Used to fetch games

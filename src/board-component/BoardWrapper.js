@@ -57,10 +57,12 @@ export class BoardWrapper extends React.Component {
 
 	componentWillUnmount = () => {
 		window.removeEventListener("keydown", this.handleKey)
+		window.removeEventListener("resize", this.handleResize)
 	}
 
 	handleResize = () => {
 		let display = document.getElementsByClassName("chess-board-wrapper")[0];
+		if (!display) return console.log('what happened to display? ', document.getElementsByClassName("chess-board-wrapper"))
 		this.setState({ boardWidth: display.offsetWidth})
 	}
 
@@ -123,12 +125,12 @@ export class BoardWrapper extends React.Component {
 
 	render() {
 		return (
-			<>
+			<div className="container">
 				{/* ROW 1 */}
 				<div className="row">
 
-					{/* Black Player Info and Black Clock */}
-					<div className="col-8 col-sm-4">
+					{/* Black Player Info and Black Time */}
+					<div className="col-8 col-md-6">
 
 						{this.state.boardOrientation ? 
 						<h4>
@@ -143,7 +145,7 @@ export class BoardWrapper extends React.Component {
 						}
 
 					</div>
-					<div className="col-4 text-end">
+					<div className="col-4 col-md-2 text-end">
 						{this.state.boardOrientation ? 
 						<h4>
 							<span className={this.game.turn() === 'b' ? 'highlight-clock' : ''}>
@@ -168,8 +170,8 @@ export class BoardWrapper extends React.Component {
 				<div className="row">
 
 					{/* Chess Board */}
-					<div className="col-sm-8">
-						<div className="chess-board-wrapper justify-content-sm-center">
+					<div className="col-md-8">
+						<div className="chess-board-wrapper justify-content-md-center">
 							<Chessboard 
 								id="BasicBoard" 
 								position={this.state.fen}
@@ -184,7 +186,7 @@ export class BoardWrapper extends React.Component {
 					</div>
 
 					{/* Notations */}
-					<div className="col-sm-4 d-none d-sm-block" style={{height: this.state.boardWidth, overflow: "auto"}}>
+					<div className="col-md-4 d-none d-md-block" style={{height: this.state.boardWidth, overflow: "auto"}}>
 						<Notations 
 							history={this.state.history}
 							onNotationClick={this.handleNotationClick}
@@ -196,11 +198,10 @@ export class BoardWrapper extends React.Component {
 
 				{/* ROW 3 */}
 				<div className="row">
-
-					{/* Black Player Info and Black Clock */}
+					{/* White Player Info and White Time */}
 					{/*<div className="col-8">*/}
 						{/*<div className="row">*/}
-							<div className="col-8 col-sm-4">
+							<div className="col-8 col-md-6">
 								
 								{this.state.boardOrientation ? 
 								<h4>
@@ -215,7 +216,7 @@ export class BoardWrapper extends React.Component {
 								}
 
 							</div>
-							<div className="col-4 col-sm-4 text-end">
+							<div className="col-4 col-md-2 text-end">
 								{this.state.boardOrientation ?
 								<h4>
 									<span className={this.game.turn() === 'w' ? 'highlight-clock' : ''}>
@@ -234,8 +235,9 @@ export class BoardWrapper extends React.Component {
 					{/*</div>*/}
 
 					{/* Buttons */}
-					<div className="col-sm-4">
+					<div className="col-md-4">
 						<div className="row">
+							<div className="col-1"></div>
 
 							<div className="col-2 hand-icon text-center double-left-arrow" style={{backgroundColor: "#8FBC8F", borderStyle: "ridge"}} onClick={this.handleDoubleLeftClick}>
 								<FaAngleDoubleLeft/>
@@ -249,7 +251,6 @@ export class BoardWrapper extends React.Component {
 							<div className="col-2 hand-icon text-center double-right-arrow" style={{backgroundColor: "#8FBC8F", borderStyle: "ridge" }} onClick={this.handleDoubleRightClick}>
 								<FaAngleDoubleRight/>
 							</div>
-							<div className="col-1"></div>
 							<div className="col-2 hand-icon text-center double-left-arrow" style={{backgroundColor: "lightblue", borderStyle: "ridge"}} onClick={this.toggleBoard}>
 								<FaArrowsAltV />
 							</div>
@@ -259,7 +260,7 @@ export class BoardWrapper extends React.Component {
 					<div style={{height: "10px"}}>
 					</div>
 				</div>
-			</>
+			</div>
 		)
 	}
 

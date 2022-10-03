@@ -15,7 +15,7 @@ export class Sidebar extends React.Component {
 			<>
 			{/* Sidebar Heading */}
 			
-				<div className="text-center text-sm-start border-bottom p-1">
+				<div className="text-center text-lg-start border-bottom p-1">
 					<div 
 						className="sidebar-heading" 
 						data-bs-toggle="collapse" 

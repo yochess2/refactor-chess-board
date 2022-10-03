@@ -95,7 +95,7 @@ export class App extends React.Component {
 						TODO: 		- Needs styling
 									- FaBar not showing on mobile
 					*/}
-					<div className="col-md-3">
+					<div className="col-lg-3">
 						<Sidebar {...SidebarProps} />
 					{/* End Sidebar */}
 
@@ -122,7 +122,7 @@ export class App extends React.Component {
 						
 					</div>
 
-					<div className="col-md-9">
+					<div className="col-lg-9">
 
 
 						{/* ErrorMessage (x)
@@ -153,7 +153,7 @@ export class App extends React.Component {
 
 
 					    {/* Main Content */}
-						<div className="table-responsive-md mt-2">
+						<div className="mt-2">
 							<Routes>
 								<Route
 									path="*"
