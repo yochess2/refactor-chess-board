@@ -20,6 +20,7 @@ class Notations extends React.Component {
 						{this.formatHistory(this.props.history).map((move, index) => {
 							return (
 								<tr key={index} ref={(el) => {
+									// console.log(this.props.ply)
 									if (index*2+1 === this.props.ply || (index+1)*2 === this.props.ply) {
 										this.ref = el
 									}
@@ -81,7 +82,8 @@ class Notations extends React.Component {
 	//Returns: Nothing
 	onNotationClick = (event, color, index) => {
 		let moveNum = color === 'white' ? index*2 : index*2+1
-		this.props.onMoveClick(moveNum)
+		// console.log(color, index, moveNum)
+		this.props.onNotationClick(moveNum)
 	}
 }
 

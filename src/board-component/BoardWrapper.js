@@ -15,16 +15,15 @@ import Notations from "./Notations"
 export class BoardWrapper extends React.Component {
 	constructor(props) {
 		super(props)
+		this.game = new Chess()
 
 		this.state = {
-			// chesscom: this.props.chesscom, //placeholder for now
 			boardWidth: "256",
-			game: new Chess(),
 
-
-			fen: "start",
+			fen: this.game.fen(),
 			history: [],
 			timestamps: [],
+			ply: this.game.history() && this.game.history.length,
 			black_time: "",
 			white_time: "",
 			white: {
@@ -37,8 +36,6 @@ export class BoardWrapper extends React.Component {
 				username: "Black User",
 				rating: "1000",
 			},
-			games: [],
-
 			boardOrientation: true,
 
 			leftArrow: { backgroundColor: "lightgray", borderStyle: "ridge" },
@@ -146,13 +143,13 @@ export class BoardWrapper extends React.Component {
 					<div className="col-4 text-end">
 						{this.state.boardOrientation ? 
 						<h4>
-							<span className={this.state.game.turn() === 'b' ? 'highlight-clock' : ''}>
+							<span className={this.game.turn() === 'b' ? 'highlight-clock' : ''}>
 								{this.state.black_time && this.state.black_time.slice(5, 13)}
 							</span>
 						</h4>
 						:
 						<h4>
-							<span className={this.state.game.turn() === 'w' ? 'highlight-clock' : ''}>
+							<span className={this.game.turn() === 'w' ? 'highlight-clock' : ''}>
 								{this.state.white_time && this.state.white_time.slice(5, 13)}
 							</span>
 						</h4>
@@ -187,8 +184,8 @@ export class BoardWrapper extends React.Component {
 					<div className="col-sm-4 d-none d-sm-block" style={{height: this.state.boardWidth, overflow: "auto"}}>
 						<Notations 
 							history={this.state.history}
-							onMoveClick={this.handleMoveClick}
-							ply={this.state.game.history && this.state.game.history().length}
+							onNotationClick={this.handleNotationClick}
+							ply={this.state.ply}
 
 						/>
 					</div>
@@ -218,13 +215,13 @@ export class BoardWrapper extends React.Component {
 							<div className="col-4 col-sm-4 text-end">
 								{this.state.boardOrientation ?
 								<h4>
-									<span className={this.state.game.turn() === 'w' ? 'highlight-clock' : ''}>
+									<span className={this.game.turn() === 'w' ? 'highlight-clock' : ''}>
 										{this.state.white_time && this.state.white_time.slice(5, 13)}
 									</span>
 								</h4>
 								:
 								<h4>
-									<span className={this.state.game.turn() === 'b' ? 'highlight-clock' : ''}>
+									<span className={this.game.turn() === 'b' ? 'highlight-clock' : ''}>
 										{this.state.black_time && this.state.black_time.slice(5, 13)}
 									</span>
 								</h4>
@@ -263,46 +260,68 @@ export class BoardWrapper extends React.Component {
 		)
 	}
 
+	//DONE
 	toggleBoard = () => {
 		this.setState({boardOrientation: !this.state.boardOrientation})
 	}
 
 
+	//Done?
 	//When user drops a piece, the move gets input into the chess instance
 	//  if the chess instance says the move is illegal then nothing happens
 	//  else the chess instance gets updated and fen's state changes 
 	//Returns: a value of true or false as required by the chessboard instance
 	handlePieceDrop = (sourceSquare, targetSquare, piece) => {		
-		let moved = this.state.game.move({
+		let moved = this.game.move({
 			from: sourceSquare, 
 			to: targetSquare
 		})
-
-		let currentHistory = this.state.game.history()
-		let notationHistory = this.state.history
-		let index = currentHistory.length-1
-
 		if (!moved) {
 			return false
 		}
 
-		let history
-		if (currentHistory.length >= notationHistory.length) {
-			history = this.state.game.history()
+		//fix timestamp and if initial is black to move
+		// really guessed and checked until the numbers matched
+		let gameHistory = this.game.history()
+		let notationHistory = this.state.history
+		let timestamps = [...this.state.timestamps]
+		let index = gameHistory.length-1
+		let totalPly = gameHistory.length
+		let history = []
+		let offset = 0
+
+		if ((totalPly % 2 === 0 && this.game.turn() === 'b') || 
+			(totalPly % 2 === 1 && this.game.turn() === 'w')) {
+			index+=1
+			totalPly+=1
+			offset-=1
+			history.push(null)
+		}
+
+		// if gameHistory.length is greater than notationHistory.length
+		if (totalPly > notationHistory.length) {
+			history = [...history, ...this.game.history()]
+			timestamps = []
 		} else {
-			if (currentHistory[index] === notationHistory[index]) {
-				history = this.state.history
+			if (gameHistory[index+offset] === notationHistory[index]) {
+				history = [...this.state.history]
 			} else {
-				history = this.state.game.history()
+				history = [...history, ...this.game.history()]
+				timestamps = []
 			}
 		}
-		this.setState({
-			fen: this.state.game.fen(),
-			history: history,
+		this.setState(prevState => {
+			return {
+				fen: this.game.fen(),
+				history: history,
+				timestamps: timestamps, 	
+				ply: prevState.ply+1,
+			}
 		})
 		return true
 	}
 
+	//DONE,
 	//Load game, set timer
 	//Odd on length is white, even on index is black
 	//Subtract 1 to get other side, just guess and check, don't think too hard!
@@ -310,111 +329,189 @@ export class BoardWrapper extends React.Component {
 	handleGameClick = (game) => {
 		let newGame = new Chess()
 		newGame.loadPgn(game.pgn)
+		let gameComments = newGame.getComments()
+		let gameHistory = newGame.history()
+		let totalPly = gameHistory.length
 
-		let comments = newGame.getComments()
-		let totalPly = newGame.getComments().length
-
-		if (comments.length === 0) {
-			comments = Array.from(Array(1000).keys()).map(x => {
-				return {comment: 'NA'}
+		// if pgn doesn't include time, comments is blank
+		// manually set the time if that is the case
+		let comments
+		if (gameComments.length !== gameHistory.length) {
+			comments = gameHistory.map(ply => {
+				return {comment: '[%clk No Time  ]'}
 			})
-			totalPly = comments.length
-
+		} else {
+			comments = gameComments
 		}
 
-		this.setState({ 
-			game: newGame,
-			fen: newGame.fen(),
-			history: newGame.history(),
-			white: game.white,
-			black: game.black,
-			timestamps: comments.map((obj) => obj.comment),
-			white_time: newGame.turn() === "w" ? comments[totalPly-2].comment : comments[totalPly-1].comment,
-			black_time: newGame.turn() === "w" ? comments[totalPly-1].comment : comments[totalPly-2].comment,
-		})
+		// console.log('game from chess.js', newGame)
+		// console.log('game from chess.com', game)
+
+		// if its an analyzed game, sometimes black is first to move
+		if ((totalPly % 2 === 0 && newGame.turn() === 'b') || 
+			(totalPly % 2 === 1 && newGame.turn() === 'w')) {
+			this.setState({history: [null]}, () => {
+				this.setState({ 
+					fen: newGame.fen(),
+					history: [...this.state.history, ...newGame.history()],
+					white: game.white,
+					black: game.black,
+					timestamps: comments.map((obj) => obj.comment),
+					ply: comments.length+1,
+					white_time: newGame.turn() === "w" ? comments[totalPly-2].comment : comments[totalPly-1].comment,
+					black_time: newGame.turn() === "w" ? comments[totalPly-1].comment : comments[totalPly-2].comment,
+				}, () => {
+					this.game = newGame
+					// console.log('>>>>', this.state)
+				})
+			})
+		} else {
+			this.setState({ 
+				fen: newGame.fen(),
+				history: newGame.history(),
+				white: game.white,
+				black: game.black,
+				timestamps: comments.map((obj) => obj.comment),
+				ply: comments.length,
+				white_time: newGame.turn() === "w" ? comments[totalPly-2].comment : comments[totalPly-1].comment,
+				black_time: newGame.turn() === "w" ? comments[totalPly-1].comment : comments[totalPly-2].comment,
+			}, () => {
+				this.game = newGame
+				// console.log(this.state)
+			})
+
+		}
+		
 	}
 
-	//done
+	//DONE
 	//Method is invoked from Notations.onMoveClick()
 	//When invoked, it resets the game and board to that point in time,
 	//Notation is not affected
 	//Returns: Nothing
-	handleMoveClick = (moveNum) => {
-		this.state.game.reset()
-		for (let index = 0; index <= moveNum; index++) {
-			this.handleRightClick()
+	handleNotationClick = (moveNum) => {
+		let newGame = new Chess()
+
+		let attempt
+		if (this.props.chesscom && this.props.chesscom.initial_setup) {
+			attempt = newGame.load(this.props.chesscom.initial_setup)			
 		}
+		if (!attempt) {
+			let fen = this.game.header() && this.game.header().FEN
+			if (fen) attempt = newGame.load(fen)
+		}
+		if (!attempt) {
+			// console.log('Either new game or some unhandled error', this.game)
+		}
+
+		let ply = this.state.history[0] ? 0 : 1
+		this.setState({ply}, () => {
+			this.game = newGame
+			let index = this.state.history[0] ? 0 : 1
+			for (index; index <= moveNum; index++) {
+				this.handleRightClick()
+			}
+
+		})
+
 
 	}
 
-	//Done, just reset fen and timers, nothing else!
+	//DONE, just reset fen and timers, nothing else!
 	handleDoubleLeftClick = () => {
-		this.state.game.reset()
+		let newGame = new Chess()
+
+		let attempt
+		if (this.props.chesscom && this.props.chesscom.initial_setup) {
+			attempt = newGame.load(this.props.chesscom.initial_setup)			
+		}
+		if (!attempt) {
+			let fen = this.game.header() && this.game.header().FEN
+			if (fen) attempt = newGame.load(fen)
+		}
+		if (!attempt) {
+			// console.log('Either new game or some unhandled error', this.game)
+		}
+
+		this.game = newGame
+
 		this.setState({ 
-			fen: this.state.game.fen(),
+			fen: newGame.fen(),
 			white_time: this.state.timestamps[0],
 			black_time: this.state.timestamps[0],
+			ply: this.state.history[0] ? 0 : 1,
 		})
 	}
 
-	//done, just invoke handlerightclick
+	//DONE, just invoke handlerightclick
 	handleDoubleRightClick = () => {
-		let length = this.state.game.history().length
-		for (let index = length; index < this.state.timestamps.length; index++) {
+		let length = this.game.history().length
+		for (let index = length; index < this.state.history.length; index++) {
 			this.handleRightClick()
 		}
 	}
 
-	//done, hard edge cases on 2 and 1
+	//DONE, hard edge cases on 2 and 1
 	handleLeftClick = () => {
-		this.state.game.undo()
-
-		let comments = this.state.timestamps
-		let totalPly = this.state.game.history().length
+		this.game.undo()
+		// console.log(this.props.chesscom)
+		// console.log(this.props.chesscom.initial_setup)
+		// console.log(this.game.fen())
+		let timestamps = this.state.timestamps
+		let totalPly = this.game.history().length
 
 		if (totalPly === 1) {
 			this.setState({ 
-				fen: this.state.game.fen(), 
-				white_time: comments[0],
-				black_time: comments[0],
+				fen: this.game.fen(), 
+				white_time: timestamps[0],
+				black_time: timestamps[0],
+				ply: this.state.history[0] ? 1 : 2,
 			})
 		} else if (totalPly === 0) {
 			this.setState({ 
-				fen: this.state.game.fen(),
+				fen: this.game.fen(),
+				ply: this.state.history[0] ? 0 : 1,
 			})
 		} else 
-		this.setState({ 
-			fen: this.state.game.fen(), 
-			white_time: this.state.game.turn() === "w" ? comments[totalPly-2] : comments[totalPly-1],
-			black_time: this.state.game.turn() === "w" ? comments[totalPly-1] : comments[totalPly-2],
+		this.setState(prevState => {
+			return { 
+				fen: this.game.fen(), 
+				white_time: this.game.turn() === "w" ? timestamps[totalPly-2] : timestamps[totalPly-1],
+				black_time: this.game.turn() === "w" ? timestamps[totalPly-1] : timestamps[totalPly-2],
+				ply: prevState.ply-1,
+			}
 		})
 	}
 
-	//Done, edge cases are beginning and end
+	//DONE, edge cases are beginning and end
 	handleRightClick = () => {
-		let index = this.state.game.history().length
+		let index = this.state.history[0] ? this.game.history().length : this.game.history().length+1
+		// console.log(index)
 		let move = this.state.history[index]
-		this.state.game.move(move)
 
+		this.game.move(move)
 		if (index === 0) {
 			this.setState({ 
-				fen: this.state.game.fen(), 
+				fen: this.game.fen(), 
 				white_time: this.state.timestamps[index],
 				black_time: this.state.timestamps[index],
+				ply: 1,
 			})
-		} else if (index >= this.state.timestamps.length) {
+		} else if (index >= this.state.history.length) {
 			this.setState({
-				fen: this.state.game.fen(),
+				fen: this.game.fen(),
+				ply: this.state.history.length,
 			})
-		}else {
-			this.setState({ 
-				fen: this.state.game.fen(),
-				white_time: this.state.game.turn() === "w" ? this.state.timestamps[index-1] : this.state.timestamps[index],
-				black_time: this.state.game.turn() === "w" ? this.state.timestamps[index] : this.state.timestamps[index-1],
+		} else {
+			this.setState(prevState => {
+				return { 
+					fen: this.game.fen(),
+					white_time: this.game.turn() === "w" ? this.state.timestamps[index-1] : this.state.timestamps[index],
+					black_time: this.game.turn() === "w" ? this.state.timestamps[index] : this.state.timestamps[index-1],
+					ply: prevState.ply+1
+				}
 			})
-
 		}
-
 	}
 }
 
