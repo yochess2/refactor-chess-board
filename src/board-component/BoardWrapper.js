@@ -66,44 +66,47 @@ export class BoardWrapper extends React.Component {
 
 	handleKey = (e) => {
 		if (e.key === "ArrowRight") {
-			this.handleRightClick()
-			this.setState({
-				rightArrow: {
-					backgroundColor: "orange",
-					borderStyle: "ridge"
-				}
-			}, () => {
-				setTimeout(() => {
-					this.setState({
-						rightArrow: {
-							backgroundColor: "lightgray", 
-							borderStyle: "ridge"
-						}
-					})
+			if(this.handleRightClick()) {
+				this.setState({
+					rightArrow: {
+						backgroundColor: "orange",
+						borderStyle: "ridge"
+					}
+				}, () => {
+					setTimeout(() => {
+						this.setState({
+							rightArrow: {
+								backgroundColor: "lightgray", 
+								borderStyle: "ridge"
+							}
+						})
 
-				}, 100)
+					}, 100)
 
-			})
+				})
+			}
 		}
 		if (e.key === "ArrowLeft") {
-			this.handleLeftClick()
-			this.setState({
-				leftArrow: {
-					backgroundColor: "orange",
-					borderStyle: "ridge"
-				}
-			}, () => {
-				setTimeout(() => {
-					this.setState({
-						leftArrow: {
-							backgroundColor: "lightgray", 
-							borderStyle: "ridge"
-						}
-					})
+			if (this.handleLeftClick()) {
+				this.setState({
+					leftArrow: {
+						backgroundColor: "orange",
+						borderStyle: "ridge"
+					}
+				}, () => {
+					setTimeout(() => {
+						this.setState({
+							leftArrow: {
+								backgroundColor: "lightgray", 
+								borderStyle: "ridge"
+							}
+						})
 
-				}, 100)
+					}, 100)
 
-			})
+				})
+
+			}
 		}
 
 		if (e.key === "ArrowUp") {
@@ -457,10 +460,13 @@ export class BoardWrapper extends React.Component {
 
 	//DONE, hard edge cases on 2 and 1
 	handleLeftClick = () => {
-		this.game.undo()
+		let isUndo = this.game.undo()
 		// console.log(this.props.chesscom)
 		// console.log(this.props.chesscom.initial_setup)
 		// console.log(this.game.fen())
+		if (!isUndo) return
+
+		//todo: check lengths before invoking undo on chess
 		let timestamps = this.state.timestamps
 		let totalPly = this.game.history().length
 
@@ -485,15 +491,18 @@ export class BoardWrapper extends React.Component {
 				ply: prevState.ply-1,
 			}
 		})
+		return true
 	}
 
 	//DONE, edge cases are beginning and end
 	handleRightClick = () => {
 		let index = this.state.history[0] ? this.game.history().length : this.game.history().length+1
+		if (index >= this.state.history.length) return
 		// console.log(index)
 		let move = this.state.history[index]
+		let isMove = this.game.move(move)
+		if (!isMove) return console.log('illegal move')
 
-		this.game.move(move)
 		if (index === 0) {
 			this.setState({ 
 				fen: this.game.fen(), 
@@ -516,6 +525,7 @@ export class BoardWrapper extends React.Component {
 				}
 			})
 		}
+		return true
 	}
 }
 
