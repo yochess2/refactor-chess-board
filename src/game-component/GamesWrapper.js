@@ -17,6 +17,8 @@ export class GamesWrapper extends React.Component {
 
 	componentDidMount() {
 		document.title = "YoChess - Games"
+		window.addEventListener("keydown", this.handleKey)
+
 		let pages = this.getPages(this.props.games.length, this.state.perPage)
 		this.setState({ pages })
 	}
@@ -25,6 +27,23 @@ export class GamesWrapper extends React.Component {
 		if (this.props.games.length !== prevProps.games.length) {
 			let pages = this.getPages(this.props.games.length, this.state.perPage)
 			this.setState({ pages })
+		}
+	}
+
+	componentWillUnmount() {
+		window.removeEventListener("keydown", this.handleKey)
+	}
+
+	handleKey = (e) => {
+		if (e.key === "ArrowRight") {
+			if (this.props.pageIndex+1 < this.state.pages) {
+				this.props.handlePage(this.props.pageIndex+1)
+			}
+		}
+		if (e.key === "ArrowLeft") {
+			if (this.props.pageIndex+1 > 1) {
+				this.props.handlePage(this.props.pageIndex-1)
+			}
 		}
 	}
 
