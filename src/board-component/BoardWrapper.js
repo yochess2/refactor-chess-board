@@ -108,6 +108,16 @@ export class BoardWrapper extends React.Component {
 
 			})
 		}
+
+		if (e.key === "ArrowUp") {
+			this.handleLeftClick()
+			this.handleLeftClick()
+		}
+
+		if (e.key === "ArrowDown") {
+			this.handleRightClick()
+			this.handleRightClick()
+		}
 	}
 
 
