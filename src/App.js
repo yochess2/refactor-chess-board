@@ -36,6 +36,9 @@ export class App extends React.Component {
 			chesscom: null,
 		}
 	}
+	componentDidMount() {
+		document.title = "YoChess"
+	}
 	componentDidUpdate(prevProps, prevState) {
 		this.clearErrorOnPathChange(prevProps.location.pathname)
 	}

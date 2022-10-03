@@ -72,12 +72,14 @@ export class Sidebar extends React.Component {
 	getName = (pathname) => {
 		if (pathname.match("/games")) {
 			return "Games"
-		} else if (pathname.match("/home")) {
-			return "Home"
 		} else if (pathname.match("/board")) {
 			return "Board"
+		} else if (pathname.match("/about")) {
+			return "About"
+		} else if (pathname.match("/") && pathname.match("/").input === "/") {
+			return "Home"
 		} else {
-			return "Sidebar"
+			return "404"
 		}
 	}
 
