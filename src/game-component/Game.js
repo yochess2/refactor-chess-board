@@ -26,14 +26,15 @@ export class Game extends React.Component {
 					<div>({this.props.game.black.rating})</div>
 				</td >
 				<td className="align-middle">
-					<div>{this.getResult(this.props.game.white.result, this.props.game.black.result)}</div>
+					<div>{this.getResult(this.props.game.white.result, this.props.game.black.result).score}</div>
 				</td>
 			</tr>
 		)
 	}
 
 	onGameClick = (event, index) => {
-		this.props.handleGameClick(this.props.game, index)
+		let result = this.getResult(this.props.game.white.result, this.props.game.black.result)
+		this.props.handleGameClick(this.props.game, index, result)
 	}
 
 	getGameNum = (index, pageIndex, perPage) => {
@@ -85,13 +86,16 @@ export class Game extends React.Component {
 
 	//TODO: edge cases like abortion
 	getResult = (white_result, black_result) => {
-		let result;
+		let result = {}
 		if (white_result === "win") {
-			result = "1-0"
+			result.score = "1-0"
+			result.description = "White wins"
 		} else if (black_result === "win") {
-			result = "0-1"
+			result.score = "0-1"
+			result.description = "Black wins"
 		} else {
-			result = "1/2-1/2"
+			result.score = "1/2-1/2"
+			result.description = "Draw"
 		}
 		return result
 	}

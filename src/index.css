@@ -28,11 +28,11 @@ body {
 }
 
 .highlight-clock {
-	background-color: #ffb6c1;
+	background-color: rgb(214 211 209);
 }
 
 .highlight-move {
-	background-color: #00FFFF !important;
+	background-color: rgb(153 246 228) !important;
 }
 
 .collapse-sidebar-btn {
@@ -45,33 +45,33 @@ body {
 }
 
 .double-left-arrow:active {
-	color: yellow;
+	color: black;
 }
 
 .double-left-arrow:hover{
-	background: orange !important;
+	background: rgb(254 226 226) !important;
 }
 
 .left-arrow:active {
-	color: yellow;
+	color: black;
 }
 
 .left-arrow:hover{
-	background: orange !important;
+	background: rgb(254 226 226) !important;
 }
 
 .double-right-arrow:active {
-	color: yellow;
+	color: black;
 }
 
 .double-right-arrow:hover{
-	background: orange !important;
+	background: rgb(254 226 226) !important;
 }
 
 .right-arrow:active {
-	color: yellow;
+	color: black;
 }
 
 .right-arrow:hover{
-	background: orange !important;
+	background: rgb(254 226 226) !important;
 }

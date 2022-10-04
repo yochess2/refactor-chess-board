@@ -48,7 +48,7 @@ export class App extends React.Component {
 	}
 	render() {
 		const { location, navigate } = this.props
-		const { games, isFetch, error, inputs, pageIndex, player } = this.state
+		const { games, isFetch, error, inputs, pageIndex, player, result } = this.state
 
 
 
@@ -173,6 +173,7 @@ export class App extends React.Component {
 								<Route 
 									path="board"
 									element={<BoardWrapper 
+										result={result}
 										chesscom={this.state.chesscom}
 										/>} />
 								<Route 
@@ -282,9 +283,10 @@ export class App extends React.Component {
 
 	/* 6. handleGameClick */
 	// getting MVP out first
-	handleGameClick = (game) => {
+	handleGameClick = (game, index, result) => {
 		this.setState({
-			chesscom: game
+			chesscom: game,
+			result: result,
 		}, () => {
 			this.props.navigate('/board')
 		})

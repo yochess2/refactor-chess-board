@@ -8,6 +8,8 @@ import {
 	FaAngleDoubleLeft,
 	FaAngleDoubleRight,
 	FaArrowsAltV,
+	FaSearchMinus,
+	FaSearchPlus
 } from "react-icons/fa"
 
 import Notations from "./Notations"
@@ -71,7 +73,7 @@ export class BoardWrapper extends React.Component {
 			if(this.handleRightClick()) {
 				this.setState({
 					rightArrow: {
-						backgroundColor: "orange",
+						backgroundColor: "rgb(254 226 226)",
 						borderStyle: "ridge"
 					}
 				}, () => {
@@ -92,7 +94,7 @@ export class BoardWrapper extends React.Component {
 			if (this.handleLeftClick()) {
 				this.setState({
 					leftArrow: {
-						backgroundColor: "orange",
+						backgroundColor: "rgb(254 226 226)",
 						borderStyle: "ridge"
 					}
 				}, () => {
@@ -199,43 +201,44 @@ export class BoardWrapper extends React.Component {
 				{/* ROW 3 */}
 				<div className="row">
 					{/* White Player Info and White Time */}
-					{/*<div className="col-8">*/}
-						{/*<div className="row">*/}
-							<div className="col-8 col-md-6">
-								
-								{this.state.boardOrientation ? 
-								<h4>
-									{this.state.white.name || this.state.white.username}
-									<span> ({this.state.white.rating})</span>
-								</h4>
-								:
-								<h4>
-									{this.state.black.name || this.state.black.username}
-									<span> ({this.state.black.rating})</span>
-								</h4>
-								}
+					<div className="col-8 col-md-6">
+						
+						{this.state.boardOrientation ? 
+						<h4>
+							{this.state.white.name || this.state.white.username}
+							<span> ({this.state.white.rating})</span>
+						</h4>
+						:
+						<h4>
+							{this.state.black.name || this.state.black.username}
+							<span> ({this.state.black.rating})</span>
+						</h4>
+						}
 
-							</div>
-							<div className="col-4 col-md-2 text-end">
-								{this.state.boardOrientation ?
-								<h4>
-									<span className={this.game.turn() === 'w' ? 'highlight-clock' : ''}>
-										{this.state.white_time && this.state.white_time.slice(5, 13)}
-									</span>
-								</h4>
-								:
-								<h4>
-									<span className={this.game.turn() === 'b' ? 'highlight-clock' : ''}>
-										{this.state.black_time && this.state.black_time.slice(5, 13)}
-									</span>
-								</h4>
-								}
-							</div>
-						{/*</div>*/}
-					{/*</div>*/}
+					</div>
+					<div className="col-4 col-md-2 text-end">
+						{this.state.boardOrientation ?
+						<h4>
+							<span className={this.game.turn() === 'w' ? 'highlight-clock' : ''}>
+								{this.state.white_time && this.state.white_time.slice(5, 13)}
+							</span>
+						</h4>
+						:
+						<h4>
+							<span className={this.game.turn() === 'b' ? 'highlight-clock' : ''}>
+								{this.state.black_time && this.state.black_time.slice(5, 13)}
+							</span>
+						</h4>
+						}
+					</div>
+					<div className="col-md-4 text-center">
+					{this.props.result && 
+						<h4>{this.props.result.score}, {this.props.result.description}</h4>
+					}
+					</div>
 
 					{/* Buttons */}
-					<div className="col-md-4">
+					<div className="col-md-8">
 						<div className="row">
 							<div className="col-1"></div>
 
