@@ -8,8 +8,6 @@ import {
 	FaAngleDoubleLeft,
 	FaAngleDoubleRight,
 	FaArrowsAltV,
-	FaSearchMinus,
-	FaSearchPlus
 } from "react-icons/fa"
 
 import Notations from "./Notations"

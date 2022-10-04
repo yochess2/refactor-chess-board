@@ -91,7 +91,6 @@ export class Searchbar extends React.Component {
 							className="form-control"
 							disabled={this.props.isFetch}
 							value={username}
-							placeholder="Enter username"
 							onChange={onUserInput} 
 							aria-label="Search Username"/>
 						{/* End Username Input */}
