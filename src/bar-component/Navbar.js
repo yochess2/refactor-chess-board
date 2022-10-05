@@ -41,9 +41,9 @@ export class Navbar extends Component {
 							</li>
 							<li className="nav-item">
 								<NavLink 
-									to="about" 
+									to="streamers" 
 									className="navbar-brand nav-link">
-									About
+									Streamers
 								</NavLink>	
 							</li>
 						</ul>

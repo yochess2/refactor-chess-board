@@ -50,9 +50,9 @@ export class Sidebar extends React.Component {
 							Games
 						</NavLink>
 						<NavLink 
-							to="about" 
+							to="streamers" 
 							className="list-group-item list-group-item-action">
-							About
+							Streamers
 						</NavLink>
 					</div>
 				</div>
@@ -78,6 +78,8 @@ export class Sidebar extends React.Component {
 			return "About"
 		} else if (pathname.match("/") && pathname.match("/").input === "/") {
 			return "Home"
+		} else if (pathname.match("/streamers")) {
+			return "Streamers"
 		} else {
 			return "404"
 		}

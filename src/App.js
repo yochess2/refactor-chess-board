@@ -17,6 +17,10 @@ import Player from "./Player"
 import GamesWrapper from "./game-component/GamesWrapper"
 import BoardWrapper from "./board-component/BoardWrapper"
 
+import Streamers from "./Streamers"
+import Streamer from "./Streamer"
+
+
 export class App extends React.Component {
 	constructor(props) {
 		super(props) // navigate() and location passed down as props
@@ -34,6 +38,8 @@ export class App extends React.Component {
 			// board, need to heavily redo
 			// just getting MVP out
 			chesscom: null,
+
+			streamers: [],
 		}
 	}
 	componentDidMount() {
@@ -48,7 +54,7 @@ export class App extends React.Component {
 	}
 	render() {
 		const { location, navigate } = this.props
-		const { games, isFetch, error, inputs, pageIndex, player, result } = this.state
+		const { games, isFetch, error, inputs, pageIndex, player, result, streamers } = this.state
 
 
 
@@ -63,7 +69,8 @@ export class App extends React.Component {
 			handlePage, 
 			handleGames, 
 			handleGameClick, 
-			fixChessDate 
+			fixChessDate,
+			handleStreamers,
 		} = this
 
 		const ErrorProps = { error }
@@ -176,6 +183,17 @@ export class App extends React.Component {
 								<Route 
 									path="about"
 									element={<About />} />
+								<Route
+									path="streamers"
+									element={<Streamers 
+										streamers={streamers}
+										handleStreamers={handleStreamers}
+									/>}>
+									<Route
+										path="streamers/:streamer"
+										element={<Streamer />} />
+
+								</Route>
 							</Routes>
 						</div>
 						{/* End Main Content */}
@@ -287,6 +305,12 @@ export class App extends React.Component {
 		}, () => {
 			this.props.navigate('/board')
 		})
+	}
+
+
+	// 7
+	handleStreamers = (streamers) => {
+		this.setState({streamers: streamers})
 	}
 
 	  ////////////////////
