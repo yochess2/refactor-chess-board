@@ -1,9 +1,19 @@
-import React, { useEffect } from 'react'
-import { NavLink, Outlet } from 'react-router-dom'
+import React, { useEffect, useState } from 'react'
+import { useNavigate, Outlet } from 'react-router-dom'
+import Select from 'react-select'
 import ChessWebAPI from "chess-web-api"
 
 const Streamers = ({ handleStreamers, streamers }) => {
 	const regex = /(?<=twitch.tv\/).+/
+	const navigate = useNavigate()
+	const options = streamers.map(s => (
+		{
+			value: s.username,
+			label: s.username,
+			url: s.twitch_url
+		}
+	))
+	const [selectedOption, setSelectedOption] = useState(null)
 
 	useEffect(() => {
 		let fetchStreamers = async () => {
@@ -19,33 +29,22 @@ const Streamers = ({ handleStreamers, streamers }) => {
 		fetchStreamers()
 	}, [handleStreamers])
 
-	return (
-		<div className="row">
-			<div className="col-12 col-lg-4">
-				<div className="list-group" style={{overflow:"auto", height: "400px"}}>
-					{streamers.map((streamer, index) => {
-						return (
-							<NavLink 
-								id={`streamer_${index+1}`}
-							 	key ={`streamer_${index+1}`}
-								to={`streamers/${streamer.twitch_url.match(regex)}`} 
-								className="list-group-item list-group-item-action">
-								{streamer.username}
-							</NavLink>
-						)
-					})}
-					
-				</div>
+	return (<>
+		<div>
+			<div className="streamer-list text-center">
+				<Select options={options} onChange={handleChange} defaultValue={selectedOption} />
 			</div>
-			<div className="col-12 col-lg-8">
-				<Outlet />
-			</div>
-
 		</div>
-	)
+		<div className="mt-5">
+			<Outlet />
+		</div>
+</>)
+
+	function handleChange(option) {
+		setSelectedOption(option)
+		if (!option.url.match(regex)) return
+		navigate(option.url.match(regex)[0])
+	}
 }
-
-
-
 
 export default Streamers

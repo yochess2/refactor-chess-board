@@ -190,7 +190,7 @@ export class App extends React.Component {
 										handleStreamers={handleStreamers}
 									/>}>
 									<Route
-										path="streamers/:streamer"
+										path=":streamer"
 										element={<Streamer />} />
 
 								</Route>
