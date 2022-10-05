@@ -23,7 +23,7 @@ export class Searchbar extends React.Component {
 
 	//TODO: Fix Styling
 	render() { 
-		let { formatMonth, onStartMonthClick, onEndMonthClick, handleUserSearch, onUserInput } = this
+		let { formatMonth, onStartMonthClick, onEndMonthClick, onUserSearch, onUserInput } = this
 		let { displayStartDate, displayEndDate, formStartDate, formEndDate, username } = this.state
 		return (
 	    	<div className="row mt-lg-2">
@@ -101,7 +101,7 @@ export class Searchbar extends React.Component {
 							id="usersearch01" 
 							disabled={this.props.isFetch}
 							className="btn btn-primary btn-outline" 
-							onClick={handleUserSearch}>
+							onClick={onUserSearch}>
 							Search
 						</button>
 						{/* End Search Button */}
@@ -147,14 +147,14 @@ export class Searchbar extends React.Component {
 	// 3. onUserInput (x) - binds <dom> Search Input to React Library
 	onUserInput = (event) => this.setState({ username: event.target.value })
 
-	/* 4. handleUserSearch (x)
+	/* 4. onUserSearch (x)
 		Invoker:	Search Button (username, fromDate, toDate)
-		Invokee:	App - HandleUserSearch (username, fromDate, toDate)
+		Invokee:	App - onUserSearch (username, fromDate, toDate)
 
 		params: 	<dom> event
 		effect: 	Sends (username, fromDate, toDate) up to the App Component
 	*/
-	handleUserSearch = (event) => {
+	onUserSearch = (event) => {
 		event.preventDefault()
 		let { username, formEndDate, formStartDate, } = {...this.state}
 		if (!username) 
