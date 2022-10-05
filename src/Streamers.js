@@ -1,15 +1,13 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
 import ChessWebAPI from "chess-web-api"
 
-import useWindowDimensions from "./utilities/useWindowDimensions"
-
 const Streamers = ({ handleStreamers, streamers }) => {
-	const api = new ChessWebAPI()
 	const regex = /(?<=twitch.tv\/).+/
 
 	useEffect(() => {
 		let fetchStreamers = async () => {
+			const api = new ChessWebAPI()
 			try {
 				const res = await api.getStreamers()
 				const s = res.body.streamers.filter(streamer => streamer.is_live)
@@ -19,7 +17,7 @@ const Streamers = ({ handleStreamers, streamers }) => {
 			}
 		}
 		fetchStreamers()
-	}, [])
+	}, [handleStreamers])
 
 	return (
 		<div className="row">

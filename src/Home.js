@@ -21,7 +21,7 @@ export class Home extends React.Component {
 					</iframe>
 				</div>
 				<div>
-					<p>Link to Repo is on <a target="_blank" href="https://github.com/yochess2/refactor-chess-board">Github</a></p>
+					<p>Link to Repo is on <a target="_blank" rel="noreferrer" href="https://github.com/yochess2/refactor-chess-board">Github</a></p>
 				</div>
 			</div>
 	</>)
