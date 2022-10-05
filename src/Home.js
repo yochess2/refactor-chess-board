@@ -15,9 +15,9 @@ export class Home extends React.Component {
 						height="315" 
 						src="https://www.youtube.com/embed/79C_6_cPe2A" 
 						title="YouTube video player" 
-						frameborder="0" 
+						frameBorder="0" 
 						allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-						allowfullscreen>
+						allowFullScreen>
 					</iframe>
 				</div>
 				<div>
