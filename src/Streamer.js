@@ -5,8 +5,8 @@ import { TwitchPlayerNonInteractive } from 'react-twitch-embed'
 const Streamer = () => {
 	const { streamer } = useParams()
 	return (
-		<div>
-			<TwitchPlayerNonInteractive channel={streamer} autoplay muted style={{width: "100%", maxHeight: "400px"}}/>
+		<div className="mt-5">
+			<TwitchPlayerNonInteractive channel={streamer} autoplay muted style={{width: "100%"}}/>
 		</div>
 	)
 }

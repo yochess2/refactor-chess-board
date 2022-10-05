@@ -1,9 +1,20 @@
 import React, { useEffect } from 'react'
-import { NavLink, Outlet } from 'react-router-dom'
+import { useNavigate, Outlet } from 'react-router-dom'
+import Select from 'react-select'
 import ChessWebAPI from "chess-web-api"
 
 const Streamers = ({ handleStreamers, streamers }) => {
 	const regex = /(?<=twitch.tv\/).+/
+	const navigate = useNavigate()
+
+	// console.log(streamers)
+	const options = streamers.map(s => (
+		{
+			value: s.username,
+			label: s.username,
+			url: s.twitch_url
+		}
+	))
 
 	useEffect(() => {
 		let fetchStreamers = async () => {
@@ -19,33 +30,22 @@ const Streamers = ({ handleStreamers, streamers }) => {
 		fetchStreamers()
 	}, [handleStreamers])
 
-	return (
-		<div className="row">
-			<div className="col-12 col-lg-4">
-				<div className="list-group" style={{overflow:"auto", height: "400px"}}>
-					{streamers.map((streamer, index) => {
-						return (
-							<NavLink 
-								id={`streamer_${index+1}`}
-							 	key ={`streamer_${index+1}`}
-								to={`streamers/${streamer.twitch_url.match(regex)}`} 
-								className="list-group-item list-group-item-action">
-								{streamer.username}
-							</NavLink>
-						)
-					})}
-					
-				</div>
-			</div>
-			<div className="col-12 col-lg-8">
-				<Outlet />
-			</div>
+	return (<>
+		<div>
+			<div className="streamer-list text-center">
 
+				<Select 
+					options={options}
+					onChange={option => {
+						navigate(option.url.match(regex)[0])
+					}}
+				/>
+			</div>
 		</div>
-	)
+		<div>
+			<Outlet />
+		</div>
+</>)
 }
-
-
-
 
 export default Streamers
