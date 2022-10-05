@@ -163,10 +163,7 @@ export class App extends React.Component {
 									path="games"
 									element={<GamesWrapper
 										games={games}
-										inputs={inputs}
-										isFetch={isFetch}
 										pageIndex={pageIndex}
-										getLink={getLink}
 										handlePage={handlePage}
 										extractDate={extractDate} 
 										handleGameClick={handleGameClick} />} />

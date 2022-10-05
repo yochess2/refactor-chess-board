@@ -18,12 +18,17 @@ export class BoardWrapper extends React.Component {
 		this.game = new Chess()
 
 		this.state = {
+			// board properties
 			boardWidth: "256",
-
+			boardOrientation: true,
 			fen: this.game.fen(),
-			history: [],
-			timestamps: [],
+
+			// notations
 			ply: this.game.history() && this.game.history.length,
+			history: [],
+
+			// player information
+			timestamps: [],
 			black_time: "",
 			white_time: "",
 			white: {
@@ -36,10 +41,11 @@ export class BoardWrapper extends React.Component {
 				username: "Black User",
 				rating: "1000",
 			},
-			boardOrientation: true,
 
+			// buttons
 			leftArrow: { backgroundColor: "lightgray", borderStyle: "ridge" },
 			rightArrow: { backgroundColor: "lightgray", borderStyle: "ridge" },
+
 		}
 	}
 
@@ -174,13 +180,13 @@ export class BoardWrapper extends React.Component {
 						<div className="chess-board-wrapper justify-content-md-center">
 							<Chessboard 
 								id="BasicBoard" 
-								position={this.state.fen}
-								showBoardNotation={true}
 								boardOrientation={this.state.boardOrientation ? "white" : "black"}
-								onPieceDrop={this.handlePieceDrop}
+								boardWidth={this.state.boardWidth}
+								position={this.state.fen}
+								onPieceDrop={this.handlePieceDrop} //either true or false is returned
+								showBoardNotation={true}
 								animationDuration={0}
 								areArrowsAllowed={true}
-								boardWidth={this.state.boardWidth}
 							/>
 						</div>
 					</div>
@@ -188,9 +194,9 @@ export class BoardWrapper extends React.Component {
 					{/* Notations */}
 					<div className="col-md-4 d-none d-md-block" style={{height: this.state.boardWidth, overflow: "auto"}}>
 						<Notations 
+							ply={this.state.ply}
 							history={this.state.history}
 							onNotationClick={this.handleNotationClick}
-							ply={this.state.ply}
 
 						/>
 					</div>
@@ -266,9 +272,7 @@ export class BoardWrapper extends React.Component {
 	}
 
 	//DONE
-	toggleBoard = () => {
-		this.setState({boardOrientation: !this.state.boardOrientation})
-	}
+	toggleBoard = () => this.setState({boardOrientation: !this.state.boardOrientation})
 
 
 	//Done?
@@ -277,6 +281,8 @@ export class BoardWrapper extends React.Component {
 	//  else the chess instance gets updated and fen's state changes 
 	//Returns: a value of true or false as required by the chessboard instance
 	handlePieceDrop = (sourceSquare, targetSquare, piece) => {		
+		// here we want to see if the move is legal
+		// if it is not legal then do not allow it
 		let moved = this.game.move({
 			from: sourceSquare, 
 			to: targetSquare
@@ -410,11 +416,12 @@ export class BoardWrapper extends React.Component {
 			if (fen) attempt = newGame.load(fen)
 		}
 		if (!attempt) {
+			return
 			// console.log('Either new game or some unhandled error', this.game)
 		}
 
 		let ply = this.state.history[0] ? 0 : 1
-		this.setState({ply}, () => {
+		this.setState({ ply }, () => {
 			this.game = newGame
 			let index = this.state.history[0] ? 0 : 1
 			for (index; index <= moveNum; index++) {
@@ -439,6 +446,7 @@ export class BoardWrapper extends React.Component {
 			if (fen) attempt = newGame.load(fen)
 		}
 		if (!attempt) {
+			return
 			// console.log('Either new game or some unhandled error', this.game)
 		}
 

@@ -189,6 +189,7 @@ export class ApiContent extends React.Component {
 		}
 		// Logics start here: setting games to parent component
 		this.props.handleGames(response.body.games, (gamesLength) => {
+			// console.log(response.body.games)
 			let jsonObj = {
 				id: this.state.games.length+1,
 				month: `${endMonth}`,

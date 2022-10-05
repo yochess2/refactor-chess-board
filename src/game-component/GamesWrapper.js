@@ -11,7 +11,6 @@ export class GamesWrapper extends React.Component {
 		this.state = {
 			perPage: 20,
 			pages: this.getPages(props.games.length, 20),
-			pageIndex: this.props.pageIndex
 		}
 	}
 
@@ -60,7 +59,7 @@ export class GamesWrapper extends React.Component {
 				pageCount={this.state.pages}
 				// initialPage={this.props.pageIndex}
 				forcePage={this.props.pageIndex || -1}
-				onPageChange={this.handlePage}
+				onPageChange={this.onPageChange}
 				renderOnZeroPageCount={null}
 				nextLabel=" >"
 				previousLabel="<"
@@ -91,7 +90,7 @@ export class GamesWrapper extends React.Component {
 		return paginatedGames
 	}
 
-	handlePage = (event) => {
+	onPageChange = (event) => {
 		let pageIndex = event.selected
 		this.props.handlePage(pageIndex)
 	}
