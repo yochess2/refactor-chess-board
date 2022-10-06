@@ -41,7 +41,7 @@ const Streamer = ({handlePlayer, handleError, selectedOption}) => {
 	return (
 		<>
 			{selectedOption &&
-			<TwitchPlayerNonInteractive channel={selectedOption.username} autoplay muted/>
+			<TwitchPlayerNonInteractive channel={selectedOption.username} autoplay allowFullScreen muted/>
 			}
 		</>
 	)
