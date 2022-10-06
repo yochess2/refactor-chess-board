@@ -33,12 +33,12 @@ export class ApiContent extends React.Component {
 		if (isFetch !== prevProps.isFetch && isFetch) {
 			let res = await this.fetchPlayerData(username)
 			let player = this.getPlayer(res)
-
 			if (!player) { return this.props.handleError(true, res, null, false) } 
-			// console.log('player: ', player)
-			// let player = tiger415
 
-			this.props.handlePlayer(player)
+			let res2 = await this.fetchPlayerStats(username)
+			let player2 = this.getPlayer(res2)
+
+			this.props.handlePlayer({...player, ...player2})
 			// if player is found, reset API and then go look for games
 			this.setApi(0, null, null, [], true, false, true, false, () => { 	// reset API state				
 			
@@ -140,6 +140,16 @@ export class ApiContent extends React.Component {
 		return response
 	}
 
+	fetchPlayerStats = async (player) => {
+		let res
+		try {
+			res = await this.api.getPlayerStats(player) // gets chess.com username to display on display card on side
+		} catch (err) {
+			res = err
+		}
+		return res
+	}
+
 	// 2. processFetchGames (x) - gets the necessary params before invoking fetchAndSetGames
 	fetchAndProcessGames = async (startDate, endDate, player, username) => {
 		let today = new Date()
@@ -176,7 +186,6 @@ export class ApiContent extends React.Component {
 	    		loading: false,
 	    	}, () => {
 	    		this.props.handleFetching(false)
-	    		// console.log('API: BASE CASE', this.state)
 	    	})
 	    }
 		if (error || !response || !response.body) {
@@ -189,7 +198,6 @@ export class ApiContent extends React.Component {
 		}
 		// Logics start here: setting games to parent component
 		this.props.handleGames(response.body.games, (gamesLength) => {
-			// console.log(response.body.games)
 			let jsonObj = {
 				id: this.state.games.length+1,
 				month: `${endMonth}`,
@@ -239,11 +247,11 @@ export class ApiContent extends React.Component {
 	*/
 	getPlayer = (res) => {
 		if (res.statusCode === 404) {
-			// console.log('>>>>>>', res)
+			console.log('>>>>>>', res)
 			return this.props.handleError(true, res, null, false)
 		}
 		if (res.statusCode !== 200) {
-			// console.log('>>>>>>', res)
+			console.log('>>>>>>', res)
 			return this.props.handleError(true, res, null, false)
 		}
 		return res.body

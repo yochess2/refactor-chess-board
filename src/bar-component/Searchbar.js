@@ -6,7 +6,7 @@ export class Searchbar extends React.Component {
 	constructor(props) {
 		super(props) // handleUserSearch(), handleError() are passed down as props
 		this.state = {
-			username: "hikaru",
+			username: "",
 			displayStartDate: new Date(),
 			displayEndDate: new Date(),
 			formStartDate: new Date(),

@@ -36,22 +36,14 @@ const Streamers = ({handleError, handlePlayer}) => {
 		}
 	}, [handleError])
 
-	useEffect(() => {
-		// console.log(options)
-	}, [options])
-
-	//TODO: figure out how to use navigate correctly, this renders twice
-	useEffect(() => {
-		if (!selectedOption || !selectedOption.url || !(selectedOption.url.match(regex))) return 
-		// console.log('selected: ', selectedOption)
-		// let url = selectedOption.url.match(regex)[1]
-		// navigate(url)
-	}, [selectedOption])
-
 	return (<>
 		<div>
 			<div className="streamer-list text-center">
-				<Select options={options} onChange={setSelectedOption} defaultValue={selectedOption} />
+				<Select 
+					options={options} 
+					onChange={setSelectedOption}
+					placeholder='Search Twitch Streamer' 
+					defaultValue={selectedOption} />
 			</div>
 		</div>
 		<div className="mt-5 row">

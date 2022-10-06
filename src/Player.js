@@ -32,20 +32,40 @@ export class Player extends React.Component {
 				    			<h2><FaTimesCircle className="hand-icon" onClick={this.onClick}/> {player.username}</h2>
 				    		</div>
 
-								<ul className="list-group">
-					    		<li className="list-group-item">
-					    		    name: {player.name}
-					    		</li>
+							<ul className="list-group">
+
+								{(player.name || player.fide) &&
+						    		<li className="list-group-item">
+						    		    <p style={{margin: "0"}}>
+						    		    	{player.title && <b>{player.title} </b> }
+						    		    	<b>{player.name}
+						    		    </b></p>
+						    		    {player.fide &&
+						    		    <p style={{margin: "0"}}><b>Fide:</b> {player.fide}</p>
+						    		    }
+						    		</li>
+								}
 					    		    
 					    		{player.joined &&
 					    		<li className="list-group-item">
-					    		    join date: {extractDate(fixChessDate(player.joined)).monthYear}
+					    		    <p style={{margin: "0"}}><b>join date:</b> {extractDate(fixChessDate(player.joined)).monthYear}</p>
+				    		    	<p style={{margin: "0"}}><b>last seen:</b> {extractDate(fixChessDate(player.last_online)).monthYear}</p>
 					    		</li>
 				    			}
-				    		    
+
+				    		    {(player.chess_blitz || player.chess_bullet || player.chess_rapid) &&	
 				    		    <li className="list-group-item">
-				    		    	last seen: {extractDate(fixChessDate(player.last_online)).monthYear}
+				    		    	{player.chess_rapid &&
+				    		    		<p style={{margin: "0"}}><b>Rapid:</b> {player.chess_rapid.last.rating}</p>
+				    		    	}
+				    		    	{player.chess_blitz &&
+				    		    		<p style={{margin: "0"}}><b>Blitz:</b> {player.chess_blitz.last.rating}</p>
+				    		    	}
+				    		    	{player.chess_bullet &&
+				    		    		<p style={{margin: "0"}}><b>Bullet:</b> {player.chess_bullet.last.rating}</p>
+				    		    	}
 				    		    </li>
+				    		    }
 			    		    </ul>
 					  	</div>
 					</div>
