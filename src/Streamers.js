@@ -27,7 +27,7 @@ const Streamers = ({handleError, handlePlayer}) => {
 
 		function getStreamers(streamers) {
 			if (!streamers) {
-				this.handleError(false, "response not ready or no streamers")
+				handleError(true, "response not ready or no streamers")
 				return []
 			}
 			return streamers.filter(s => s.is_live).map(s => ({
