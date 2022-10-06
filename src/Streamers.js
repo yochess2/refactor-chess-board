@@ -5,10 +5,13 @@ import ChessWebAPI from "chess-web-api"
 import Streamer from "./Streamer"
 const regex = /twitch.tv\/(.*)/
 
+// const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
+
+
 const Streamers = ({handleError, handlePlayer}) => {
 	// const navigate = useNavigate()
-	const [options, setOptions] = useState("")
-	const [selectedOption, setSelectedOption] = useState("")
+	const [options, setOptions] = useState()
+	const [selectedOption, setSelectedOption] = useState()
 	
 	useEffect(() => {
 		let fetchStreamers = async () => {
@@ -22,14 +25,12 @@ const Streamers = ({handleError, handlePlayer}) => {
 			return res
 		}
 		fetchStreamers()
-			.then(res => setOptions(getStreamers(res.body.streamers)))
+			.then(res => res.body ? getStreamers(res.body.streamers) : handleError(true, "no response from chess.com"))
+			.then(streamers => { setOptions(streamers) })
 			.catch(err => handleError(true, err))
 
 		function getStreamers(streamers) {
-			if (!streamers) {
-				handleError(true, "response not ready or no streamers")
-				return []
-			}
+			if (!streamers) return handleError(true, "streamers not provided by response")
 			return streamers.filter(s => s.is_live).map(s => ({
 				value: s.username,
 				label: s.username,

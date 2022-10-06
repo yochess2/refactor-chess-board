@@ -328,7 +328,7 @@ export class App extends React.Component {
 						newMessage = "Unhandled Case 1"
 					}
 				} else {
-					// console.log(">>:: ", message)
+					console.log(">>:: ", message)
 					newMessage = "Unhandled Case 2, likely no internet"
 				}
 			} else {

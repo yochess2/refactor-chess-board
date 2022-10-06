@@ -11,7 +11,6 @@ const Streamer = ({handlePlayer, handleError, selectedOption}) => {
 			try {
 				res = await api.getPlayer(selectedOption.value) // gets chess.com username to display on display card on side
 			} catch (err) {
-				console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>', err)
 				res = err
 			}
 			return res
@@ -22,7 +21,6 @@ const Streamer = ({handlePlayer, handleError, selectedOption}) => {
 			try {
 				res = await api.getPlayerStats(selectedOption.value) // gets chess.com username to display on display card on side
 			} catch (err) {
-				console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>', err)
 				res = err
 			}
 			return res
