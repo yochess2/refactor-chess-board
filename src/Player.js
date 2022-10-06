@@ -38,9 +38,9 @@ export class Player extends React.Component {
 						    		<li className="list-group-item">
 						    		    <p style={{margin: "0"}}>
 						    		    	{player.title && <b>{player.title} </b> }
-						    		    	<b>{player.name}
-						    		    </b></p>
-						    		    {player.fide &&
+						    		    	<b>{player.name}</b>
+						    		    </p>
+						    		    {!!player.fide &&
 						    		    <p style={{margin: "0"}}><b>Fide:</b> {player.fide}</p>
 						    		    }
 						    		</li>

@@ -14,11 +14,23 @@ export class Searchbar extends React.Component {
 		}
 		this.startDateRef = React.createRef()
 		this.endDateRef = React.createRef()
+		this.inputRef = React.createRef()
 	}
 
-	//TESTING: Clear when done, checking how many re-renders 
-	componentDidUpdate() {
-		// console.log('TEST - searchbar updates')
+	componentDidMount() {
+		window.addEventListener("keydown", this.handleKey)
+	}
+
+	componentWillUnmount() {
+		window.removeEventListener("keydown", this.handleKey)
+	}
+
+	handleKey = (e) => {
+		if (e.key === "Enter") {
+			if (this.inputRef.current === document.activeElement) {
+				this.onUserSearch(e)
+			}
+		}
 	}
 
 	//TODO: Fix Styling
@@ -85,7 +97,8 @@ export class Searchbar extends React.Component {
 
 					
 						{/* Username Input */}
-						<input 
+						<input
+							ref={this.inputRef} 
 							type="search"
 							placeholder="Search Username"
 							className="form-control"
