@@ -1,18 +1,38 @@
 import React from "react"
 
 export class Home extends React.Component {
+	constructor(props) {
+		super(props)
+		this.state = {
+			width: 530,
+			height: 315,
+		}
+	}
+
 	componentDidMount() {
 		document.title = "YoChess"
+		window.addEventListener("resize", this.resize);
+		this.resize();
 	}
+	resize = () => {
+		let display = document.getElementsByClassName("home-wrapper")[0]
+	    this.setState({
+	    	width: display.offsetWidth, height: display.offsetWidth/1.7777
+	    });
+	}
+	componentWillUnmount() {
+		window.removeEventListener("resize", this.resize);
+	}
+
 	render() {
 		return (<>
-			<div className="text-center mt-4">
+			<div className="text-center mt-4 home-wrapper">
 				<h4>Site Walkthrough</h4>
 
 				<div className="youtube-video mt-4">
 					<iframe 
-						width="560" 
-						height="315" 
+						width={this.state.width}
+						height={this.state.height}
 						src="https://www.youtube.com/embed/79C_6_cPe2A" 
 						title="YouTube video player" 
 						frameBorder="0" 

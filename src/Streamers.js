@@ -1,50 +1,66 @@
-import React, { useEffect, useState } from 'react'
-import { useNavigate, Outlet } from 'react-router-dom'
+import React, { useEffect, useState  } from 'react'
 import Select from 'react-select'
 import ChessWebAPI from "chess-web-api"
 
-const Streamers = ({ handleStreamers, streamers }) => {
-	const regex = /(?<=twitch.tv\/).+/
-	const navigate = useNavigate()
-	const options = streamers.map(s => (
-		{
-			value: s.username,
-			label: s.username,
-			url: s.twitch_url
-		}
-	))
-	const [selectedOption, setSelectedOption] = useState(null)
+import Streamer from "./Streamer"
+const regex = /twitch.tv\/(.*)/
 
+
+const Streamers = ({handleError, handlePlayer}) => {
+	// const navigate = useNavigate()
+	const [options, setOptions] = useState("")
+	const [selectedOption, setSelectedOption] = useState("")
+	
 	useEffect(() => {
 		let fetchStreamers = async () => {
 			const api = new ChessWebAPI()
+			let res
 			try {
-				const res = await api.getStreamers()
-				const s = res.body.streamers.filter(streamer => streamer.is_live)
-				handleStreamers(s)
-			} catch(err) {
-				console.log('error: ', err)
+				res = await api.getStreamers()
+			} catch (err) {
+				res = err
 			}
+			return res
 		}
 		fetchStreamers()
-	}, [handleStreamers])
+			.then(res => setOptions(getStreamers(res.body.streamers)))
+			.catch(err => handleError(err))
+
+		function getStreamers(streamers) {
+			return streamers.filter(s => s.is_live).map(s => ({
+				value: s.username,
+				label: s.username,
+				url: s.twitch_url,
+				username: s.twitch_url.match(regex)[1]
+			}))
+		}
+	}, [handleError])
+
+	useEffect(() => {
+		// console.log(options)
+	}, [options])
+
+	//TODO: figure out how to use navigate correctly, this renders twice
+	useEffect(() => {
+		if (!selectedOption || !selectedOption.url || !(selectedOption.url.match(regex))) return 
+		// console.log('selected: ', selectedOption)
+		// let url = selectedOption.url.match(regex)[1]
+		// navigate(url)
+	}, [selectedOption])
 
 	return (<>
 		<div>
 			<div className="streamer-list text-center">
-				<Select options={options} onChange={handleChange} defaultValue={selectedOption} />
+				<Select options={options} onChange={setSelectedOption} defaultValue={selectedOption} />
 			</div>
 		</div>
-		<div className="mt-5">
-			<Outlet />
+		<div className="mt-5 row">
+			<Streamer 
+				handlePlayer={handlePlayer}
+				handleError={handleError} 
+				selectedOption={selectedOption} />
 		</div>
 </>)
-
-	function handleChange(option) {
-		setSelectedOption(option)
-		if (!option.url.match(regex)) return
-		navigate(option.url.match(regex)[0])
-	}
 }
 
 export default Streamers

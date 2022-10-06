@@ -18,7 +18,6 @@ import GamesWrapper from "./game-component/GamesWrapper"
 import BoardWrapper from "./board-component/BoardWrapper"
 
 import Streamers from "./Streamers"
-import Streamer from "./Streamer"
 
 
 export class App extends React.Component {
@@ -38,8 +37,6 @@ export class App extends React.Component {
 			// board, need to heavily redo
 			// just getting MVP out
 			chesscom: null,
-
-			streamers: [],
 		}
 	}
 	componentDidMount() {
@@ -54,7 +51,7 @@ export class App extends React.Component {
 	}
 	render() {
 		const { location, navigate } = this.props
-		const { games, isFetch, error, inputs, pageIndex, player, result, streamers } = this.state
+		const { games, isFetch, error, inputs, pageIndex, player, result, } = this.state
 
 
 
@@ -70,7 +67,7 @@ export class App extends React.Component {
 			handleGames, 
 			handleGameClick, 
 			fixChessDate,
-			handleStreamers,
+			// handleStreamers,
 		} = this
 
 		const ErrorProps = { error }
@@ -186,14 +183,9 @@ export class App extends React.Component {
 								<Route
 									path="streamers"
 									element={<Streamers 
-										streamers={streamers}
-										handleStreamers={handleStreamers}
-									/>}>
-									<Route
-										path=":streamer"
-										element={<Streamer />} />
-
-								</Route>
+										handlePlayer={handlePlayer}
+										handleError={handleError} 
+										navigate={navigate} />} />
 							</Routes>
 						</div>
 						{/* End Main Content */}
@@ -264,7 +256,7 @@ export class App extends React.Component {
 					perform a lot of tasks in between (may get confusing now)
 					When it's done, it is set back to false. The search bar toggles as a result.
 	*/ 
-	handleFetching = (isFetch, cb) => {
+	handleFetching = (isFetch, cb) => {	
 		this.setState({ isFetch }, () => { if (cb) cb() })
 	}
 
@@ -309,9 +301,10 @@ export class App extends React.Component {
 
 
 	// 7
-	handleStreamers = (streamers) => {
-		this.setState({streamers: streamers})
-	}
+	// handleStreamers = (streamers) => {
+	// 	console.log('parent: ', streamers)
+	// 	this.setState({streamers: streamers})
+	// }
 
 	  ////////////////////
 	 /* Helper Methods */
