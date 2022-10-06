@@ -10,7 +10,7 @@ export class Player extends React.Component {
     		{this.props.player.username &&
 
 
-			<div className="card mt-lg-5" style={{maxWidth: "574px"}}>
+			<div className="card mt-lg-2" style={{maxWidth: "574px"}}>
 				<div className="row d-none d-lg-block ms-2">
 					<div className="col">
 			    		<h2><FaTimesCircle className="hand-icon" onClick={this.onClick}/> {player.username}</h2>
