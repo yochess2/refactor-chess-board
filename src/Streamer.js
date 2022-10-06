@@ -35,7 +35,7 @@ const Streamer = ({handlePlayer, handleError, selectedOption}) => {
 			.then(r => fetchPlayerStats())
 			.then(res => player = {...player, ...res.body})
 			.then(r => handlePlayer(player))
-			.catch(err => handleError(err))
+			.catch(err => handleError(true, err))
 	}, [handleError, handlePlayer, selectedOption])
 
 	return (

@@ -23,7 +23,7 @@ const Streamers = ({handleError, handlePlayer}) => {
 		}
 		fetchStreamers()
 			.then(res => setOptions(getStreamers(res.body.streamers)))
-			.catch(err => handleError(err))
+			.catch(err => handleError(true, err))
 
 		function getStreamers(streamers) {
 			if (!streamers) {
