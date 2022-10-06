@@ -5,7 +5,6 @@ import ChessWebAPI from "chess-web-api"
 import Streamer from "./Streamer"
 const regex = /twitch.tv\/(.*)/
 
-
 const Streamers = ({handleError, handlePlayer}) => {
 	// const navigate = useNavigate()
 	const [options, setOptions] = useState("")
@@ -27,6 +26,10 @@ const Streamers = ({handleError, handlePlayer}) => {
 			.catch(err => handleError(err))
 
 		function getStreamers(streamers) {
+			if (!streamers) {
+				this.handleError(false, "response not ready or no streamers")
+				return []
+			}
 			return streamers.filter(s => s.is_live).map(s => ({
 				value: s.username,
 				label: s.username,
