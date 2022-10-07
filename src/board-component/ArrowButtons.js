@@ -35,7 +35,19 @@ const ArrowButtons = ({ handleDoubleRightClick, handleLeftClick, handleRightClic
 	const timeRef = useRef([])
 	const counterRef = useRef(0)
 
-	const handleKeyMemo = useCallback(handleKey, [handleRightClick, handleLeftClick])
+	const handleKeyMemo = useCallback(event => {
+		if (event.key === "ArrowRight") {
+			if(handleRightClick()) setRightArrowStyle(setStyles.clickedArrowStyle)
+		} else if (event.key === "ArrowLeft") {
+			if (handleLeftClick()) setLeftArrowStyle(setStyles.clickedArrowStyle)	
+		} else if (event.key === "ArrowUp") {
+			Array.from({length:2}).map(() => handleLeftClick())
+		} else if (event.key === "ArrowDown") {
+			Array.from({length:2}).map(() => handleRightClick())
+		} else {
+			return
+		}
+	}, [handleRightClick, handleLeftClick])
 
 	useEffect(() => {
 		window.addEventListener("keydown", handleKeyMemo)
@@ -86,20 +98,6 @@ const ArrowButtons = ({ handleDoubleRightClick, handleLeftClick, handleRightClic
 			<div className="col-1"></div>
 		</div>
 	)
-
-	function handleKey(event) {
-		if (event.key === "ArrowRight") {
-			if(handleRightClick()) setRightArrowStyle(setStyles.clickedArrowStyle)
-		} else if (event.key === "ArrowLeft") {
-			if (handleLeftClick()) setLeftArrowStyle(setStyles.clickedArrowStyle)	
-		} else if (event.key === "ArrowUp") {
-			Array.from({length:2}).map(() => handleLeftClick())
-		} else if (event.key === "ArrowDown") {
-			Array.from({length:2}).map(() => handleRightClick())
-		} else {
-			return
-		}
-	}
 
 	function cacheAndSetArrowStyle(setArrowStyle, counter) {
 		timeRef.current[counter] = null

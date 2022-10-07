@@ -73,7 +73,7 @@ export class BoardWrapper extends React.Component {
 					<div className="col-md-8">
 						<ChessBoardWrapper isFlip={isFlip} fen={fen} handlePieceDrop={handlePieceDrop} boardWidth={boardWidth} setBoardWidth={setBoardWidth} />
 					</div>
-					<div className="col-md-4 d-none d-md-block" style={{height: "auto", overflow: "auto"}}>
+					<div className="col-md-4 d-none d-md-block" style={{height: boardWidth, overflow: "auto"}}>
 						<Notations ply={ply} history={history} onNotationClick={handleNotationClick} />
 					</div>
 				</div>
