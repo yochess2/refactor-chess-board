@@ -1,14 +1,10 @@
 import React from "react"
-import { Chessboard } from "react-chessboard" 
 import { Chess } from "chess.js"
 
-import { 
-	FaAngleLeft,
-	FaAngleRight,
-	FaAngleDoubleLeft,
-	FaAngleDoubleRight,
-	FaArrowsAltV,
-} from "react-icons/fa"
+import ArrowButtons from "./ArrowButtons"
+import PlayerDetails from "./PlayerDetails"
+import TimerDetails from "./TimerDetails"
+import ChessBoardWrapper from "./ChessBoardWrapper"
 
 import Notations from "./Notations"
 
@@ -20,7 +16,7 @@ export class BoardWrapper extends React.Component {
 		this.state = {
 			// board properties
 			boardWidth: "256",
-			boardOrientation: true,
+			isFlip: true,
 			fen: this.game.fen(),
 
 			// notations
@@ -29,8 +25,8 @@ export class BoardWrapper extends React.Component {
 
 			// player information
 			timestamps: [],
-			black_time: "",
-			white_time: "",
+			blackTime: "",
+			whiteTime: "",
 			white: {
 				name: "White Player",
 				username: "White User",
@@ -41,238 +37,83 @@ export class BoardWrapper extends React.Component {
 				username: "Black User",
 				rating: "1000",
 			},
-
-			// buttons
-			leftArrow: { backgroundColor: "lightgray", borderStyle: "ridge" },
-			rightArrow: { backgroundColor: "lightgray", borderStyle: "ridge" },
-
 		}
 	}
 
 	componentDidMount() {
 		document.title = "YoChess - Board"
-		window.addEventListener("resize", this.handleResize)
-		this.handleResize()
-
-		window.addEventListener("keydown", this.handleKey)
-
 		if (this.props.chesscom) {
 			this.handleGameClick(this.props.chesscom)
 		}
 	}
 
-	componentWillUnmount = () => {
-		window.removeEventListener("keydown", this.handleKey)
-		window.removeEventListener("resize", this.handleResize)
-	}
-
-	handleResize = () => {
-		let display = document.getElementsByClassName("chess-board-wrapper")[0];
-		if (!display) return console.log('what happened to display? ', document.getElementsByClassName("chess-board-wrapper"))
-		this.setState({ boardWidth: display.offsetWidth})
-	}
-
-	handleKey = (e) => {
-		if (e.key === "ArrowRight") {
-			if(this.handleRightClick()) {
-				this.setState({
-					rightArrow: {
-						backgroundColor: "rgb(254 226 226)",
-						borderStyle: "ridge"
-					}
-				}, () => {
-					setTimeout(() => {
-						this.setState({
-							rightArrow: {
-								backgroundColor: "lightgray", 
-								borderStyle: "ridge"
-							}
-						})
-
-					}, 100)
-
-				})
-			}
-		}
-		if (e.key === "ArrowLeft") {
-			if (this.handleLeftClick()) {
-				this.setState({
-					leftArrow: {
-						backgroundColor: "rgb(254 226 226)",
-						borderStyle: "ridge"
-					}
-				}, () => {
-					setTimeout(() => {
-						this.setState({
-							leftArrow: {
-								backgroundColor: "lightgray", 
-								borderStyle: "ridge"
-							}
-						})
-
-					}, 100)
-
-				})
-
-			}
-		}
-
-		if (e.key === "ArrowUp") {
-			this.handleLeftClick()
-			this.handleLeftClick()
-		}
-
-		if (e.key === "ArrowDown") {
-			this.handleRightClick()
-			this.handleRightClick()
-		}
-	}
-
-
 	render() {
+		const { isFlip, white, black, whiteTime, blackTime, fen, ply, history, boardWidth } = this.state
+		const { result } = this.props
+		const { handlePieceDrop, handleNotationClick, setBoardWidth } = this
+
+		const turn = this.game.turn()
+
 		return (
 			<div className="container">
+
 				{/* ROW 1 */}
 				<div className="row">
-
-					{/* Black Player Info and Black Time */}
 					<div className="col-8 col-md-6">
-
-						{this.state.boardOrientation ? 
-						<h4>
-							{this.state.black.name || this.state.black.username}
-							<span> ({this.state.black.rating})</span>
-						</h4>
-						:
-						<h4>
-							{this.state.white.name || this.state.white.username}
-							<span> ({this.state.white.rating})</span>
-						</h4>
-						}
-
+						<PlayerDetails isFlip={isFlip} player1={white} player2={black} />
 					</div>
-					<div className="col-4 col-md-2 text-end">
-						{this.state.boardOrientation ? 
-						<h4>
-							<span className={this.game.turn() === 'b' ? 'highlight-clock' : ''}>
-								{this.state.black_time && this.state.black_time.slice(5, 13)}
-							</span>
-						</h4>
-						:
-						<h4>
-							<span className={this.game.turn() === 'w' ? 'highlight-clock' : ''}>
-								{this.state.white_time && this.state.white_time.slice(5, 13)}
-							</span>
-						</h4>
-						}
-
+					<div className="col-4 col-md-2">
+						<TimerDetails isFlip={isFlip} timer1={whiteTime} timer2={blackTime} turn={turn} letter="b" />
 					</div>
-
-					{/* Empty Space */}
 					<div className="col-4"></div>
 				</div>
 
 				{/* ROW 2 */}
 				<div className="row">
-
-					{/* Chess Board */}
 					<div className="col-md-8">
-						<div className="chess-board-wrapper justify-content-md-center">
-							<Chessboard 
-								id="BasicBoard" 
-								boardOrientation={this.state.boardOrientation ? "white" : "black"}
-								boardWidth={this.state.boardWidth}
-								position={this.state.fen}
-								onPieceDrop={this.handlePieceDrop} //either true or false is returned
-								showBoardNotation={true}
-								animationDuration={0}
-								areArrowsAllowed={true}
-							/>
-						</div>
+						<ChessBoardWrapper isFlip={isFlip} fen={fen} handlePieceDrop={handlePieceDrop} boardWidth={boardWidth} setBoardWidth={setBoardWidth} />
 					</div>
-
-					{/* Notations */}
-					<div className="col-md-4 d-none d-md-block" style={{height: this.state.boardWidth, overflow: "auto"}}>
-						<Notations 
-							ply={this.state.ply}
-							history={this.state.history}
-							onNotationClick={this.handleNotationClick}
-
-						/>
+					<div className="col-md-4 d-none d-md-block" style={{height: "auto", overflow: "auto"}}>
+						<Notations ply={ply} history={history} onNotationClick={handleNotationClick} />
 					</div>
 				</div>
 
 				{/* ROW 3 */}
 				<div className="row">
-					{/* White Player Info and White Time */}
 					<div className="col-8 col-md-6">
-						
-						{this.state.boardOrientation ? 
-						<h4>
-							{this.state.white.name || this.state.white.username}
-							<span> ({this.state.white.rating})</span>
-						</h4>
-						:
-						<h4>
-							{this.state.black.name || this.state.black.username}
-							<span> ({this.state.black.rating})</span>
-						</h4>
-						}
-
+						<PlayerDetails isFlip={isFlip} player1={black} player2={white} />
 					</div>
-					<div className="col-4 col-md-2 text-end">
-						{this.state.boardOrientation ?
-						<h4>
-							<span className={this.game.turn() === 'w' ? 'highlight-clock' : ''}>
-								{this.state.white_time && this.state.white_time.slice(5, 13)}
-							</span>
-						</h4>
-						:
-						<h4>
-							<span className={this.game.turn() === 'b' ? 'highlight-clock' : ''}>
-								{this.state.black_time && this.state.black_time.slice(5, 13)}
-							</span>
-						</h4>
-						}
+					<div className="col-4 col-md-2">
+						<TimerDetails isFlip={isFlip} timer1={blackTime} timer2={whiteTime} turn={turn} letter="w" />
 					</div>
 					<div className="col-md-4 text-center">
-					{this.props.result && 
-						<h4>{this.props.result.score}, {this.props.result.description}</h4>
-					}
+					{result && <h4>{result.score}, {result.description}</h4> }
 					</div>
-
-					{/* Buttons */}
+				</div>
+				{/* Buttons */}
+				<div className="row">
 					<div className="col-md-8">
-						<div className="row">
-							<div className="col-1"></div>
-
-							<div className="col-2 hand-icon text-center double-left-arrow" style={{backgroundColor: "#8FBC8F", borderStyle: "ridge"}} onClick={this.handleDoubleLeftClick}>
-								<FaAngleDoubleLeft/>
-							</div>
-							<div className="col-2 hand-icon text-center left-arrow" style={this.state.leftArrow} onClick={this.handleLeftClick}>
-								<FaAngleLeft/>
-							</div>
-							<div className="col-2 hand-icon text-center right-arrow" style={this.state.rightArrow} onClick={this.handleRightClick}>
-								<FaAngleRight/>
-							</div>
-							<div className="col-2 hand-icon text-center double-right-arrow" style={{backgroundColor: "#8FBC8F", borderStyle: "ridge" }} onClick={this.handleDoubleRightClick}>
-								<FaAngleDoubleRight/>
-							</div>
-							<div className="col-2 hand-icon text-center double-left-arrow" style={{backgroundColor: "lightblue", borderStyle: "ridge"}} onClick={this.toggleBoard}>
-								<FaArrowsAltV />
-							</div>
-							<div className="col-1"></div>
-						</div>
+					<ArrowButtons 
+						handleDoubleLeftClick={this.handleDoubleLeftClick}
+						handleLeftClick={this.handleLeftClick}
+						handleRightClick={this.handleRightClick}
+						handleDoubleRightClick={this.handleDoubleRightClick}
+						toggleBoard={this.toggleBoard}
+					/>
 					</div>
-					<div style={{height: "10px"}}>
-					</div>
+				</div>
+				<div style={{height: "10px"}}>
 				</div>
 			</div>
 		)
 	}
 
+	// redundantly done in child component
+	setBoardWidth = (boardWidth) => this.setState({boardWidth})
+	
+
 	//DONE
-	toggleBoard = () => this.setState({boardOrientation: !this.state.boardOrientation})
+	toggleBoard = () => this.setState({isFlip: !this.state.isFlip})
 
 
 	//Done?
@@ -373,8 +214,8 @@ export class BoardWrapper extends React.Component {
 					black: game.black,
 					timestamps: comments.map((obj) => obj.comment),
 					ply: comments.length+1,
-					white_time: newGame.turn() === "w" ? comments[totalPly-2].comment : comments[totalPly-1].comment,
-					black_time: newGame.turn() === "w" ? comments[totalPly-1].comment : comments[totalPly-2].comment,
+					whiteTime: newGame.turn() === "w" ? comments[totalPly-2].comment : comments[totalPly-1].comment,
+					blackTime: newGame.turn() === "w" ? comments[totalPly-1].comment : comments[totalPly-2].comment,
 				}, () => {
 					this.game = newGame
 					// console.log('>>>>', this.state)
@@ -388,8 +229,8 @@ export class BoardWrapper extends React.Component {
 				black: game.black,
 				timestamps: comments.map((obj) => obj.comment),
 				ply: comments.length,
-				white_time: newGame.turn() === "w" ? comments[totalPly-2].comment : comments[totalPly-1].comment,
-				black_time: newGame.turn() === "w" ? comments[totalPly-1].comment : comments[totalPly-2].comment,
+				whiteTime: newGame.turn() === "w" ? comments[totalPly-2].comment : comments[totalPly-1].comment,
+				blackTime: newGame.turn() === "w" ? comments[totalPly-1].comment : comments[totalPly-2].comment,
 			}, () => {
 				this.game = newGame
 				// console.log(this.state)
@@ -454,8 +295,8 @@ export class BoardWrapper extends React.Component {
 
 		this.setState({ 
 			fen: newGame.fen(),
-			white_time: this.state.timestamps[0],
-			black_time: this.state.timestamps[0],
+			whiteTime: this.state.timestamps[0],
+			blackTime: this.state.timestamps[0],
 			ply: this.state.history[0] ? 0 : 1,
 		})
 	}
@@ -483,8 +324,8 @@ export class BoardWrapper extends React.Component {
 		if (totalPly === 1) {
 			this.setState({ 
 				fen: this.game.fen(), 
-				white_time: timestamps[0],
-				black_time: timestamps[0],
+				whiteTime: timestamps[0],
+				blackTime: timestamps[0],
 				ply: this.state.history[0] ? 1 : 2,
 			})
 		} else if (totalPly === 0) {
@@ -496,8 +337,8 @@ export class BoardWrapper extends React.Component {
 		this.setState(prevState => {
 			return { 
 				fen: this.game.fen(), 
-				white_time: this.game.turn() === "w" ? timestamps[totalPly-2] : timestamps[totalPly-1],
-				black_time: this.game.turn() === "w" ? timestamps[totalPly-1] : timestamps[totalPly-2],
+				whiteTime: this.game.turn() === "w" ? timestamps[totalPly-2] : timestamps[totalPly-1],
+				blackTime: this.game.turn() === "w" ? timestamps[totalPly-1] : timestamps[totalPly-2],
 				ply: prevState.ply-1,
 			}
 		})
@@ -516,8 +357,8 @@ export class BoardWrapper extends React.Component {
 		if (index === 0) {
 			this.setState({ 
 				fen: this.game.fen(), 
-				white_time: this.state.timestamps[index],
-				black_time: this.state.timestamps[index],
+				whiteTime: this.state.timestamps[index],
+				blackTime: this.state.timestamps[index],
 				ply: 1,
 			})
 		} else if (index >= this.state.history.length) {
@@ -529,8 +370,8 @@ export class BoardWrapper extends React.Component {
 			this.setState(prevState => {
 				return { 
 					fen: this.game.fen(),
-					white_time: this.game.turn() === "w" ? this.state.timestamps[index-1] : this.state.timestamps[index],
-					black_time: this.game.turn() === "w" ? this.state.timestamps[index] : this.state.timestamps[index-1],
+					whiteTime: this.game.turn() === "w" ? this.state.timestamps[index-1] : this.state.timestamps[index],
+					blackTime: this.game.turn() === "w" ? this.state.timestamps[index] : this.state.timestamps[index-1],
 					ply: prevState.ply+1
 				}
 			})
