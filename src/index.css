@@ -65,34 +65,34 @@ body {
 	font-weight: bold;
 }
 
-.double-left-arrow:active {
+.double-left-arrow-wrapper:active {
 	color: black;
 }
 
-.double-left-arrow:hover{
+.double-left-arrow-wrapper:hover{
 	background: rgb(254 226 226) !important;
 }
 
-.left-arrow:active {
+.left-arrow-wrapper:active {
 	color: black;
 }
 
-.left-arrow:hover{
+.left-arrow-wrapper:hover{
 	background: rgb(254 226 226) !important;
 }
 
-.double-right-arrow:active {
+.double-right-arrow-wrapper:active {
 	color: black;
 }
 
-.double-right-arrow:hover{
+.double-right-arrow-wrapper:hover{
 	background: rgb(254 226 226) !important;
 }
 
-.right-arrow:active {
+.right-arrow-wrapper:active {
 	color: black;
 }
 
-.right-arrow:hover{
+.right-arrow-wrapper:hover{
 	background: rgb(254 226 226) !important;
 }

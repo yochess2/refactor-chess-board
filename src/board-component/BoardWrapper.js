@@ -256,11 +256,6 @@ export class BoardWrapper extends React.Component {
 			let fen = this.game.header() && this.game.header().FEN
 			if (fen) attempt = newGame.load(fen)
 		}
-		if (!attempt) {
-			return
-			// console.log('Either new game or some unhandled error', this.game)
-		}
-
 		let ply = this.state.history[0] ? 0 : 1
 		this.setState({ ply }, () => {
 			this.game = newGame
